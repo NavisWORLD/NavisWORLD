@@ -1,0 +1,134 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="760" viewBox="0 0 1400 760" role="img" aria-labelledby="title desc">
+  <title id="title">NavisWORLD // The Light Bringer</title>
+  <desc id="desc">A dark cosmic profile banner with stars, moonlight, a dragon silhouette, a galaxy core, and terminal-style identity panels for Cory Shane Davis and Cosmic Synapse Theory.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#03040b"/>
+      <stop offset="0.48" stop-color="#070817"/>
+      <stop offset="1" stop-color="#020309"/>
+    </linearGradient>
+    <radialGradient id="nebula" cx="50%" cy="40%" r="70%">
+      <stop offset="0" stop-color="#5e2ea8" stop-opacity=".34"/>
+      <stop offset=".42" stop-color="#1b2559" stop-opacity=".18"/>
+      <stop offset="1" stop-color="#000" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="moon" cx="42%" cy="36%" r="65%">
+      <stop offset="0" stop-color="#fff"/>
+      <stop offset=".64" stop-color="#d9ddff"/>
+      <stop offset="1" stop-color="#b3a8ff"/>
+    </radialGradient>
+    <radialGradient id="galaxy" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#fff"/>
+      <stop offset=".15" stop-color="#d8c5ff"/>
+      <stop offset=".42" stop-color="#8056ff"/>
+      <stop offset="1" stop-color="#26154f" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="dragonStroke" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#8f7bff"/>
+      <stop offset=".5" stop-color="#c7b8ff"/>
+      <stop offset="1" stop-color="#5d35c9"/>
+    </linearGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="8" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="soft" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="24"/>
+    </filter>
+    <pattern id="stars" width="80" height="80" patternUnits="userSpaceOnUse">
+      <circle cx="9" cy="12" r="1" fill="#fff" opacity=".65"/>
+      <circle cx="39" cy="24" r="1.2" fill="#a78bfa" opacity=".75"/>
+      <circle cx="67" cy="9" r=".8" fill="#fff" opacity=".45"/>
+      <circle cx="18" cy="63" r=".8" fill="#7dd3fc" opacity=".55"/>
+      <circle cx="58" cy="58" r="1.1" fill="#fff" opacity=".5"/>
+    </pattern>
+    <style>
+      .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace}
+      .small{font-size:20px;letter-spacing:.08em}
+      .label{fill:#9b87ff;font-weight:700}
+      .value{fill:#d8dcff}
+    </style>
+  </defs>
+
+  <rect width="1400" height="760" rx="28" fill="url(#bg)"/>
+  <rect width="1400" height="760" rx="28" fill="url(#stars)" opacity=".8"/>
+  <rect width="1400" height="760" rx="28" fill="url(#nebula)"/>
+
+  <!-- nebula wisps -->
+  <ellipse cx="270" cy="370" rx="250" ry="330" fill="#29406f" opacity=".14" filter="url(#soft)"/>
+  <ellipse cx="605" cy="365" rx="290" ry="350" fill="#562a8f" opacity=".12" filter="url(#soft)"/>
+
+  <!-- moon and orbit -->
+  <circle cx="485" cy="450" r="94" fill="#c9c2ff" opacity=".22" filter="url(#soft)"/>
+  <circle cx="485" cy="450" r="78" fill="url(#moon)" filter="url(#glow)"/>
+  <g fill="none" stroke="#fff" opacity=".45">
+    <path d="M431 420c26-19 75-24 109-7"/>
+    <path d="M433 469c39 22 86 24 115 1"/>
+    <circle cx="457" cy="434" r="10"/>
+    <circle cx="516" cy="477" r="8"/>
+    <circle cx="508" cy="421" r="6"/>
+  </g>
+  <ellipse cx="465" cy="306" rx="48" ry="14" fill="none" stroke="#ece8ff" stroke-width="4" transform="rotate(12 465 306)" filter="url(#glow)"/>
+  <ellipse cx="465" cy="306" rx="32" ry="7" fill="none" stroke="#8b5cf6" stroke-width="3" transform="rotate(12 465 306)"/>
+
+  <!-- dragon / cosmic guardian -->
+  <g fill="none" stroke="url(#dragonStroke)" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M154 566 C118 468 142 348 225 262 C281 205 354 177 430 186 C357 197 307 231 279 283 C251 334 258 389 285 431 C325 493 389 527 451 532" stroke-width="7" opacity=".88"/>
+    <path d="M238 303 C178 296 137 268 103 222 C111 281 135 326 179 354" stroke-width="6"/>
+    <path d="M292 255 C226 219 192 175 179 120 C232 168 284 188 339 190" stroke-width="6"/>
+    <path d="M314 425 C256 458 218 503 197 560 C253 524 304 510 358 518" stroke-width="6"/>
+    <path d="M231 314 L192 301 L218 333 L184 342 L225 357" stroke-width="4" opacity=".7"/>
+    <path d="M342 210 L318 167 L357 193 L375 151 L387 195 L427 169 L407 211" stroke-width="4" opacity=".8"/>
+    <path d="M390 240 C359 226 326 230 300 250 C323 246 342 253 355 267 C366 279 371 295 368 314" stroke-width="5"/>
+    <path d="M369 314 C405 331 438 356 459 388 C479 420 482 457 467 489" stroke-width="6"/>
+    <path d="M307 284 C320 278 333 279 344 288" stroke-width="4"/>
+  </g>
+  <circle cx="328" cy="286" r="5" fill="#f5f3ff" filter="url(#glow)"/>
+
+  <!-- galaxy heart -->
+  <g transform="translate(0 8)">
+    <ellipse cx="344" cy="390" rx="84" ry="28" fill="none" stroke="#8b5cf6" stroke-width="5" transform="rotate(-14 344 390)"/>
+    <ellipse cx="344" cy="390" rx="61" ry="18" fill="none" stroke="#c4b5fd" stroke-width="3" transform="rotate(-14 344 390)" opacity=".85"/>
+    <ellipse cx="344" cy="390" rx="42" ry="10" fill="url(#galaxy)" transform="rotate(-14 344 390)" filter="url(#glow)"/>
+    <circle cx="344" cy="390" r="5" fill="#fff"/>
+  </g>
+
+  <!-- identity title -->
+  <text x="74" y="76" class="mono" font-size="22" fill="#d9d7ff">&gt; NavisWORLD / README.md</text>
+  <text x="74" y="655" class="mono" font-size="56" font-weight="700" letter-spacing=".22em" fill="#e7e3ff">NAVISWORLD</text>
+  <text x="76" y="702" class="mono" font-size="20" letter-spacing=".28em" fill="#9b87ff">DARE TO WONDER  •  DARE TO LOVE</text>
+
+  <!-- terminal panel -->
+  <g transform="translate(760 74)">
+    <rect width="580" height="530" rx="18" fill="#050714" fill-opacity=".88" stroke="#6d5bd0" stroke-width="2"/>
+    <rect width="580" height="60" rx="18" fill="#0b0d1d"/>
+    <circle cx="522" cy="30" r="6" fill="#8b5cf6"/><circle cx="546" cy="30" r="6" fill="#6d5bd0"/><circle cx="570" cy="30" r="6" fill="#3e2c7f"/>
+    <text x="26" y="39" class="mono" font-size="23" fill="#b8a7ff">SYSTEM_OVERVIEW.exe</text>
+
+    <g class="mono small">
+      <text x="30" y="104" class="label">OS</text><text x="175" y="104" class="value">Windows • Linux • Android</text>
+      <line x1="26" y1="128" x2="554" y2="128" stroke="#252848"/>
+
+      <text x="30" y="170" class="label">STACK</text><text x="175" y="170" class="value">Python • Rust • C++ • JavaScript</text>
+      <text x="175" y="200" class="value">HTML/CSS • Bash</text>
+      <line x1="26" y1="225" x2="554" y2="225" stroke="#252848"/>
+
+      <text x="30" y="267" class="label">FOCUS</text><text x="175" y="267" class="value">Local AI • persistent memory</text>
+      <text x="175" y="297" class="value">simulation • creative engines</text>
+      <line x1="26" y1="322" x2="554" y2="322" stroke="#252848"/>
+
+      <text x="30" y="364" class="label">RESEARCH</text><text x="175" y="364" class="value">Davis CST 12D • adaptive state</text>
+      <text x="175" y="394" class="value">sensor fusion • autonomy</text>
+      <line x1="26" y1="419" x2="554" y2="419" stroke="#252848"/>
+
+      <text x="30" y="461" class="label">MISSION</text><text x="175" y="461" class="value">Build strange. Measure hard.</text>
+      <text x="175" y="491" class="value">Share what helps people.</text>
+    </g>
+  </g>
+
+  <text x="760" y="650" class="mono" font-size="20" fill="#a995ff">THE LIGHT BRINGER</text>
+  <text x="760" y="686" class="mono" font-size="18" fill="#d7d9ff">“I carry the fire of the stars so others may find their way.”</text>
+  <text x="760" y="720" class="mono" font-size="16" fill="#777da8">Cory Shane Davis • Cosmic Synapse Theory</text>
+
+  <rect x="1" y="1" width="1398" height="758" rx="27" fill="none" stroke="#252a55" stroke-width="2"/>
+</svg>
