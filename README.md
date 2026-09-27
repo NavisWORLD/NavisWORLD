@@ -239,3 +239,8 @@ If something here taught you something, helped you build, inspired a question, o
 ### CORY SHANE DAVIS // NAVISWORLD
 
 </div>
+
+
+## Open-source licensing (proposed)
+
+Original Cory-owned content published with the new [Apache-2.0 LICENSE](LICENSE) is available under that license, except separately marked files or third-party dependencies. See [OPEN_SOURCE_SCOPE.md](OPEN_SOURCE_SCOPE.md) for exclusions; third-party materials and historical copies are governed by their existing terms.
