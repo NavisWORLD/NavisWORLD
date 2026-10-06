@@ -1,38 +1,39 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="520" viewBox="0 0 1500 520" role="img" aria-labelledby="t d">
-<title id="t">Beast Box living ecosystem map</title>
-<desc id="d">A cosmic circuit showing one persistent creature moving through Beast Cage, Brain Bay, Lost COSMOS, storage and devices.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 520" role="img" aria-labelledby="t d">
+<title id="t">Beast Box continuity map</title>
+<desc id="d">The persistent creature keeps identity, state and memory references outside a replaceable model slot and moves between Beast Cage, Brain Bay, Lost COSMOS and exports.</desc>
+<style>
+  .wire{stroke-dasharray:10 9;animation:flow 8s linear infinite}
+  .beat{animation:beat 4s ease-in-out infinite;transform-origin:center}
+  @keyframes flow{to{stroke-dashoffset:-76}}
+  @keyframes beat{0%,100%{opacity:.65}50%{opacity:1}}
+  @media(prefers-reduced-motion:reduce){.wire,.beat{animation:none!important}}
+</style>
 <defs>
- <linearGradient id="g" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#67e8f9"/><stop offset=".5" stop-color="#a78bfa"/><stop offset="1" stop-color="#f472b6"/></linearGradient>
- <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#050816"/><stop offset="1" stop-color="#0b1023"/></linearGradient>
- <filter id="gl" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
- <style>.m{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}.s{font-family:Inter,system-ui,sans-serif}</style>
+<linearGradient id="bg" x1="0" x2="1"><stop stop-color="#070c21"/><stop offset="1" stop-color="#130b28"/></linearGradient>
+<linearGradient id="g" x1="0" x2="1"><stop stop-color="#5ee7ff"/><stop offset="1" stop-color="#c792ff"/></linearGradient>
 </defs>
-<rect width="1500" height="520" rx="28" fill="url(#bg)" stroke="#2e3768"/>
-<text x="52" y="58" class="m" font-size="20" fill="#a78bfa">&gt; ONE CREATURE // MANY WORLDS // CONTINUOUS IDENTITY</text>
-<path d="M205 260H420M560 260H760M900 260H1110M1250 260H1400" stroke="url(#g)" stroke-width="5" opacity=".7"/>
-<g fill="#0b1023" stroke-width="3">
- <rect x="52" y="170" width="300" height="180" rx="24" stroke="#67e8f9"/>
- <rect x="410" y="140" width="160" height="240" rx="80" stroke="#a78bfa"/>
- <rect x="650" y="100" width="300" height="120" rx="22" stroke="#67e8f9"/>
- <rect x="650" y="300" width="300" height="120" rx="22" stroke="#f472b6"/>
- <rect x="1080" y="170" width="290" height="180" rx="24" stroke="#a78bfa"/>
+<rect width="1200" height="520" rx="28" fill="url(#bg)" stroke="#38547f"/>
+<text x="55" y="60" fill="#f4f8ff" font-family="system-ui,sans-serif" font-size="28" font-weight="800">ONE CREATURE // MANY BRAINS // MANY WORLDS</text>
+<text x="55" y="90" fill="#94a8c6" font-family="system-ui,sans-serif" font-size="16">Persistent identity and state stay outside the replaceable inference slot.</text>
+<g transform="translate(55 128)">
+<rect width="480" height="300" rx="24" fill="#0b1536" stroke="#5ee7ff" stroke-width="2"/>
+<text x="28" y="42" fill="#6deaff" font-family="monospace" font-size="22" font-weight="700">BEAST // PERSISTENT OBJECT</text>
+<g fill="#dce9ff" font-family="monospace" font-size="17">
+<text x="36" y="83">├── identity + family</text><text x="36" y="112">├── traits + stats</text>
+<text x="36" y="141">├── memory references</text><text x="36" y="170">├── evolution state</text>
+<text x="36" y="199">├── environment + save state</text><text x="36" y="228">├── QBEAST metadata / provenance</text>
+<text x="36" y="257">└── MODEL SLOT → replaceable</text>
 </g>
-<circle cx="490" cy="260" r="44" fill="url(#g)" filter="url(#gl)"/>
-<circle cx="490" cy="260" r="12" fill="#fff"/>
-<text x="82" y="218" class="m" font-size="17" fill="#67e8f9">YOU / CREATOR</text>
-<text x="82" y="258" class="s" font-size="19" fill="#f8fafc">create • care • play</text>
-<text x="82" y="292" class="s" font-size="17" fill="#94a3b8">name • traits • intent</text>
-<text x="436" y="420" class="m" font-size="15" fill="#c4b5fd">SPARK BEAST</text>
-
-<text x="682" y="142" class="m" font-size="17" fill="#67e8f9">BEAST CAGE / BRAIN BAY</text>
-<text x="682" y="180" class="s" font-size="18" fill="#e2e8f0">body • behavior • models • chat</text>
-
-<text x="682" y="342" class="m" font-size="17" fill="#f472b6">LOST COSMOS / SIMULATION</text>
-<text x="682" y="380" class="s" font-size="18" fill="#e2e8f0">game • evolution • events • growth</text>
-
-<text x="1112" y="218" class="m" font-size="17" fill="#a78bfa">PERSIST + EXPORT</text>
-<text x="1112" y="258" class="s" font-size="18" fill="#f8fafc">memory • state • saves</text>
-<text x="1112" y="294" class="s" font-size="17" fill="#94a3b8">web • local • device</text>
-
-<text x="54" y="474" class="m" font-size="16" fill="#64748b">MODEL ≠ MEMORY  //  MODEL ≠ STATE  //  MODEL ≠ AUTHORITY  //  QUANTUM LABELS MUST MATCH THEIR EVIDENCE SOURCE</text>
+<rect x="255" y="268" width="195" height="18" rx="9" fill="#1b2c4f"/><rect class="beat" x="255" y="268" width="126" height="18" rx="9" fill="url(#g)"/>
+</g>
+<g stroke="#71ddff" stroke-width="3" fill="none" class="wire">
+<path d="M550 200 C650 200 640 152 720 152"/><path d="M550 270 C650 270 650 252 720 252"/>
+<path d="M550 340 C650 340 650 352 720 352"/><path d="M550 410 C650 410 650 452 720 452"/>
+</g>
+<g font-family="system-ui,sans-serif">
+<g transform="translate(735 117)"><rect width="395" height="70" rx="18" fill="#121c3c" stroke="#a78bfa"/><text x="23" y="30" fill="#eae5ff" font-size="18" font-weight="800">BEAST CAGE</text><text x="23" y="54" fill="#aebed6" font-size="14">body • habitat • interaction</text></g>
+<g transform="translate(735 217)"><rect width="395" height="70" rx="18" fill="#121c3c" stroke="#f1a3dd"/><text x="23" y="30" fill="#ffe8f7" font-size="18" font-weight="800">BRAIN BAY</text><text x="23" y="54" fill="#aebed6" font-size="14">local / native / supported model adapters</text></g>
+<g transform="translate(735 317)"><rect width="395" height="70" rx="18" fill="#121c3c" stroke="#f6c56c"/><text x="23" y="30" fill="#fff1ca" font-size="18" font-weight="800">LOST COSMOS</text><text x="23" y="54" fill="#aebed6" font-size="14">same creature • game snapshot • lineage</text></g>
+<g transform="translate(735 417)"><rect width="395" height="70" rx="18" fill="#121c3c" stroke="#68e2ba"/><text x="23" y="30" fill="#d9fff2" font-size="18" font-weight="800">EXPORT / SAVE / DEVICE</text><text x="23" y="54" fill="#aebed6" font-size="14">state may travel; authority stays gated</text></g>
+</g>
 </svg>
