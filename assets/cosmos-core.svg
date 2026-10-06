@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="520" viewBox="0 0 1500 520" role="img" aria-labelledby="t d">
+<title id="t">Beast Box living ecosystem map</title>
+<desc id="d">A cosmic circuit showing one persistent creature moving through Beast Cage, Brain Bay, Lost COSMOS, storage and devices.</desc>
+<defs>
+ <linearGradient id="g" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#67e8f9"/><stop offset=".5" stop-color="#a78bfa"/><stop offset="1" stop-color="#f472b6"/></linearGradient>
+ <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#050816"/><stop offset="1" stop-color="#0b1023"/></linearGradient>
+ <filter id="gl" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+ <style>.m{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}.s{font-family:Inter,system-ui,sans-serif}</style>
+</defs>
+<rect width="1500" height="520" rx="28" fill="url(#bg)" stroke="#2e3768"/>
+<text x="52" y="58" class="m" font-size="20" fill="#a78bfa">&gt; ONE CREATURE // MANY WORLDS // CONTINUOUS IDENTITY</text>
+<path d="M205 260H420M560 260H760M900 260H1110M1250 260H1400" stroke="url(#g)" stroke-width="5" opacity=".7"/>
+<g fill="#0b1023" stroke-width="3">
+ <rect x="52" y="170" width="300" height="180" rx="24" stroke="#67e8f9"/>
+ <rect x="410" y="140" width="160" height="240" rx="80" stroke="#a78bfa"/>
+ <rect x="650" y="100" width="300" height="120" rx="22" stroke="#67e8f9"/>
+ <rect x="650" y="300" width="300" height="120" rx="22" stroke="#f472b6"/>
+ <rect x="1080" y="170" width="290" height="180" rx="24" stroke="#a78bfa"/>
+</g>
+<circle cx="490" cy="260" r="44" fill="url(#g)" filter="url(#gl)"/>
+<circle cx="490" cy="260" r="12" fill="#fff"/>
+<text x="82" y="218" class="m" font-size="17" fill="#67e8f9">YOU / CREATOR</text>
+<text x="82" y="258" class="s" font-size="19" fill="#f8fafc">create • care • play</text>
+<text x="82" y="292" class="s" font-size="17" fill="#94a3b8">name • traits • intent</text>
+<text x="436" y="420" class="m" font-size="15" fill="#c4b5fd">SPARK BEAST</text>
+
+<text x="682" y="142" class="m" font-size="17" fill="#67e8f9">BEAST CAGE / BRAIN BAY</text>
+<text x="682" y="180" class="s" font-size="18" fill="#e2e8f0">body • behavior • models • chat</text>
+
+<text x="682" y="342" class="m" font-size="17" fill="#f472b6">LOST COSMOS / SIMULATION</text>
+<text x="682" y="380" class="s" font-size="18" fill="#e2e8f0">game • evolution • events • growth</text>
+
+<text x="1112" y="218" class="m" font-size="17" fill="#a78bfa">PERSIST + EXPORT</text>
+<text x="1112" y="258" class="s" font-size="18" fill="#f8fafc">memory • state • saves</text>
+<text x="1112" y="294" class="s" font-size="17" fill="#94a3b8">web • local • device</text>
+
+<text x="54" y="474" class="m" font-size="16" fill="#64748b">MODEL ≠ MEMORY  //  MODEL ≠ STATE  //  MODEL ≠ AUTHORITY  //  QUANTUM LABELS MUST MATCH THEIR EVIDENCE SOURCE</text>
+</svg>
