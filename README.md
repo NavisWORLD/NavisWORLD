@@ -85,10 +85,6 @@ That boundary is not lore. It is the engineering rule.
 
 ## 🛠️ The workshop where I keep connecting things I probably shouldn't
 
-<table>
-<tr>
-<td width="50%" valign="top">
-
 ### 🛠️ Builder desk
 
 The boring machinery is part of the magic:
@@ -97,10 +93,7 @@ The boring machinery is part of the magic:
 
 **Rule:** build → instrument → test → preserve → connect → teach → ship.
 
-</td>
-<td width="50%" valign="top">
-
-### 🐉 Beast habitat
+### 🐉 Meanwhile, across the room...
 
 The creative layer is allowed to be ridiculous.
 
@@ -113,9 +106,8 @@ The technical layer still has to answer:
 - what was simulated,
 - and which receipt proves the sentence.
 
-</td>
-</tr>
-</table>
+So yes: **tiny dragon, glowing crystals, Game Boy shrine.**  
+Also yes: **tests, provenance, permissions, and failure receipts.**
 
 <img src="assets/cosmic-break.svg" width="100%" alt="Animated workshop divider with a tiny Spark Beast following a glowing cable through the NavisWORLD workshop." />
 
