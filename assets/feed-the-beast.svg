@@ -1,15 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 250" role="img" aria-labelledby="t d">
 <title id="t">Feed the Beast support card</title><desc id="d">A little fire dragon sits next to a glowing heart-shaped reactor bowl with text explaining that support funds hosting, compute, hardware, storage and documentation.</desc>
 <defs><radialGradient id="r"><stop stop-color="#ff78ca"/><stop offset="1" stop-color="#6b2d74"/></radialGradient></defs>
+<style>.beast{animation:bob 3.2s ease-in-out infinite;transform-origin:center;transform-box:fill-box}.heart{animation:heart 1.9s ease-in-out infinite;transform-origin:center;transform-box:fill-box}.crumb{animation:crumb 4s ease-in-out infinite}@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}@keyframes heart{0%,100%{transform:scale(.97)}50%{transform:scale(1.04)}}@keyframes crumb{0%,100%{opacity:.2;transform:translateY(7px)}50%{opacity:1;transform:translateY(-8px)}}@media(prefers-reduced-motion:reduce){.beast,.heart,.crumb{animation:none!important}}</style>
 <rect width="900" height="250" rx="28" fill="#0a0d22" stroke="#54396a"/>
-<g transform="translate(45 36)">
+<g class="beast" transform="translate(45 36)">
 <ellipse cx="86" cy="165" rx="74" ry="14" fill="#050716"/>
 <path d="M75 58l-25-35 38 20 25-22-4 42z" fill="#f06b32"/>
 <path d="M42 117Q52 70 101 69q55 0 65 50l-25 34H69z" fill="#4c3832"/><circle cx="126" cy="96" r="8" fill="#ffc54c"/>
 <path d="M62 91l-37 16 33 8z" fill="#e35f2d"/><rect x="70" y="146" width="38" height="22" rx="9" fill="#782b3d"/><rect x="117" y="146" width="38" height="22" rx="9" fill="#782b3d"/>
 </g>
-<path d="M284 106c-23-35-79-10-55 29l55 58 55-58c24-39-32-64-55-29z" fill="url(#r)" stroke="#ff9ddd" stroke-width="4"/>
-<text x="382" y="78" fill="#fff" font-family="system-ui,sans-serif" font-size="29" font-weight="800">FEED THE BEAST // SUPPORT THE WORKSHOP</text>
+<path class="heart" d="M284 106c-23-35-79-10-55 29l55 58 55-58c24-39-32-64-55-29z" fill="url(#r)" stroke="#ff9ddd" stroke-width="4"/>
+<g fill="#ffd36d"><circle class="crumb" cx="206" cy="66" r="4"/><circle class="crumb" cx="342" cy="55" r="3" style="animation-delay:1.2s"/><circle class="crumb" cx="326" cy="193" r="3.5" style="animation-delay:2.1s"/></g><text x="382" y="78" fill="#fff" font-family="system-ui,sans-serif" font-size="29" font-weight="800">FEED THE BEAST // SUPPORT THE WORKSHOP</text>
 <text x="382" y="116" fill="#c4d0e7" font-family="system-ui,sans-serif" font-size="17">hosting • compute • hardware • storage • experiments • documentation • prototype parts • development time</text>
 <text x="382" y="159" fill="#f3c66e" font-family="system-ui,sans-serif" font-size="18" font-weight="700">Support is optional. Curiosity is free.</text>
 <text x="382" y="188" fill="#f39bd9" font-family="system-ui,sans-serif" font-size="18" font-weight="700">The Beast remains suspiciously hungry.</text>
