@@ -20,6 +20,10 @@ required_files = [
     "assets/spark-guide.svg",
     "assets/lost-cosmos-screen.svg",
     "assets/lost-cosmos-atlas.svg",
+    "assets/living-beast-strip.svg",
+    "assets/cosmic-break.svg",
+    "assets/project-constellation.svg",
+    "assets/cory-chaos.svg",
 ]
 for rel in required_files:
     if not (ROOT / rel).exists():
@@ -30,6 +34,27 @@ for svg in (ROOT / "assets").glob("*.svg"):
         ET.parse(svg)
     except Exception as exc:
         errors.append(f"invalid SVG XML {svg.name}: {exc}")
+
+animated_assets = [
+    "light-bringer.svg",
+    "cosmos-core.svg",
+    "model-garden.svg",
+    "creature-telemetry.svg",
+    "feed-the-beast.svg",
+    "spark-guide.svg",
+    "lost-cosmos-screen.svg",
+    "lost-cosmos-atlas.svg",
+    "living-beast-strip.svg",
+    "cosmic-break.svg",
+    "project-constellation.svg",
+    "cory-chaos.svg",
+]
+for name in animated_assets:
+    body = (ROOT / "assets" / name).read_text(encoding="utf-8")
+    if "@keyframes" not in body:
+        errors.append(f"animated profile asset lost keyframes: {name}")
+    if "prefers-reduced-motion" not in body:
+        errors.append(f"animated profile asset lost reduced-motion fallback: {name}")
 
 # Verify all local image refs in README exist.
 refs = set(re.findall(r'(?:src|srcset)="([^"]+)"', README))
