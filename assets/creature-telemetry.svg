@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 500" role="img" aria-labelledby="t d">
+<title id="t">Example creature telemetry card</title><desc id="d">A clearly labeled example card based on a supplied Spark interface capture, showing simulated Muse signal values and creature presentation fields.</desc>
+<rect width="1000" height="500" rx="28" fill="#070d20" stroke="#395384"/>
+<text x="45" y="55" fill="#f3f8ff" font-family="system-ui,sans-serif" font-size="27" font-weight="800">QBEAST // EXAMPLE CREATURE TELEMETRY</text>
+<text x="45" y="85" fill="#f3c66e" font-family="system-ui,sans-serif" font-size="15">CAPTURED UI EXAMPLE • SIMULATED MUSE SIGNAL • NOT A LIVE BACKEND FEED</text>
+<g font-family="monospace" font-size="18">
+<text x="45" y="132" fill="#76e7ff">FORM</text><text x="235" y="132" fill="#e6ecfa">Cogfist II / Rust Meridian</text>
+<text x="45" y="168" fill="#76e7ff">TEMPERAMENT</text><text x="235" y="168" fill="#e6ecfa">Bold • chatty 0.91 • “riv~” tic</text>
+<text x="45" y="204" fill="#76e7ff">BASE GAIT</text><text x="235" y="204" fill="#e6ecfa">hop 0.89/s • amp 2 px • swing 0.069</text>
+<text x="45" y="240" fill="#76e7ff">CAPTURED MOVE</text><text x="235" y="240" fill="#e6ecfa">SPARK • hop 1.38 beats/s</text>
+<text x="45" y="276" fill="#76e7ff">PROVENANCE</text><text x="235" y="276" fill="#e6ecfa">recorded-run pointer shown in source capture</text>
+</g>
+<g font-family="system-ui,sans-serif" font-size="16" font-weight="700">
+<text x="45" y="332" fill="#eef4ff">SIMULATED INPUT SNAPSHOT</text>
+<text x="45" y="372" fill="#c6d4ea">FOCUS 18</text><rect x="175" y="357" width="600" height="18" rx="9" fill="#1c2945"/><rect x="175" y="357" width="108" height="18" rx="9" fill="#63e4ef"/>
+<text x="45" y="411" fill="#c6d4ea">CALM 8</text><rect x="175" y="396" width="600" height="18" rx="9" fill="#1c2945"/><rect x="175" y="396" width="48" height="18" rx="9" fill="#63e4ef"/>
+<text x="45" y="450" fill="#c6d4ea">SPARK 94</text><rect x="175" y="435" width="600" height="18" rx="9" fill="#1c2945"/><rect x="175" y="435" width="564" height="18" rx="9" fill="#f3c66e"/>
+</g>
+<text x="810" y="372" fill="#91a5c4" font-family="system-ui,sans-serif" font-size="13">values from supplied screenshot</text>
+<text x="810" y="397" fill="#91a5c4" font-family="system-ui,sans-serif" font-size="13">signal explicitly labeled SIMULATED</text>
+<text x="810" y="422" fill="#91a5c4" font-family="system-ui,sans-serif" font-size="13">receipt pointer still needs source verification</text>
+</svg>
