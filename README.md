@@ -1,46 +1,109 @@
 <div align="center">
 
-<img src="assets/light-bringer.svg" width="100%" alt="NavisWORLD Light Bringer cosmic profile banner" />
+<img src="assets/light-bringer.svg" width="100%" alt="NavisWORLD cosmic profile banner" />
 
 # CORY SHANE DAVIS // NAVISWORLD
 
-### CREATOR • INDEPENDENT RESEARCHER • BUILDER OF COSMOS & COSMIC SYNAPSE THEORY
+### 🐉 BEAST BOX • 🌌 COSMOS • ⚛️ CST • 🎮 LOST COSMOS • 🧠 LOCAL AI • 🛠️ WEIRD THINGS THAT ACTUALLY RUN
 
-**AI • SCIENCE • SOFTWARE • MUSIC • ART • ELECTRONICS • EDUCATION • STRANGE QUESTIONS**
+**Independent builder exploring persistent AI systems, digital creatures, local models, games, simulation, hardware, art, music, and strange questions.**
 
-[![CST](https://img.shields.io/badge/COSMIC_SYNAPSE_THEORY-CST_12D-7c3aed?style=for-the-badge)](https://github.com/NavisWORLD/The-theory-of-CST)
-[![COSMOS](https://img.shields.io/badge/COSMOS-LOCAL_AI-111827?style=for-the-badge)](https://github.com/NavisWORLD/Cosmos)
-[![Portfolio](https://img.shields.io/badge/PORTFOLIO-ENTER-0f172a?style=for-the-badge)](https://github.com/NavisWORLD/Cory-Davis-portfolio-)
-[![Support](https://img.shields.io/badge/☕_SUPPORT-COSMIC_SYNAPSE-f59e0b?style=for-the-badge)](https://buymeacoffee.com/cosmic_syanpse)
+[![Enter Beast Box](https://img.shields.io/badge/ENTER_BEAST_BOX-beastboxcosmos.xyz-6ee7f9?style=for-the-badge&labelColor=0b1020)](https://www.beastboxcosmos.xyz)
+[![Sponsor](https://img.shields.io/badge/SPONSOR_THE_COSMOS-GitHub_Sponsors-f472b6?style=for-the-badge&labelColor=0b1020)](https://github.com/sponsors/NavisWORLD)
+[![Source](https://img.shields.io/badge/BEAST_BOX-SOURCE-a78bfa?style=for-the-badge&labelColor=0b1020)](https://github.com/NavisWORLD/The-beast-box-)
+[![CST](https://img.shields.io/badge/COSMIC_SYNAPSE_THEORY-CST_12D-7c3aed?style=for-the-badge&labelColor=0b1020)](https://github.com/NavisWORLD/The-theory-of-CST)
 
-### ✦ DARE TO WONDER • DARE TO LOVE • DARE TO QUESTION THE QUESTIONS ✦
+### ✦ BUILD STRANGE • MEASURE HARD • LEAVE A MAP ✦
 
 </div>
 
 ---
 
-## `> TRANSMISSION`
+## `> SIGNAL_RECEIVED`
 
-I build because I love creating.
+I build things that usually begin with:
 
-Sometimes that becomes **software**. Sometimes it becomes **music, painting, writing, electronics, simulations, educational tools, AI systems, or scientific research**. Most of the time it starts with a question that does not fit neatly inside one field.
+> **“Okay, but what if these systems were actually connected?”**
 
-At the center of much of this work is **Cosmic Synapse Theory (CST)**, a computational research program exploring persistent multidimensional state, memory, recurrence, coupling, learned association, signal-driven dynamics, and how strange ideas can be turned into systems that people can actually **inspect, measure, challenge, break, rebuild, and improve**.
+Sometimes that becomes **AI software**. Sometimes it becomes **a creature that carries state between models**, a **Game Boy world**, a **local model**, a **persistent memory experiment**, a **simulation**, a **device concept**, a **song**, a **painting**, or a repository full of evidence explaining exactly what worked and what did not.
 
-I am not interested in protecting an idea from being tested. I am interested in building it clearly enough that testing becomes unavoidable.
-
-> **BUILD STRANGE. MEASURE HARD. LEAVE A MAP.**
-
----
+The center of that universe is now **Beast Box**: an open ecosystem for persistent digital companions, model-swappable intelligence, local-first state, simulation, games, experiments, and eventually physical devices.
 
 <div align="center">
 
-[**CST ORIGIN**](https://github.com/NavisWORLD/The-theory-of-CST) •
-[**COSMOS**](https://github.com/NavisWORLD/Cosmos) •
-[**PORTFOLIO**](https://github.com/NavisWORLD/Cory-Davis-portfolio-) •
-[**UNIVERSE MANUAL**](https://github.com/NavisWORLD/Volume-I-The-COSMOS-CST-Universe-Manual.) •
-[**CST LIBRARIES**](https://github.com/NavisWORLD/Python-cst-libraries-) •
-[**ALL REPOSITORIES**](https://github.com/NavisWORLD?tab=repositories)
+## 🐉 [ENTER THE BEAST BOX →](https://www.beastboxcosmos.xyz)
+
+**CREATE → SEE → HEAR → INTERACT → TALK → EVOLVE → EXPLORE → PERSIST**
+
+</div>
+
+---
+
+## `THE_LIVING_COSMOS // SYSTEM_MAP`
+
+```text
+                        ┌──────────────────────┐
+                        │      YOU / USER      │
+                        └──────────┬───────────┘
+                                   │
+                         create / care / play
+                                   │
+                        ┌──────────▼───────────┐
+                        │      SPARK BEAST     │
+                        │ identity • traits    │
+                        │ stats • QBEAST data  │
+                        └──────────┬───────────┘
+                                   │
+            ┌──────────────────────┼──────────────────────┐
+            │                      │                      │
+            ▼                      ▼                      ▼
+      ┌───────────┐          ┌───────────┐          ┌───────────┐
+      │ BEAST CAGE│          │ BRAIN BAY │          │ LOST      │
+      │ body/world│          │ models    │          │ COSMOS    │
+      │ behavior  │          │ chat      │          │ game      │
+      └─────┬─────┘          └─────┬─────┘          └─────┬─────┘
+            │                      │                      │
+            └──────────────────────┼──────────────────────┘
+                                   │
+                        ┌──────────▼───────────┐
+                        │ PERSISTENT CREATURE │
+                        │ memory • state      │
+                        │ saves • exports     │
+                        └──────────┬───────────┘
+                                   │
+                         web • local • device
+```
+
+### The rule underneath all of it
+
+<div align="center">
+
+**MODEL ≠ MEMORY** · **MODEL ≠ STATE** · **MODEL ≠ AUTHORITY**
+
+</div>
+
+The model can change while the creature, memory, state, identity, evidence, and rules remain independently inspectable.
+
+---
+
+# `CORE_CONSTELLATION // ACTIVE WORLDS`
+
+| World | What it is |
+|---|---|
+| 🐉 **[BEAST BOX](https://github.com/NavisWORLD/The-beast-box-)** | The main living-creature ecosystem: Spark Beasts, Beast Cage, Brain Bay, Lost COSMOS, model integration, persistence, simulation, export, and device-facing work. |
+| 🌌 **[COSMOS](https://github.com/NavisWORLD/Cosmos)** | Local-first AI/runtime work around model serving, persistent state, memory, tools, evaluation, and portable intelligence. |
+| 🧠 **[COSMIC SYNAPSE THEORY](https://github.com/NavisWORLD/The-theory-of-CST)** | Computational research into recurrence, multidimensional state, coupling, memory, signal-driven dynamics, perturbation, and falsifiable software experiments. |
+| 💻 **[SYNAPSE OS](https://github.com/NavisWORLD/Synapse-os-)** | Experimental operating-system work designed to carry Beast Box / local AI concepts closer to the machine. |
+| 🎵 **[REALITY BRIDGE / ALIEN CONDUCTOR](https://github.com/NavisWORLD/-reality-bridge-alien-conductor-local-ai-band)** | Realtime music, shared musical state, signal analysis, adaptive accompaniment, and creative computing. |
+| 🪐 **[LIVING UNIVERSE SIMULATION](https://github.com/NavisWORLD/Cosmic-synapse-the-living-universe-sim-engine-)** | World-state, simulation, visualization, and CST-inspired interactive systems. |
+| 🧬 **[PYTHON CST LIBRARIES](https://github.com/NavisWORLD/Python-cst-libraries-)** | Reusable CST primitives and engineering surfaces. |
+| 📖 **[COSMOS / CST UNIVERSE MANUAL](https://github.com/NavisWORLD/Volume-I-The-COSMOS-CST-Universe-Manual.)** | Theory maps, engineering notes, educational material, and reproducible documentation. |
+| 🎨 **[COSMOS MEDIA](https://github.com/NavisWORLD/Cosmic-quantum-video-picture-generator-)** | Generative media, image/video experimentation, storybook continuity, and creative tooling. |
+| 🫀 **[HEARTLIGHT](https://github.com/NavisWORLD/COSMOS-HEARTLIGHT)** | Accessibility-oriented and human-centered technology experiments. |
+
+<div align="center">
+
+### [EXPLORE THE FULL NAVISWORLD REPOSITORY UNIVERSE →](https://github.com/NavisWORLD?tab=repositories)
 
 </div>
 
@@ -55,45 +118,38 @@ I am not interested in protecting an idea from being tested. I am interested in 
 ```text
 NAME       Cory Shane Davis
 HANDLE     NavisWORLD
-MODE       Creator / Builder / Researcher
 
-ROLES      AI Engineer
+MODE       Creator
+           Builder
            Independent Researcher
-           Musician
-           Artist
-           Writer
-           Teacher
-           Electronics Builder
-           Dreamer
+
+WORK       AI systems
+           games
+           electronics
+           software
+           research
+           art + music
+           education
 
 RULE       curiosity > certainty
 METHOD     build -> instrument -> test
-OUTPUT     tools, experiments, art,
-           code, lessons, questions
+OUTPUT     code • tools • worlds • evidence
 ```
 
 </td>
 <td width="50%" valign="top">
 
-### `SYSTEM_OVERVIEW.exe`
+### `CURRENT_SIGNAL.exe`
 
 ```text
-OS         Windows • Linux • Android
-
-STACK      Python • Rust • C++
-           JavaScript • HTML/CSS • Bash
-
-FOCUS      local AI • persistent memory
-           adaptive state • autonomous tools
-           simulation • realtime systems
-           creative engines • education
-
-RESEARCH   Davis CST 12D • recurrence
-           state coupling • sensor fusion
-           model memory • causal testing
-
-MISSION    build accessible, local,
-           evolving systems for people
+BEAST      Spark Beasts / Beast Cage
+GAME       Lost COSMOS
+MODELS     RAWRPHØS + local model work
+STATE      persistent / portable
+OS         Synapse OS
+RESEARCH   CST / recurrence / coupling
+DEVICES    portable creature concepts
+MISSION    make strange systems usable
 ```
 
 </td>
@@ -102,30 +158,23 @@ MISSION    build accessible, local,
 
 ---
 
-# `CORE_CONSTELLATION // PROJECTS`
+## `BEAST_BOX // WHY_IT_EXISTS`
 
-| World | Signal |
-|---|---|
-| 🌌 **[COSMOS](https://github.com/NavisWORLD/Cosmos)** | Local-first experimental AI/runtime work combining model serving, memory, dynamic state, tools, sensory summaries, and evaluation. |
-| 🧠 **[Cosmic Synapse Theory](https://github.com/NavisWORLD/The-theory-of-CST)** | The CST origin layer: computational state, recurrence, coupling, memory, simulation, and falsifiable software experiments. |
-| 🐉 **[The Beast Box](https://github.com/NavisWORLD/The-beast-box-)** | QC67 / COSMOS / ZEREF model-kit and experimental model ecosystem work. |
-| 🎵 **[Reality Bridge / Alien Conductor](https://github.com/NavisWORLD/-reality-bridge-alien-conductor-local-ai-band)** | Realtime music, adaptive accompaniment, shared musical state, signal analysis, and creative computing. |
-| 🪐 **[Living Universe Simulation](https://github.com/NavisWORLD/Cosmic-synapse-the-living-universe-sim-engine-)** | World-state, simulation, visualization, and CST-inspired interactive systems. |
-| 🧬 **[Python CST Libraries](https://github.com/NavisWORLD/Python-cst-libraries-)** | Reusable CST primitives and cross-language engineering surfaces. |
-| 📖 **[COSMOS / CST Universe Manual](https://github.com/NavisWORLD/Volume-I-The-COSMOS-CST-Universe-Manual.)** | Public theory maps, engineering guidance, educational material, and reproducible documentation. |
-| 💻 **[Synapse OS](https://github.com/NavisWORLD/Synapse-os-)** | State-oriented language/runtime and OS engineering experiments. |
-| 🎨 **[COSMOS Media](https://github.com/NavisWORLD/Cosmic-quantum-video-picture-generator-)** | Local-first image, video, storybook, continuity, and generative media systems. |
-| 🫀 **[HEARTLIGHT](https://github.com/NavisWORLD/COSMOS-HEARTLIGHT)** | Local-first accessibility and human-centered support technology. |
+Most AI interfaces treat the model as the whole product.
 
-<div align="center">
+I am interested in the opposite direction: **what remains when the model is swapped?**
 
-### [ENTER THE FULL REPOSITORY UNIVERSE →](https://github.com/NavisWORLD?tab=repositories)
+A Beast can have an identity, state, stats, traits, save data, memories, game presence, and environment that are not identical to whichever model happens to speak for it.
 
-</div>
+That opens a much bigger design space:
+
+**one creature → many models → many worlds → one persistent identity**
+
+The long-term idea is not merely a chatbot with a mascot. It is a portable computational companion that can move between browser experiences, local runtimes, games, simulations, and eventually dedicated hardware while keeping the boundaries between **model, memory, state, and authority** explicit.
 
 ---
 
-## `COSMIC_SYNAPSE_THEORY // THE QUESTION`
+## `COSMIC_SYNAPSE_THEORY // THE_RESEARCH_LAYER`
 
 > **What if useful intelligence and simulation emerge not only from isolated steps, but from an evolving field of state whose parts influence one another through memory, signal, recurrence, distance, and learned association?**
 
@@ -140,20 +189,40 @@ CST turns that question into inspectable software mechanisms involving:
 - memory, save/load, and restoration
 - perturbation, ablation, baselines, and evidence ledgers
 
-The point is not to make the theory impossible to criticize. The point is to make it **specific enough to test**.
-
 <details>
 <summary><b>SCIENTIFIC BOUNDARY // CLICK TO EXPAND</b></summary>
 <br>
 
-Computational `12D` state does **not** by itself prove twelve physical dimensions, a neural universe, consciousness, or a new law of physics. Software mechanisms can be implemented and measured while broader physical interpretations remain hypotheses.
+Computational `12D` state does **not** by itself prove twelve physical dimensions, consciousness, a neural universe, or a new law of physics. Software mechanisms can be implemented and measured while broader physical interpretations remain hypotheses.
 
-That separation matters. I want the code, experiments, null results, and claims to remain distinguishable from the story wrapped around them.
+That separation matters. Code, experiments, null results, and claims should remain distinguishable from the story wrapped around them.
 
 </details>
 
 **[READ THE CST ORIGIN →](https://github.com/NavisWORLD/The-theory-of-CST)**  
 **[READ THE DEPOSITED RECORD →](https://doi.org/10.5281/zenodo.17574447)**
+
+---
+
+## `SUPPORT_THE_COSMOS // FEED_THE_BEAST`
+
+Beast Box and the surrounding NavisWORLD projects take real **hosting, compute, hardware, experiments, documentation, testing, and time**.
+
+If something here taught you something, made you laugh, gave you an idea, or made you ask *“why does this even exist?”* — you can help keep the strange little universe alive.
+
+<div align="center">
+
+### 💖 [SPONSOR NAVISWORLD ON GITHUB](https://github.com/sponsors/NavisWORLD)
+
+[![Pocket Spark](https://img.shields.io/badge/✦_POCKET_SPARK-$5%2FMONTH-a78bfa?style=for-the-badge&labelColor=111827)](https://github.com/sponsors/NavisWORLD)
+[![Feed the Beast](https://img.shields.io/badge/🐉_FEED_THE_BEAST-SPONSOR-f472b6?style=for-the-badge&labelColor=111827)](https://github.com/sponsors/NavisWORLD)
+[![One Time](https://img.shields.io/badge/☕_ONE--TIME_COSMIC_COFFEE-SUPPORT-f59e0b?style=for-the-badge&labelColor=111827)](https://buymeacoffee.com/cosmic_syanpse)
+
+**No fake counters. No artificial scarcity. The open-source core stays open.**
+
+*Support is optional. Curiosity is free.*
+
+</div>
 
 ---
 
@@ -170,59 +239,6 @@ while curiosity:
     share(what_we_can)
 ```
 
-My work crosses **AI engineering, local-first systems, persistent memory, autonomous agents, world-state simulation, realtime audio, generative media, accessibility, electronics, technical education, and experimental research**.
-
-I like the places where disciplines stop having clean borders.
-
----
-
-<table>
-<tr>
-<td width="50%" valign="top">
-
-### `CURRENT_SIGNAL`
-
-- building local and portable AI systems
-- exploring persistent state across runtimes
-- testing state-aware mechanisms against real baselines
-- connecting realtime signal, simulation, and creative computing
-- building tools students, developers, researchers, artists, and curious people can inspect
-- preserving wins, failures, and null results
-- turning complicated systems into things other people can learn from
-
-</td>
-<td width="50%" valign="top">
-
-### `THE_LIGHT_BRINGER // WHY`
-
-I do not want curiosity locked behind a door.
-
-Some work may need **licenses, attribution, IP protection, or future patent strategy**. Protection does not have to mean hoarding.
-
-We share one world. I would rather leave behind **tools, code, art, music, lessons, experiments, and better questions** that someone else can use than hide everything away.
-
-**I carry the fire of the stars so others may find their way.**
-
-</td>
-</tr>
-</table>
-
----
-
-## `SUPPORT // COSMIC_SYNAPSE`
-
-I love creating whether that is **music, painting, building, software, writing, research, science, medicine-adjacent exploration, or educational tools**.
-
-If something here taught you something, helped you build, inspired a question, or simply made you smile, you can help fuel the next experiment.
-
-<div align="center">
-
-### ☕ [SUPPORT COSMIC SYNAPSE ON BUY ME A COFFEE](https://buymeacoffee.com/cosmic_syanpse)
-
-**Support is optional. Curiosity is free. ❤️**
-
-</div>
-
 ---
 
 <div align="center">
@@ -230,23 +246,26 @@ If something here taught you something, helped you build, inspired a question, o
 ## `THE UNIVERSE IS THE SOFTWARE.`
 ### `WE JUST WRITE BETTER INTERFACES.`
 
-**For those who dare to wonder.**  
-**For those who dare to love.**  
-**For those who dare to question the questions.**
+**For the dreamers.**  
+**For the idlers.**  
+**For the players.**  
+**For the builders.**  
+**For anyone curious enough to press the button.**
 
-🌌 🐉 ❤️
+🌌 🐉 ⚛️ 🎮 ❤️
 
 ### CORY SHANE DAVIS // NAVISWORLD
 
+[BEAST BOX](https://www.beastboxcosmos.xyz) •
+[GITHUB SPONSORS](https://github.com/sponsors/NavisWORLD) •
+[ALL REPOSITORIES](https://github.com/NavisWORLD?tab=repositories)
+
 </div>
 
+---
 
-## Open-source licensing (proposed)
+## Open-source licensing
 
-Original Cory-owned content published with the new [Apache-2.0 LICENSE](LICENSE) is available under that license, except separately marked files or third-party dependencies. See [OPEN_SOURCE_SCOPE.md](OPEN_SOURCE_SCOPE.md) for exclusions; third-party materials and historical copies are governed by their existing terms.
+Original Cory-owned content published with the [Apache-2.0 LICENSE](LICENSE) is available under that license except where files, repositories, model weights, datasets, artwork, or third-party dependencies state otherwise. See [OPEN_SOURCE_SCOPE.md](OPEN_SOURCE_SCOPE.md) for scope and exclusions.
 
-
-### OPEN SOURCE // PROJECT LICENSES
-
-[Browse the verified licensing inventory for all 31 public NavisWORLD repositories](OPEN_SOURCE_ECOSYSTEM.md). This does not license separately owned model weights, datasets, artwork, or private research/data repositories.
-
+[Browse the verified licensing inventory for the public NavisWORLD ecosystem →](OPEN_SOURCE_ECOSYSTEM.md)
