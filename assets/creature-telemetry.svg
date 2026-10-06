@@ -1,5 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 500" role="img" aria-labelledby="t d">
 <title id="t">Example creature telemetry card</title><desc id="d">A clearly labeled example card based on a supplied Spark interface capture, showing simulated Muse signal values and creature presentation fields.</desc>
+<style>.scan{animation:scan 5s linear infinite}.ping{animation:ping 2.6s ease-in-out infinite}@keyframes scan{from{transform:translateX(-760px)}to{transform:translateX(1050px)}}@keyframes ping{0%,100%{opacity:.35}50%{opacity:1}}@media(prefers-reduced-motion:reduce){.scan,.ping{animation:none!important}}</style>
 <rect width="1000" height="500" rx="28" fill="#070d20" stroke="#395384"/>
 <text x="45" y="55" fill="#f3f8ff" font-family="system-ui,sans-serif" font-size="27" font-weight="800">QBEAST // EXAMPLE CREATURE TELEMETRY</text>
 <text x="45" y="85" fill="#f3c66e" font-family="system-ui,sans-serif" font-size="15">CAPTURED UI EXAMPLE • SIMULATED MUSE SIGNAL • NOT A LIVE BACKEND FEED</text>
@@ -16,7 +17,7 @@
 <text x="45" y="411" fill="#c6d4ea">CALM 8</text><rect x="175" y="396" width="600" height="18" rx="9" fill="#1c2945"/><rect x="175" y="396" width="48" height="18" rx="9" fill="#63e4ef"/>
 <text x="45" y="450" fill="#c6d4ea">SPARK 94</text><rect x="175" y="435" width="600" height="18" rx="9" fill="#1c2945"/><rect x="175" y="435" width="564" height="18" rx="9" fill="#f3c66e"/>
 </g>
-<text x="810" y="372" fill="#91a5c4" font-family="system-ui,sans-serif" font-size="13">values from supplied screenshot</text>
+<rect class="scan" x="0" y="307" width="70" height="158" fill="#63e7ff" opacity=".035"/><circle class="ping" cx="283" cy="366" r="5" fill="#c9fbff"/><circle class="ping" cx="223" cy="405" r="5" fill="#c9fbff" style="animation-delay:.7s"/><circle class="ping" cx="739" cy="444" r="6" fill="#ffd36d" style="animation-delay:1.4s"/><text x="810" y="372" fill="#91a5c4" font-family="system-ui,sans-serif" font-size="13">values from supplied screenshot</text>
 <text x="810" y="397" fill="#91a5c4" font-family="system-ui,sans-serif" font-size="13">signal explicitly labeled SIMULATED</text>
 <text x="810" y="422" fill="#91a5c4" font-family="system-ui,sans-serif" font-size="13">receipt pointer still needs source verification</text>
 </svg>
