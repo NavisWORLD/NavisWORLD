@@ -90,7 +90,7 @@ required_phrases = [
     "Support is optional. Curiosity is free.",
     "COSMIC.CYPHER",
     "compatible Brain Bay adapter",
-    "QC67 / Zeref",
+    "QC67 / COSMOS-Zeref",
 ]
 for phrase in required_phrases:
     if phrase not in README:
