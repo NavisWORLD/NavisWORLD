@@ -29,7 +29,9 @@ The big idea is simple:
 
 Instead of treating one inference model as the entire identity, **[Beast Box](https://github.com/NavisWORLD/The-beast-box-)** keeps creature identity and persistent state separate enough that models, runtimes and worlds can change without automatically becoming a new creature.
 
-**MODEL ≠ MEMORY · MODEL ≠ STATE · MODEL ≠ AUTHORITY · MODEL ≠ IDENTITY**
+**MODEL ≠ MEMORY ≠ STATE ≠ AUTHORITY**
+
+Identity stays separate too: a Beast can use a model without becoming that model.
 
 <div align="center">
 
@@ -120,6 +122,10 @@ Not every cosmic name in this ecosystem is the same kind of thing. 💀
 
 **COSMIC.CYPHER is not another model checkpoint.** It is a local-model registry, conversation layer and bounded coding-agent interface.
 
+Another model can become a Beast Box brain **if it can be wrapped by a compatible Brain Bay adapter**.
+
+**Nebula** remains creature/world/visual identity language in this ecosystem; it is **not a deployed language-model checkpoint**.
+
 The important rule is still boring on purpose:
 
 > **The model is a brain slot. The Beast is the continuity object.**
@@ -174,6 +180,8 @@ The supplied capture includes **simulated** input controls. It is not presented 
 ## 📡 Creature state should say where it came from
 
 <img src="assets/creature-telemetry.svg" width="100%" alt="Example creature telemetry card labeled as simulated example data rather than a live backend feed." />
+
+This is **EXAMPLE CREATURE TELEMETRY**, not a claim of a live public backend feed.
 
 The bars are fun. The provenance is more important.
 
