@@ -323,8 +323,21 @@ I somehow made the dragon require server bills. Incredible.
 Support helps with **hosting, compute, storage, hardware, experiments, documentation, prototype parts and development time.**
 
 - 💖 **[GitHub Sponsors](https://github.com/sponsors/NavisWORLD)** — recurring support
-- ⚡ **[Direct Cosmic Fuel via Stripe](https://buy.stripe.com/3cIbJ27zN7kO8mN97pa7C01)** — direct payment
+- ⚡ **[Pocket Spark via Stripe](https://buy.stripe.com/3cIbJ27zN7kO8mN97pa7C01)** — $5/month
 - ☕ **[Buy Me a Coffee](https://buymeacoffee.com/Cosmic_syanpse)** — quick one-time support
+
+**[Enter the Living Support Shrine →](https://www.beastboxcosmos.xyz)** — meet the little support Beast, pet it, and choose your fuel.
+
+<details>
+<summary>Eight ways to throw stardust into the workshop</summary>
+
+**Monthly Companions:** [Pocket Spark — $5/month](https://buy.stripe.com/3cIbJ27zN7kO8mN97pa7C01) · [Beast Keeper — $15/month](https://buy.stripe.com/fZueVe5rF7kO9qR3N5a7C02) · [COSMOS Builder — $50/month](https://buy.stripe.com/3cI28s2ft7kO6eF0ATa7C03) · [Universe Patron — $150/month](https://buy.stripe.com/6oU00kaLZax0eLb5Vda7C04)
+
+**One-Time Fuel:** [Feed the Beast — $10](https://donate.stripe.com/cNiaEY4nBcF87iJ1EXa7C05) · [Compute Burst — $50](https://donate.stripe.com/3cI8wQ8DRbB446x5Vda7C06) · [Hardware Rune — $100](https://donate.stripe.com/4gM00kdYb5cG8mN0ATa7C07) · [Launch Fuel — $500](https://donate.stripe.com/fZu7sM4nB20u0UlfvNa7C08)
+
+Voluntary support provides no equity, ownership, investment returns, or guaranteed feature delivery. Opening checkout is not payment confirmation. Cosmetic reactions do not change QBEAST identity or scientific results.
+
+</details>
 
 **No fake counters. No fake scarcity. No pretending sponsorship buys scientific truth.**
 
