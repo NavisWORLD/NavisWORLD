@@ -1,17 +1,17 @@
 <div align="center">
 
-<img src="assets/light-bringer.svg" width="100%" alt="NavisWORLD living cosmic workshop connecting Beast Box, local models, Lost COSMOS, CST, simulation work and device experiments." />
+<picture>
+  <source media="(max-width: 600px)" srcset="assets/light-bringer-mobile.svg" />
+  <img src="assets/light-bringer.svg" width="100%" alt="A warm walnut cosmic workshop. An amber-eyed, fire-winged Beast greets visitors from a glass habitat, surrounded by model familiars, a purple handheld, memory crystals, code and CST notes." />
+</picture>
 
 <h2>CORY SHANE DAVIS // NAVISWORLD</h2>
 
-<p><strong>🐉 Beast Box · 🌌 COSMOS · ⚛️ CST · 🎮 Lost COSMOS · 🧠 Local AI · 🛰️ Synapse OS</strong></p>
+<p><strong>🐉 Beast Box — persistent computational companions.</strong><br />One creature. Many brains. Many worlds.</p>
 
-<p><strong>Persistent software creatures, local AI, games, simulations, devices, and weird little systems that probably should not be connected — but are.</strong></p>
+<p>🌌 COSMOS · ⚛️ CST · 🎮 Lost COSMOS · 🧠 Local AI · 🛰️ Synapse OS</p>
 
-<a href="https://www.beastboxcosmos.xyz"><img alt="Enter Beast Box" src="https://img.shields.io/badge/ENTER-BEAST_BOX-67e8f9?style=flat-square&labelColor=070b17" /></a>
-<a href="https://github.com/NavisWORLD/The-beast-box-"><img alt="Beast Box source" src="https://img.shields.io/badge/SOURCE-BEAST_BOX-a78bfa?style=flat-square&labelColor=070b17" /></a>
-<a href="https://github.com/sponsors/NavisWORLD"><img alt="GitHub Sponsors" src="https://img.shields.io/badge/SPONSOR-GITHUB-f472b6?style=flat-square&labelColor=070b17" /></a>
-<a href="https://buy.stripe.com/3cIbJ27zN7kO8mN97pa7C01"><img alt="Direct Cosmic Fuel via Stripe" src="https://img.shields.io/badge/COSMIC_FUEL-STRIPE-635BFF?style=flat-square&labelColor=070b17" /></a>
+<p><a href="https://www.beastboxcosmos.xyz"><img alt="Enter Beast Box" src="https://img.shields.io/badge/ENTER-BEAST_BOX-67e8f9?style=flat-square&labelColor=070b17" /></a> <a href="https://github.com/NavisWORLD/The-beast-box-"><img alt="Beast Box source" src="https://img.shields.io/badge/SOURCE-BEAST_BOX-a78bfa?style=flat-square&labelColor=070b17" /></a> <a href="https://github.com/sponsors/NavisWORLD"><img alt="GitHub Sponsors" src="https://img.shields.io/badge/SPONSOR-GITHUB-f472b6?style=flat-square&labelColor=070b17" /></a> <a href="https://buy.stripe.com/3cIbJ27zN7kO8mN97pa7C01"><img alt="Direct Cosmic Fuel via Stripe" src="https://img.shields.io/badge/COSMIC_FUEL-STRIPE-635BFF?style=flat-square&labelColor=070b17" /></a></p>
 
 <sub>✦ BUILD STRANGE · MEASURE HARD · LEAVE A MAP ✦</sub>
 
@@ -31,7 +31,7 @@ Instead of treating one inference model as the entire identity, **[Beast Box](ht
 
 **MODEL ≠ MEMORY ≠ STATE ≠ AUTHORITY**
 
-Identity stays separate too: a Beast can use a model without becoming that model.
+**MODEL ≠ IDENTITY**, too: a Beast can use a model without becoming that model.
 
 <div align="center">
 
@@ -45,7 +45,10 @@ Identity stays separate too: a Beast can use a model without becoming that model
 
 ## 🐉 Same Beast. Different Worlds.
 
-<img src="assets/cosmos-core.svg" width="100%" alt="Beast Box continuity map showing one persistent creature connected to Beast Cage, Brain Bay, Lost COSMOS and save or device surfaces." />
+<picture>
+  <source media="(max-width: 600px)" srcset="assets/cosmos-core-mobile.svg" />
+  <img src="assets/cosmos-core.svg" width="100%" alt="The same fire-winged Beast visits four illustrated doors: a planted Beast Cage, Brain Bay with model stars, Lost COSMOS in a purple handheld, and save or device surfaces." />
+</picture>
 
 **ONE CREATURE · MANY BRAINS · MANY WORLDS · CONTINUOUS IDENTITY**
 
@@ -107,7 +110,10 @@ BEAST → BEAST CAGE → BRAIN BAY → LOST COSMOS → SAVE / EXPORT / DEVICE
 
 ## 🧠 The cosmic brain menagerie
 
-<img src="assets/model-garden.svg" width="100%" alt="Cosmic Brain Menagerie separating NavisWORLD model work, routing and compatible model slots around one persistent QBEAST identity." />
+<picture>
+  <source media="(max-width: 600px)" srcset="assets/model-garden-mobile.svg" />
+  <img src="assets/model-garden.svg" width="100%" alt="Four model-work familiars: purple RAWRPHØS, cyan PHOS, amber SAMGO and geometric QC67/Zeref. A separate shelf holds the COSMIC.CYPHER router machine, Nebula world terrarium and an open adapter socket." />
+</picture>
 
 Not every cosmic name in this ecosystem is the same kind of thing. 💀
 
@@ -161,7 +167,7 @@ Current documented local paths include `Ollama`, `GGUF`, `llama.cpp server`, and
 
 ## 🎮 Then I put the little menace in a Game Boy
 
-<img src="assets/lost-cosmos-screen.svg" width="100%" alt="Lost COSMOS Spark interface capture with a generated creature, movement parameters and explicitly labeled simulated input." />
+<img src="assets/lost-cosmos-screen.svg" width="100%" alt="Workshop illustration of the same Beast entering a purple handheld world, with its brown hide, fire wings, amber eye and burgundy feet expressed as a pixel sprite beside a SAVE cartridge." />
 
 **Same Beast. Different world. Now it has a save file.** 💀
 
@@ -170,20 +176,23 @@ Lost COSMOS is the game-facing side of the system: a place where a serialized cr
 The supplied capture includes **simulated** input controls. It is not presented as a live EEG measurement.
 
 <details>
-<summary><b>🗺️ Open the supplied creature atlas</b></summary>
+<summary><b>🗺️ Open the actual interface capture + creature atlas</b></summary>
 <br/>
-<img src="assets/lost-cosmos-atlas.svg" width="100%" alt="Creator-supplied Lost COSMOS poster showing selected creature finds and depicted forms." />
+The handheld scene above is artwork. These are the original creator-supplied software captures; open an image to inspect its full-size text.
+
+<img src="assets/lost-cosmos-capture.png" width="100%" alt="Original Lost COSMOS Cogfist II interface capture with movement parameters, a recorded seed pointer and Muse inputs explicitly labeled SIMULATED: focus 18, calm 8, spark 94." />
+<img src="assets/lost-cosmos-atlas.png" width="100%" alt="Original creator-supplied Lost COSMOS poster showing twelve selected finds and three depicted forms for each. Its footer labels the input signal simulated and recorded measurements as fixed seed sources." />
 </details>
 
 ---
 
 ## 📡 Creature state should say where it came from
 
-<img src="assets/creature-telemetry.svg" width="100%" alt="Example creature telemetry card labeled as simulated example data rather than a live backend feed." />
+<img src="assets/creature-telemetry.svg" width="100%" alt="The guide beside an illustrated scanner marked EXAMPLE and SIMULATED INPUT. Focus 18, calm 8 and spark 94 come from the supplied Cogfist capture, not live measurements of the guide." />
 
 This is **EXAMPLE CREATURE TELEMETRY**, not a claim of a live public backend feed.
 
-The bars are fun. The provenance is more important.
+The scanner shows simulated inputs from the supplied Cogfist capture: **focus 18 · calm 8 · spark 94**. The guide is artwork; those values are not its live stats.
 
 If state is **simulated**, say simulated. If it is **seeded**, say seeded. If it is **measured**, keep the receipt that makes *measured* defensible.
 
@@ -192,6 +201,8 @@ If state is **simulated**, say simulated. If it is **seeded**, say seeded. If it
 ## ⚛️ The actual research shelf
 
 ### Cosmic Synapse Theory
+
+<img src="assets/cst-observatory.svg" width="100%" alt="A quiet observatory shelf: the familiar Beast wears safety goggles beside a brass telescope, CST notebook and a paper marked 12D STATE, meaning computational notation." />
 
 CST is where I explore recurrence, coupling, compact computational state, memory, signal, association, perturbation, ablation and falsifiable software experiments.
 
@@ -213,12 +224,16 @@ The software can be real while a broader interpretation remains a hypothesis.
 
 ### Quantum work — with the labels left on
 
+<img src="assets/provenance-bench.svg" width="100%" alt="Four separate provenance drawers: SIMULATOR with a QVM waveform, SEEDED with a seed cartridge, MEASURED with a receipt, and a locked QPU bay with an asterisk. Hardware status requires actual hardware provenance." />
+
 I keep these categories separate because mixing them destroys trust:
 
 - **SIMULATOR** — classical simulator output, including QVM-style workflows.
 - **SEEDED** — deterministic/pseudorandom input or a recorded artifact reused as a seed.
 - **MEASURED** — stored measurement data with provider/backend/run context preserved.
 - **HARDWARE / QPU** — used only when the retained receipt actually identifies hardware execution.
+
+*QPU\* in the artwork: hardware label only when provenance earns it. QVM ≠ QPU.*
 
 Recorded measurement results become ordinary classical data once stored. They can seed software; they do not create an ongoing quantum link to a creature.
 
@@ -227,6 +242,8 @@ Recorded measurement results become ordinary classical data once stored. They ca
 ---
 
 ## 🛰️ The creature should not be trapped in one webpage
+
+<img src="assets/device-lab.svg" width="100%" alt="Illustrated local host, purple handheld and watch clearly marked CONCEPT, exchanging bounded creature snapshots. This is a device direction, not a physical prototype photograph." />
 
 Current and future-facing surfaces include browser/local runtime work, **[Synapse OS](https://github.com/NavisWORLD/Synapse-os-)**, native GBA/game-pack work, and device concepts.
 
@@ -242,7 +259,7 @@ A smaller device does not need the whole memory vault or full model runtime. It 
 
 ## 🌌 Project constellation
 
-<img src="assets/project-constellation.svg" width="100%" alt="NavisWORLD project constellation with Beast Box at the center and surrounding COSMOS, CST, Synapse OS and creative research projects." />
+<img src="assets/project-constellation.svg" width="100%" alt="An inhabited Beast Box planet in the COSMOS field, surrounded by a CST observatory moon, Synapse OS satellite, Reality Bridge music moon, Living Universe planet, Python CST toolkit, floating Manual, Media terrarium and Heartlight planet." />
 
 Turns out “one weird side project” became a whole constellation. Who could have predicted this. *(Me. Eventually.)*
 
@@ -266,6 +283,8 @@ Turns out “one weird side project” became a whole constellation. Who could h
 ---
 
 ## 🧠 Cory.exe
+
+<img src="assets/cory-chaos.svg" width="100%" alt="Cory's messy inventor desk with terminal, coffee, notes, handheld, screwdriver, breadboard and music cable. The same Beast sleeps nearby. A sticky note reads BUILD, BREAK, LEARN, SHIP." />
 
 ```text
 NAME       Cory Shane Davis
@@ -297,7 +316,7 @@ while curiosity:
 
 ## 🐉 Feed the Beast
 
-<img src="assets/feed-the-beast.svg" width="100%" alt="A small fire dragon beside a glowing heart reactor representing optional support for NavisWORLD open-source work." />
+<img src="assets/feed-the-beast.svg" width="100%" alt="The familiar fire-winged Beast munches glowing stardust beside a little reactor bowl with a heart. This playful support illustration has no live counters or payment controls." />
 
 I somehow made the dragon require server bills. Incredible.
 
@@ -325,7 +344,7 @@ The profile is a map, not a relicensing machine. Individual repositories and art
 
 <div align="center">
 
-<img src="assets/spark-guide.svg" width="140" alt="Pixel-art Spark Beast guide from the NavisWORLD ecosystem." />
+<img src="assets/spark-guide.svg" width="140" alt="The same brown, amber-eyed, fire-winged Spark Beast waves goodbye." />
 
 ### THE UNIVERSE IS THE SOFTWARE.
 #### WE JUST WRITE BETTER INTERFACES.

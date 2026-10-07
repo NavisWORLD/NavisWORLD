@@ -18,3 +18,5 @@ jobs:
           python-version: "3.12"
       - name: Validate profile assets, links and boundaries
         run: python scripts/check_profile.py
+      - name: Verify workshop artwork is reproducible
+        run: python scripts/build_workshop.py --check

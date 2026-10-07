@@ -1,17 +1,66 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 250" role="img" aria-labelledby="t d">
-<title id="t">Feed the Beast support card</title><desc id="d">A little fire dragon sits next to a glowing heart-shaped reactor bowl with text explaining that support funds hosting, compute, hardware, storage and documentation.</desc>
-<defs><radialGradient id="r"><stop stop-color="#ff78ca"/><stop offset="1" stop-color="#6b2d74"/></radialGradient></defs>
-<style>.beast{animation:bob 3.2s ease-in-out infinite;transform-origin:center;transform-box:fill-box}.heart{animation:heart 1.9s ease-in-out infinite;transform-origin:center;transform-box:fill-box}.crumb{animation:crumb 4s ease-in-out infinite}@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}@keyframes heart{0%,100%{transform:scale(.97)}50%{transform:scale(1.04)}}@keyframes crumb{0%,100%{opacity:.2;transform:translateY(7px)}50%{opacity:1;transform:translateY(-8px)}}@media(prefers-reduced-motion:reduce){.beast,.heart,.crumb{animation:none!important}}</style>
-<rect width="900" height="250" rx="28" fill="#0a0d22" stroke="#54396a"/>
-<g class="beast" transform="translate(45 36)">
-<ellipse cx="86" cy="165" rx="74" ry="14" fill="#050716"/>
-<path d="M75 58l-25-35 38 20 25-22-4 42z" fill="#f06b32"/>
-<path d="M42 117Q52 70 101 69q55 0 65 50l-25 34H69z" fill="#4c3832"/><circle cx="126" cy="96" r="8" fill="#ffc54c"/>
-<path d="M62 91l-37 16 33 8z" fill="#e35f2d"/><rect x="70" y="146" width="38" height="22" rx="9" fill="#782b3d"/><rect x="117" y="146" width="38" height="22" rx="9" fill="#782b3d"/>
-</g>
-<path class="heart" d="M284 106c-23-35-79-10-55 29l55 58 55-58c24-39-32-64-55-29z" fill="url(#r)" stroke="#ff9ddd" stroke-width="4"/>
-<g fill="#ffd36d"><circle class="crumb" cx="206" cy="66" r="4"/><circle class="crumb" cx="342" cy="55" r="3" style="animation-delay:1.2s"/><circle class="crumb" cx="326" cy="193" r="3.5" style="animation-delay:2.1s"/></g><text x="382" y="78" fill="#fff" font-family="system-ui,sans-serif" font-size="29" font-weight="800">FEED THE BEAST // SUPPORT THE WORKSHOP</text>
-<text x="382" y="116" fill="#c4d0e7" font-family="system-ui,sans-serif" font-size="17">hosting • compute • hardware • storage • experiments • documentation • prototype parts • development time</text>
-<text x="382" y="159" fill="#f3c66e" font-family="system-ui,sans-serif" font-size="18" font-weight="700">Support is optional. Curiosity is free.</text>
-<text x="382" y="188" fill="#f39bd9" font-family="system-ui,sans-serif" font-size="18" font-weight="700">The Beast remains suspiciously hungry.</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="660" height="300" viewBox="0 0 660 300" role="img" aria-labelledby="title desc">
+<title id="title">The Beast eats stardust</title>
+<desc id="desc">The same amber-eyed fire-winged dragon munches a gold crystal beside a little bowl of stardust with a softly glowing heart. This playful support illustration has no payment buttons, revenue or sponsor counters.</desc>
+<style>
+text{font-family:ui-rounded,'Trebuchet MS',system-ui,sans-serif;fill:#fff2d8}
+.label{font-weight:700;letter-spacing:1px}.ink{fill:#352017}.mono{font-family:ui-monospace,monospace}
+.breathe{animation:breathe 4.8s ease-in-out infinite;transform-box:fill-box;transform-origin:center bottom}
+.eyes{animation:blink 6.7s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+.tail{animation:tail 6s ease-in-out infinite;transform-box:fill-box;transform-origin:left bottom}
+.wing{animation:wing 7s ease-in-out infinite;transform-box:fill-box;transform-origin:right bottom}
+.float{animation:float 6.5s ease-in-out infinite}.twinkle{animation:twinkle 6s ease-in-out infinite}
+.sway{animation:sway 8s ease-in-out infinite;transform-box:fill-box;transform-origin:center bottom}
+.pulse{animation:pulse 5.8s ease-in-out infinite}.steam{animation:steam 7s ease-in-out infinite}
+.cursor{animation:cursor 2s steps(1,end) infinite}.trail{stroke-dasharray:3 18;animation:trail 16s linear infinite}
+.orbit{animation:orbit 55s linear infinite;transform-origin:0px 0px}
+.munch{animation:munch 4.8s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.012,1.022)}}
+@keyframes blink{0%,90%,96%,100%{transform:scaleY(1)}93%,94%{transform:scaleY(.07)}}
+@keyframes tail{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(4deg)}}
+@keyframes wing{0%,100%{transform:rotate(0)}50%{transform:rotate(-3deg)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes twinkle{0%,100%{opacity:.38}50%{opacity:.85}}
+@keyframes sway{0%,100%{transform:rotate(-1.5deg)}50%{transform:rotate(1.5deg)}}
+@keyframes pulse{0%,100%{opacity:.55}50%{opacity:.9}}
+@keyframes steam{0%,100%{opacity:.15;transform:translateY(0)}50%{opacity:.5;transform:translateY(-9px)}}
+@keyframes cursor{0%,65%,100%{opacity:1}70%,95%{opacity:.25}}
+@keyframes trail{to{stroke-dashoffset:-168}}
+@keyframes orbit{to{transform:rotate(360deg)}}
+@keyframes munch{0%,65%,100%{transform:scale(1)}72%,86%{transform:scale(1.03,.96)}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+<defs>
+<linearGradient id="night" x2=".85" y2="1"><stop stop-color="#10142d"/><stop offset=".55" stop-color="#181735"/><stop offset="1" stop-color="#090e20"/></linearGradient>
+<radialGradient id="nebula"><stop stop-color="#6d397b" stop-opacity=".45"/><stop offset="1" stop-color="#161b38" stop-opacity="0"/></radialGradient>
+<linearGradient id="wood" x2="0" y2="1"><stop stop-color="#96572f"/><stop offset=".25" stop-color="#66351f"/><stop offset=".8" stop-color="#3b211b"/><stop offset="1" stop-color="#8a4c2c"/></linearGradient>
+<linearGradient id="brass" x2=".8" y2="1"><stop stop-color="#fff0b0"/><stop offset=".25" stop-color="#d9a95c"/><stop offset=".6" stop-color="#886031"/><stop offset="1" stop-color="#edc685"/></linearGradient>
+<linearGradient id="hide" x2=".5" y2="1"><stop stop-color="#9a7060"/><stop offset=".3" stop-color="#765346"/><stop offset="1" stop-color="#493334"/></linearGradient>
+<linearGradient id="flame" x2=".65" y2="1"><stop stop-color="#ffd97b"/><stop offset=".32" stop-color="#ff9c49"/><stop offset=".65" stop-color="#ef602e"/><stop offset="1" stop-color="#a33237"/></linearGradient>
+<linearGradient id="glass" x2="1" y2=".8"><stop stop-color="#8cefff" stop-opacity=".14"/><stop offset=".45" stop-color="#59a7dd" stop-opacity=".02"/><stop offset="1" stop-color="#b8efff" stop-opacity=".14"/></linearGradient>
+<radialGradient id="lamp"><stop stop-color="#ffe1a0" stop-opacity=".22"/><stop offset="1" stop-color="#ffd98c" stop-opacity="0"/></radialGradient>
+<radialGradient id="aura"><stop stop-color="#65e6ff" stop-opacity=".25"/><stop offset="1" stop-color="#63d7ff" stop-opacity="0"/></radialGradient>
+<pattern id="grain" width="160" height="36" patternUnits="userSpaceOnUse"><path d="M-20 8Q30 0 75 10T180 9M-20 26Q36 16 72 27T180 25M40 18q22-9 50 0" fill="none" stroke="#e5a968" stroke-width="1" opacity=".14"/></pattern>
+<pattern id="pixels" width="24" height="24" patternUnits="userSpaceOnUse"><path d="M0 23H24M23 0V24" stroke="#78bcb1" opacity=".08"/></pattern>
+<filter id="glow" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<rect width="660" height="300" rx="26" fill="url(#night)"/><ellipse cx="448.8" cy="111.0" rx="277.2" ry="156.0" fill="url(#nebula)"/><circle cx="306" cy="80" r="2" fill="#fff0be" opacity=".35"/><circle cx="597" cy="111" r="2" fill="#fff0be" opacity=".35"/><circle cx="324" cy="55" r="2" fill="#fff0be" opacity=".35"/><circle cx="433" cy="274" r="1" fill="#fff0be" opacity=".35"/><circle cx="481" cy="74" r="1" fill="#fff0be" opacity=".35"/><circle cx="281" cy="228" r="1" fill="#fff0be" opacity=".35"/><circle cx="445" cy="198" r="2" fill="#fff0be" opacity=".35"/><circle cx="530" cy="239" r="1" fill="#fff0be" opacity=".35"/><circle cx="77" cy="153" r="1" fill="#fff0be" opacity=".35"/><circle cx="112" cy="255" r="1.5" fill="#fff0be" opacity=".35"/><circle cx="322" cy="84" r="1" fill="#fff0be" opacity=".35"/><circle cx="44" cy="129" r="1.5" fill="#fff0be" opacity=".35"/><circle cx="300" cy="43" r="1" fill="#fff0be" opacity=".35"/><circle cx="536" cy="105" r="2" fill="#fff0be" opacity=".35"/><circle cx="106" cy="60" r="1" fill="#fff0be" opacity=".35"/><circle cx="215" cy="85" r="1" fill="#fff0be" opacity=".35"/><circle cx="469" cy="254" r="2" fill="#fff0be" opacity=".35"/><circle cx="593" cy="141" r="1.5" fill="#fff0be" opacity=".35"/><circle cx="331" cy="121" r="1" fill="#fff0be" opacity=".35"/><circle cx="439" cy="73" r="2" fill="#fff0be" opacity=".35"/><circle cx="422" cy="48" r="1" fill="#fff0be" opacity=".35"/><circle cx="390" cy="228" r="1" fill="#fff0be" opacity=".35"/><circle cx="371" cy="268" r="1" fill="#fff0be" opacity=".35"/><circle cx="159" cy="141" r="1" fill="#fff0be" opacity=".35"/><circle cx="581" cy="171" r="2" fill="#fff0be" opacity=".35"/><circle cx="442" cy="150" r="2" fill="#fff0be" opacity=".35"/><circle cx="102" cy="268" r="1" fill="#fff0be" opacity=".35"/><circle cx="117" cy="71" r="1.5" fill="#fff0be" opacity=".35"/><circle cx="567" cy="257" r="1" fill="#fff0be" opacity=".35"/><circle cx="243" cy="183" r="1" fill="#fff0be" opacity=".35"/><circle cx="253" cy="74" r="1" fill="#fff0be" opacity=".35"/><circle cx="317" cy="119" r="1" fill="#fff0be" opacity=".35"/><circle cx="445" cy="31" r="2" fill="#fff0be" opacity=".35"/><circle cx="624" cy="97" r="1" fill="#fff0be" opacity=".35"/><g transform="translate(270 247) rotate(0) scale(1.02)"><g class="breathe" stroke="#382932" stroke-width="3" stroke-linejoin="round">
+<g class="tail"><path d="M67-47q82 25 83-24q-2-23-18-17q12 24-13 22q-23-2-39-20" fill="url(#hide)"/><path d="M140-75q-17-11-10-31q10 15 17 10q14-8 9-24q25 26-3 45" fill="url(#flame)" stroke="#8f3d35"/></g>
+<g class="wing"><path d="M-42-82q-65-21-91-77q31 15 45 8q-27-35-20-63q30 33 51 38q5-23 18-39q7 35 31 53L-12-98Z" fill="url(#flame)" stroke="#a84036"/><path d="M-104-174q29 18 59 55M-88-147q19 15 47 30M-55-174l14 57" fill="none" stroke="#ffc873" stroke-width="3" opacity=".7"/></g>
+<path d="M53-99q43-16 54-63q-14 11-29 10q8-24 4-38q-18 21-29 27q-6-16-16-20q2 24-8 40Z" fill="url(#flame)" stroke="#a84036"/>
+<ellipse cx="2" cy="-55" rx="73" ry="67" fill="url(#hide)"/>
+<path d="M-31-85q41-28 69 10q12 51-29 69q-43-10-46-39" fill="#c59e79" stroke="none"/>
+<path d="M-28-47q29 9 60-3M-24-29q20 7 45-2" fill="none" stroke="#9a735d" stroke-width="2"/>
+<path d="M-40-110q-25-18-18-53l28 18q15-25 48-26q35-4 55 28q33 4 37 29q7 28-29 40q-56 29-109-8q-11-10-12-28" fill="url(#hide)"/>
+<path d="M-47-159l7-31q19 19 22 32M42-158l12-30q11 19 10 36" fill="#efbd66" stroke="#725039"/>
+<path d="M-31-157q32-28 66-7" stroke="#c19472" stroke-width="5" fill="none" stroke-linecap="round"/>
+<path d="M39-117q48-13 63 7q4 28-47 31q-25-1-26-10" fill="#9c7560" stroke="none"/>
+<path d="M54-89q24 7 40-7" fill="none" stroke="#3e2d32" stroke-width="3" stroke-linecap="round"/>
+<ellipse cx="85" cy="-110" rx="3" ry="2" fill="#342833" stroke="none"/>
+<path d="M-35-99l-9 5M-26-89l-7 5M-15-103l-5 5" stroke="#be906f" stroke-width="3" stroke-linecap="round"/>
+<path d="M-46-22q-29-9-39 6q-12 19 15 22h34q19-8 7-25" fill="#84394a"/>
+<path d="M31-20q-10 27 16 26h33q28-3 14-21q-10-14-37-9" fill="#84394a"/>
+<path d="M-70-2v5M-54-1v5M59 0v4M75-1v5" stroke="#bc6570" stroke-width="3"/>
+<path d="M-23-75q26 14 53 0" fill="none" stroke="#514153" stroke-width="6"/>
+<path d="M3-70l12 12-12 14-12-14Z" fill="#65e8ef" stroke="#e9ffff" stroke-width="1.5"/>
+<g class="eyes" stroke="none"><ellipse cx="-10" cy="-129" rx="11" ry="14" fill="#ffd566"/><ellipse cx="38" cy="-133" rx="15" ry="16" fill="#ffd566"/><ellipse cx="-5" cy="-128" rx="5" ry="9" fill="#252231"/><ellipse cx="43" cy="-133" rx="6" ry="10" fill="#252231"/><circle cx="-7" cy="-134" r="3" fill="#fff7dc"/><circle cx="40" cy="-139" r="4" fill="#fff7dc"/></g><path d="M-24-146q11-5 20-1M24-153q15-6 28 0" stroke="#48323a" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M-51-64q13-20 35-17q14 14 3 23q-21 2-33 15M55-65q-7-16-21-15q-14 16-3 22l28 15" fill="url(#hide)"/><g transform="translate(73 -85) rotate(0) scale(0.4)"><g class="float"><path d="M0-49L22-18 15 15 0 25-16 14-24-15Z" fill="#ffd581" fill-opacity=".7" stroke="#d5f8ff" stroke-width="2"/><path d="M0-49L-6-9 0 25 8-7 0-49M-24-15l18 6 28-9M-6-9l-10 23" fill="none" stroke="#f2fdff" stroke-opacity=".45"/></g></g><path class="munch" d="M66-90q12 3 20-2q-4 15-11 14q-10-2-9-12" fill="#342533" stroke="none"/></g></g><ellipse cx="465" cy="216" rx="95" ry="46" fill="url(#aura)"/><path d="M382 192q6 65 82 65q76 0 82-65Z" fill="#69566d" stroke="#ba929d" stroke-width="3"/><ellipse cx="464" cy="192" rx="82" ry="24" fill="#362d4a" stroke="#dabaa2" stroke-width="3"/><path class="pulse" d="M454 211q-10-17-19-5q-5 10 19 25q24-15 19-25q-9-12-19 5" fill="#efabc5"/><path class="twinkle" d="M397 186q8 0 8 -8q0 8 8 8q-8 0 -8 8q0 -8 -8 -8" fill="#ffe2a1"/><path class="twinkle" d="M426 185q11 0 11 -11q0 11 11 11q-11 0 -11 11q0 -11 -11 -11" fill="#ffe2a1"/><path class="twinkle" d="M464 191q8 0 8 -8q0 8 8 8q-8 0 -8 8q0 -8 -8 -8" fill="#ffe2a1"/><path class="twinkle" d="M490 185q10 0 10 -10q0 10 10 10q-10 0 -10 10q0 -10 -10 -10" fill="#ffe2a1"/><path class="twinkle" d="M452 175q7 0 7 -7q0 7 7 7q-7 0 -7 7q0 -7 -7 -7" fill="#ffe2a1"/><path class="twinkle" d="M333 196q5 0 5 -5q0 5 5 5q-5 0 -5 5q0 -5 -5 -5" fill="#ffe2a1"/><path class="twinkle" d="M350 219q4 0 4 -4q0 4 4 4q-4 0 -4 4q0 -4 -4 -4" fill="#ffe2a1"/><path class="twinkle" d="M487 146q6 0 6 -6q0 6 6 6q-6 0 -6 6q0 -6 -6 -6" fill="#ffe2a1"/><path class="trail" d="M463 140q-19-37-51-22q-42 11-66 42" fill="none" stroke="#ddbd8d" stroke-width="3"/><g transform="translate(551 185) rotate(0) scale(0.53)"><ellipse cx="0" cy="6" rx="38" ry="8" fill="#1e1823" opacity=".5"/><path d="M-25-44h50v40q-2 15-25 15q-23 0-25-15Z" fill="#ece0c9" stroke="#9c7e67" stroke-width="2"/><path d="M26-36q31-4 24 20q-3 12-24 7" fill="none" stroke="#e3ccb2" stroke-width="7"/><ellipse cx="0" cy="-44" rx="25" ry="7" fill="#503d35" stroke="#ffdfa8" stroke-width="2"/><path class="steam" d="M-10-58q-12-12-1-24M10-57q12-16-2-26" fill="none" stroke="#ffedcf" stroke-width="3" opacity=".4"/><path d="M-7 -20q7 0 7 -7q0 7 7 7q-7 0 -7 7q0 -7 -7 -7" fill="#b77764"/></g><rect x="36" y="274" width="588" height="16" rx="4" fill="#241618"/><rect x="36" y="266" width="588" height="16" rx="4" fill="url(#wood)"/><rect x="36" y="266" width="588" height="16" rx="4" fill="url(#grain)"/><path d="M40 269h580" stroke="#d3985e" stroke-width="2" opacity=".65"/>
 </svg>
