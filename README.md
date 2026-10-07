@@ -176,7 +176,7 @@ That means I can register a compatible model, give it a name, route bounded cont
 
 **Nebula** already exists across the ecosystem as a creature family/look, Memory Nebula / persistence language, and Synapse/Nebula visual identity.
 
-That is different from claiming “Nebula is a deployed language-model checkpoint.”
+**Nebula is not a deployed language-model checkpoint.** It is part of the wider identity/world language unless a separately verified model artifact earns that label.
 
 I would rather keep the weird names **and** keep the labels honest.
 
