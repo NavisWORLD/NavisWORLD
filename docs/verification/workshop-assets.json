@@ -1,0 +1,228 @@
+{
+  "schema_version": 1,
+  "checked_date": "2026-10-07",
+  "repository": "NavisWORLD/NavisWORLD",
+  "pull_request": 10,
+  "audited_main_commit": "d45d7595006df62a552ea03d85cd05fff615358d",
+  "verified_implementation_commit": "539180770e3dc524ce389929f534fde4088bac86",
+  "verified_implementation_tree": "0eed1b3362e13a424936dec488b23e4fb35b925a",
+  "files": [
+    {
+      "path": ".github/workflows/profile-checks.yml",
+      "size": 490,
+      "binary": false,
+      "sha": "e7fb2f8dddfeacf5e6c99d472c87e2f4de76297a"
+    },
+    {
+      "path": "README.md",
+      "size": 17356,
+      "binary": false,
+      "sha": "aa8700c7a749af303ac77b94aa69951a6b715338"
+    },
+    {
+      "path": "assets/cory-chaos.svg",
+      "size": 14701,
+      "binary": false,
+      "sha": "282262829c23f472a3e6f9aeb0d1c1de1ac08df3",
+      "change": "modified",
+      "purpose": "Inventor desk, coffee, electronics, notes and sleeping Beast."
+    },
+    {
+      "path": "assets/cosmic-break.svg",
+      "size": 10125,
+      "binary": false,
+      "sha": "c5f3c0956f55efccb223a2de1a5a917b5da113e5",
+      "change": "modified",
+      "purpose": "Small reusable workshop interlude; retained."
+    },
+    {
+      "path": "assets/cosmos-core-mobile.svg",
+      "size": 18675,
+      "binary": false,
+      "sha": "4fd5b0967ef72799749c03ab2c4caddaaef9bf74",
+      "change": "added",
+      "purpose": "Four worlds composed for a narrow screen."
+    },
+    {
+      "path": "assets/cosmos-core.svg",
+      "size": 18740,
+      "binary": false,
+      "sha": "bb82acc6f366f3f913557baf344e5a78c3ee8933",
+      "change": "modified",
+      "purpose": "One Beast visiting four illustrated worlds."
+    },
+    {
+      "path": "assets/creature-telemetry.svg",
+      "size": 11817,
+      "binary": false,
+      "sha": "8bf972c21036f05fe8236aa16251fd284c623972",
+      "change": "modified",
+      "purpose": "Illustrated scanner: explicitly example/simulated source inputs."
+    },
+    {
+      "path": "assets/cst-observatory.svg",
+      "size": 12231,
+      "binary": false,
+      "sha": "7a7eff3920fc0d72f008d74c8955181df7e188a3",
+      "change": "added",
+      "purpose": "Goggles, notebook, brass telescope and computational-state orbit."
+    },
+    {
+      "path": "assets/device-lab.svg",
+      "size": 12565,
+      "binary": false,
+      "sha": "adcbe5264fa6f61d16c9957b34fc15f5ed9d00ef",
+      "change": "added",
+      "purpose": "Local host, handheld and explicitly conceptual watch."
+    },
+    {
+      "path": "assets/feed-the-beast.svg",
+      "size": 12196,
+      "binary": false,
+      "sha": "7317b547199124ef8ffcc8174845ed0105d1e6b8",
+      "change": "modified",
+      "purpose": "Beast munching stardust beside a reactor bowl."
+    },
+    {
+      "path": "assets/light-bringer-mobile.svg",
+      "size": 16783,
+      "binary": false,
+      "sha": "e476d914f0cb391c7dfc2421a1c00b76f1a7885b",
+      "change": "added",
+      "purpose": "Taller workshop composition for narrow screens."
+    },
+    {
+      "path": "assets/light-bringer.svg",
+      "size": 25013,
+      "binary": false,
+      "sha": "16fc618e13e030aa2ace94df0b5724d3bf331d74",
+      "change": "modified",
+      "purpose": "Wide walnut workshop, brass lamp and central glass Beast habitat."
+    },
+    {
+      "path": "assets/living-beast-strip.svg",
+      "size": 15411,
+      "binary": false,
+      "sha": "a822aa18c1f80aab8d70d43cd7f890233462e53b",
+      "change": "modified",
+      "purpose": "Reusable strip of consistent Beast poses; retained without adding README clutter."
+    },
+    {
+      "path": "assets/lost-cosmos-atlas.png",
+      "size": 111457,
+      "binary": true,
+      "sha": "accec9dbb77b7ec65e321872a7ff7b4bc1f10403",
+      "change": "added",
+      "purpose": "Original supplied atlas, extracted losslessly from the existing SVG."
+    },
+    {
+      "path": "assets/lost-cosmos-capture.png",
+      "size": 122071,
+      "binary": true,
+      "sha": "6806eadee714cb8e76259167c96570ba79c2fae9",
+      "change": "added",
+      "purpose": "Original supplied interface capture, extracted losslessly from the existing SVG."
+    },
+    {
+      "path": "assets/lost-cosmos-screen.svg",
+      "size": 12783,
+      "binary": false,
+      "sha": "ad9b10f39ab504bce5e2585c423c3e97eef22d5e",
+      "change": "modified",
+      "purpose": "Purple handheld with the same Beast represented as a pixel sprite."
+    },
+    {
+      "path": "assets/model-garden-mobile.svg",
+      "size": 16851,
+      "binary": false,
+      "sha": "59aecaae30f9a101fc2ae15a35ef541ca8968fac",
+      "change": "added",
+      "purpose": "Menagerie arranged vertically for narrow screens."
+    },
+    {
+      "path": "assets/model-garden.svg",
+      "size": 16928,
+      "binary": false,
+      "sha": "064e81efe454c3ed57ac88cefa938d88b98b5af8",
+      "change": "modified",
+      "purpose": "Four model familiars above router, world and adapter shelf."
+    },
+    {
+      "path": "assets/project-constellation.svg",
+      "size": 14712,
+      "binary": false,
+      "sha": "4dd387cb8a7b39fc0149532b01e1d4d2eddf3094",
+      "change": "modified",
+      "purpose": "Workshop planet, research moon, machine satellites and creative worlds."
+    },
+    {
+      "path": "assets/provenance-bench.svg",
+      "size": 10644,
+      "binary": false,
+      "sha": "f1a360e3d853023d1e1e626a23cb6dda2f218063",
+      "change": "added",
+      "purpose": "Separate SIMULATOR, SEEDED, MEASURED and conditional QPU drawers."
+    },
+    {
+      "path": "assets/spark-beast-reference.png",
+      "size": 15720,
+      "binary": true,
+      "sha": "ac4f89f0da6ec1f5abecee5f670a9918b45b6af0",
+      "change": "added",
+      "purpose": "Original supplied pixel Beast reference, preserved losslessly."
+    },
+    {
+      "path": "assets/spark-guide.svg",
+      "size": 9958,
+      "binary": false,
+      "sha": "40582b8c15e5f8ba497dcf1b669f89f3c0063c53",
+      "change": "modified",
+      "purpose": "Recognizable guide waving goodbye."
+    },
+    {
+      "path": "scripts/build_workshop.py",
+      "size": 45133,
+      "binary": false,
+      "sha": "40e71caa487f3360f97da078425f45751029b131"
+    },
+    {
+      "path": "scripts/check_profile.py",
+      "size": 7364,
+      "binary": false,
+      "sha": "04fc1b914514cc960486062b18e4b0147da59237"
+    }
+  ],
+  "protected_files": [
+    {
+      "path": ".github/FUNDING.yml",
+      "git_blob_sha": "9cdd15e237044bf6ff8514e2adfeecdd11a72c0d",
+      "size": 75,
+      "unchanged": true
+    },
+    {
+      "path": "LICENSE",
+      "git_blob_sha": "261eeb9e9f8b2b4b0d119366dda99c6fd7d35c64",
+      "size": 11357,
+      "unchanged": true
+    },
+    {
+      "path": "OPEN_SOURCE_SCOPE.md",
+      "git_blob_sha": "aa8e04202e23953300a2ff96bc1c0fa9645dee6a",
+      "size": 870,
+      "unchanged": true
+    },
+    {
+      "path": "OPEN_SOURCE_ECOSYSTEM.md",
+      "git_blob_sha": "bad91f527f5e922216d5bb6551d3faab06131607",
+      "size": 6972,
+      "unchanged": true
+    },
+    {
+      "path": "assets/lost-cosmos-atlas.svg",
+      "git_blob_sha": "76b7bef5ae1655c109b965fe241caafa5d019ebe",
+      "size": 149601,
+      "unchanged": true
+    }
+  ],
+  "note": "Git blob OIDs and byte sizes were checked against the published implementation commit. This manifest excludes itself and its accompanying report to avoid circular hashes."
+}
