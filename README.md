@@ -65,10 +65,11 @@ CREATURE
 ├── environment + save state
 ├── QBEAST metadata / provenance
 │
-└── MODEL SLOT
-      ├── RAWRPHØS / local research paths
-      ├── local models
-      └── supported external provider adapters
+└── BRAIN SLOT
+      ├── RAWRPHØS / PHOS / SAMGO / QC67
+      ├── COSMIC.CYPHER local-model routing
+      ├── compatible local models
+      └── supported provider adapters
 
 BEAST → BEAST CAGE → BRAIN BAY → LOST COSMOS → EXPORT / SAVE / DEVICE
 ```
@@ -144,21 +145,122 @@ Permission-controlled sensing and future companion-device surfaces.
 
 ---
 
-## 🌱 I apparently made a model garden
+## 🌌 The cosmic brain menagerie is getting out of hand
 
-<img src="assets/model-garden.svg" width="100%" alt="A cosmic model garden showing RAWRPHØS, PHOS, SAMGO, MUSE and SOL as distinct NavisWORLD computational familiars with cautious research or identity labels." />
+<img src="assets/model-garden.svg" width="100%" alt="Animated Cosmic Brain Menagerie separating NavisWORLD model work, the QC67 and Zeref lineage, COSMIC.CYPHER routing, Nebula ecosystem identity and open compatible model slots around one persistent QBEAST." />
 
-I did not need a shelf of computational familiars. This did not stop me.
+Okay, this part needed a correction because even **my own ecosystem has enough names to look like I lost control of a small constellation.** 💀
 
-The garden is intentionally honest about status. A name, adapter, checkpoint or research artifact does not magically turn every identity into an equally capable production model.
+Not every cosmic name is the same kind of thing.
 
-- **RAWRPHØS** — native/local research line documented inside the Beast Box ecosystem.
-- **PHOS** — NavisWORLD research model identity; artifacts do not imply production readiness.
-- **SAMGO** — NavisWORLD model-family identity.
-- **MUSE** — model/assistant identity; separate from the **Muse EEG/headband connector** discussed elsewhere.
-- **SOL** — ecosystem model/assistant identity; capability claims stay scoped to the actual artifact using the name.
+### 🧠 Actual NavisWORLD model work
 
-None of those labels assigns PHOS or SAMGO to another company.
+- **RAWRPHØS** — my native/local Beast Box research line.
+- **PHOS** — my experimental published model work.
+- **SAMGO** — my experimental model-family work.
+- **QC67 / COSMOS-Zeref lineage** — published/local model lineage used by the Zeref kit; the current Beast Box docs keep its weights, runtime state and broader COSMOS memory mechanisms explicitly separate.
+
+### 🛠️ COSMIC.CYPHER — the thing that plugs brains in
+
+**COSMIC.CYPHER is not another model checkpoint.** It is my local-model registry, conversation layer and bounded coding-agent interface.
+
+Right now its documented local paths include:
+
+`Ollama` • `GGUF` • `llama.cpp server` • `LM Studio / loopback OpenAI-compatible servers`
+
+That means I can register a compatible model, give it a name, route bounded context to it, and use it without rewriting the Beast around that model.
+
+**[Open the COSMIC.CYPHER docs →](https://github.com/NavisWORLD/The-beast-box-/blob/main/docs/COSMIC_CYPHER.md)**
+
+### 🌌 Nebula is part of the universe — not a fake checkpoint label
+
+**Nebula** already exists across the ecosystem as a creature family/look, Memory Nebula / persistence language, and Synapse/Nebula visual identity.
+
+That is different from claiming “Nebula is a deployed language-model checkpoint.”
+
+I would rather keep the weird names **and** keep the labels honest.
+
+### 🔌 So can another model become a Beast Box brain?
+
+**Yes — if it can be wrapped by a compatible Brain Bay adapter.**
+
+The contract is intentionally boring underneath the cosmic nonsense:
+
+```text
+QBEAST IDENTITY
+      │
+      ▼
+BRAIN BAY
+      │
+      ├── choose model / runtime
+      ├── provide bounded creature context
+      ├── send an allowed inference request
+      ├── receive normalized response + source metadata
+      └── return control to the Beast state layer
+
+MODEL OUTPUT ≠ CREATURE IDENTITY
+MODEL CONTEXT ≠ OWNER MEMORY VAULT
+MODEL ACCESS ≠ AUTHORITY
+```
+
+So a future compatible model does **not** need Beast Box rewritten around its brand.
+
+It needs an adapter that obeys the boundary.
+
+### 🧪 The currently documented integration idea
+
+A model adapter needs to define things like:
+
+- how the model is addressed,
+- what bounded context it receives,
+- how inference is invoked,
+- what response/source metadata comes back,
+- what capabilities are actually available,
+- and which actions remain outside model authority.
+
+Local runtimes can stay local. Remote providers stay behind server-side/provider boundaries where credentials are required. The public client does not inherit those credentials.
+
+### 🔭 Where I want Brain Bay to go next
+
+- **hot-swap brains without hatching a new Beast,**
+- route different tasks to different compatible models,
+- prefer local/offline inference when it makes sense,
+- use bigger remote models only when explicitly connected,
+- let devices choose lighter or heavier brains without changing QBEAST identity,
+- expose exactly **which model actually answered,**
+- negotiate model capabilities instead of assuming every model can do everything,
+- keep model-specific context bounded,
+- preserve creature memory/state through model replacement,
+- add more NavisWORLD experimental lineages without hard-coding the product around them,
+- and eventually let multiple specialized models collaborate around **one authoritative creature state**.
+
+Basically:
+
+> **ONE BEAST. A WHOLE DAMN CONSTELLATION OF POSSIBLE BRAINS.**
+
+<details>
+<summary><b>🪐 Tiny cosmic taxonomy so nobody gets lost</b></summary>
+<br/>
+
+**MODEL WORK**  
+RAWRPHØS · PHOS · SAMGO · QC67/Zeref lineage
+
+**ROUTER / CODING AGENT**  
+COSMIC.CYPHER
+
+**CREATURE / WORLD / VISUAL IDENTITY**  
+Nebula and the wider Spark-family language
+
+**SENSOR / CONNECTOR CONTEXT**  
+Muse where explicitly referring to the EEG/sensor/connector work
+
+**WORLD / EXPLORATION IDENTITY**  
+Luna / LUNA-ARC in the Living Universe work
+
+**OPEN SLOT**  
+any compatible local or supported external model with a bounded adapter
+
+</details>
 
 ---
 
@@ -289,7 +391,9 @@ FLAGSHIP     Beast Box
 CREATURE     Spark Beast / QBEAST identity
 GAME         Lost COSMOS
 RESEARCH     CST
-NATIVE LINE  RAWRPHØS
+MODEL WORK   RAWRPHØS • PHOS • SAMGO • QC67/Zeref
+ROUTER       COSMIC.CYPHER
+BRAIN BAY    compatible-model adapters
 STATE        persistent / portable
 OS TRACK     Synapse OS
 METHOD       build → instrument → test → preserve
