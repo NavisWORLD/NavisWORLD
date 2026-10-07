@@ -88,6 +88,9 @@ required_phrases = [
     "HARDWARE / QPU",
     "EXAMPLE CREATURE TELEMETRY",
     "Support is optional. Curiosity is free.",
+    "COSMIC.CYPHER",
+    "compatible Brain Bay adapter",
+    "QC67 / Zeref",
 ]
 for phrase in required_phrases:
     if phrase not in README:
@@ -98,6 +101,21 @@ if "github: [NavisWORLD]" not in funding:
     errors.append("FUNDING.yml lost GitHub Sponsors")
 if "https://buymeacoffee.com/Cosmic_syanpse" not in funding:
     errors.append("FUNDING.yml lost Buy Me a Coffee")
+
+# Keep ecosystem taxonomy honest.
+garden = (ROOT / "assets" / "model-garden.svg").read_text(encoding="utf-8")
+if "MUSE" in garden or ">SOL<" in garden:
+    errors.append("model garden regressed SOL/MUSE into the NavisWORLD model roster")
+for bad in [
+    r"\*\*MUSE\*\*\s+—\s+model",
+    r"\*\*SOL\*\*\s+—\s+ecosystem model",
+]:
+    if re.search(bad, README, re.I):
+        errors.append("README regressed SOL/MUSE model ownership language")
+if "COSMIC.CYPHER is not another model checkpoint" not in README:
+    errors.append("README lost COSMIC.CYPHER router/agent distinction")
+if "Nebula" not in README or "not a deployed language-model checkpoint" not in README:
+    errors.append("README lost Nebula identity/model distinction")
 
 # Security / GitHub-README constraints.
 for pattern, label in [
