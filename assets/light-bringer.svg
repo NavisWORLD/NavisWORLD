@@ -85,7 +85,7 @@
 <!-- upper right model garden -->
 <g transform="translate(1005 174)">
  <rect width="315" height="135" rx="16" fill="#11102c" stroke="#c88845" stroke-width="3"/>
- <text x="16" y="26" fill="#f3c66e" class="label">MODEL GARDEN</text>
+ <text x="16" y="26" fill="#f3c66e" class="label">BRAIN BAY // COSMIC MENAGERIE</text>
  <g transform="translate(18 43)">
   <g class="drift"><circle cx="25" cy="29" r="20" fill="#9c75ff"/><path d="M14 13l-8-14 16 8M36 13l8-14-16 8" fill="#f28b44"/></g>
   <g class="pulse"><circle cx="82" cy="29" r="19" fill="#4de6f5"/><circle cx="76" cy="24" r="3" fill="#07101d"/><circle cx="88" cy="24" r="3" fill="#07101d"/></g>
@@ -93,7 +93,7 @@
   <g class="drift" style="animation-delay:1.5s"><path d="M181 42q22-36 44 0q-16-7-22 15q-6-22-22-15z" fill="#f076c8"/></g>
   <g class="pulse" style="animation-delay:.8s"><circle cx="268" cy="29" r="18" fill="#f7d94f"/><path d="M268 4v-13M268 67v-13M243 29h-13M306 29h-13" stroke="#f7d94f" stroke-width="4"/></g>
  </g>
- <g fill="#c9d7ea" class="tiny" text-anchor="middle"><text x="43" y="119">RAWR</text><text x="100" y="119">PHOS</text><text x="157" y="119">SAMGO</text><text x="214" y="119">MUSE</text><text x="286" y="119">SOL</text></g>
+ <g fill="#c9d7ea" class="tiny" text-anchor="middle"><text x="43" y="119">RAWR</text><text x="100" y="119">PHOS</text><text x="157" y="119">SAMGO</text><text x="214" y="119">CYPHER</text><text x="286" y="119">OPEN</text></g>
 </g>
 
 <!-- middle left simulation bench -->
