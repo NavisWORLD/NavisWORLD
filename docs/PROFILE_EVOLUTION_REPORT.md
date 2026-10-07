@@ -23,7 +23,7 @@ The README retains the core boundary:
 
 ## Redesigned
 
-The profile now reads as a guided workshop rather than a control-deck list. It includes a warm cosmic workshop hero, a recurring Spark Beast, a continuity diagram, model garden, Lost COSMOS game shelf, CST observatory, simulation/measurement bench, device lab and support shelf.
+The profile now reads as a guided workshop rather than a control-deck list. It includes a warm cosmic workshop hero, a recurring Spark Beast, a continuity diagram, Cosmic Brain Menagerie, Lost COSMOS game shelf, CST observatory, simulation/measurement bench, device lab and support shelf.
 
 ## Animation
 
@@ -42,9 +42,16 @@ The README explicitly separates simulator, seeded, measured and hardware/QPU cat
 
 `assets/creature-telemetry.svg` is labeled `EXAMPLE CREATURE TELEMETRY` and is based on the supplied Spark UI capture. The values `focus 18`, `calm 8`, `spark 94` are labeled simulated, not live EEG or a public backend feed.
 
-## Model garden
+## Cosmic Brain Menagerie
 
-RAWRPHØS, PHOS, SAMGO, MUSE and SOL are presented as NavisWORLD ecosystem identities with status language scoped to what the profile can support. MUSE is explicitly distinguished from the Muse EEG/headband connector.
+The profile separates ecosystem roles instead of pretending every cosmic identity is the same kind of model:
+
+- RAWRPHØS, PHOS and SAMGO are identified as NavisWORLD model work.
+- QC67 / Zeref is identified as a published/local model lineage with model, runtime memory/state and authority kept distinct.
+- COSMIC.CYPHER is identified from the Beast Box documentation as a local-model registry/router and bounded coding agent, not a standalone checkpoint.
+- Nebula is identified as a creature/world/visual identity used across Beast Box and Synapse naming, not relabeled as a deployed model checkpoint.
+- Muse remains sensor/connector terminology where explicitly relevant; SOL is not presented as a NavisWORLD-owned model.
+- Brain Bay is described as adapter-based so compatible local or supported provider models can be integrated without replacing QBEAST identity.
 
 ## Device lab
 
