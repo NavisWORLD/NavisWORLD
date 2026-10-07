@@ -1,133 +1,16 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 640" role="img" aria-labelledby="t d">
-<title id="t">NavisWORLD Cosmic Brain Menagerie</title>
-<desc id="d">A whimsical animated cosmic menagerie separates RAWRPHOS, PHOS, SAMGO and QC67 Zeref model work from the COSMIC.CYPHER router, Nebula ecosystem identity and an open compatible model slot, all orbiting a persistent QBEAST identity.</desc>
-<style>
-text{font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
-.wire{stroke-dasharray:8 11;animation:flow 6s linear infinite}
-.orbit{animation:orbit 18s linear infinite;transform-origin:600px 322px}
-.bob{animation:bob 3.3s ease-in-out infinite;transform-origin:center;transform-box:fill-box}
-.sway{animation:sway 4.6s ease-in-out infinite;transform-origin:50% 100%;transform-box:fill-box}
-.pulse{animation:pulse 3.1s ease-in-out infinite}
-.nebula{animation:nebula 7s ease-in-out infinite;transform-origin:center;transform-box:fill-box}
-.slot{animation:slot 3.8s ease-in-out infinite}
-.tw{animation:tw 2.9s ease-in-out infinite}
-.scan{animation:scan 4.8s linear infinite}
-@keyframes flow{to{stroke-dashoffset:-114}}
-@keyframes orbit{to{transform:rotate(360deg)}}
-@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
-@keyframes sway{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
-@keyframes pulse{0%,100%{opacity:.55}50%{opacity:1}}
-@keyframes nebula{0%,100%{transform:scale(.96) rotate(-2deg);opacity:.62}50%{transform:scale(1.04) rotate(2deg);opacity:.95}}
-@keyframes slot{0%,100%{opacity:.45}50%{opacity:1}}
-@keyframes tw{0%,100%{opacity:.18}50%{opacity:1}}
-@keyframes scan{to{stroke-dashoffset:-92}}
-@media(prefers-reduced-motion:reduce){.wire,.orbit,.bob,.sway,.pulse,.nebula,.slot,.tw,.scan{animation:none!important}}
-</style>
-<defs>
- <radialGradient id="bg"><stop stop-color="#24134d"/><stop offset=".48" stop-color="#0a1330"/><stop offset="1" stop-color="#050817"/></radialGradient>
- <radialGradient id="core"><stop stop-color="#67efff"/><stop offset=".35" stop-color="#7e63ff"/><stop offset="1" stop-color="#21133f"/></radialGradient>
- <filter id="glow"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<rect width="1200" height="640" rx="30" fill="url(#bg)" stroke="#445884"/>
-<text x="52" y="54" fill="#f3f8ff" font-size="29" font-weight="900">COSMIC BRAIN MENAGERIE</text>
-<text x="52" y="84" fill="#98accb" font-size="15">models • lineages • routers • creature identities • open brain slots — different species on purpose</text>
-
-<!-- wires into one persistent creature core -->
-<g class="wire" stroke="#64e8fa" stroke-width="2.2" opacity=".38" fill="none">
- <path d="M600 318C460 235 344 210 190 210"/>
- <path d="M600 318C498 180 470 150 405 150"/>
- <path d="M600 318C634 165 665 145 770 150"/>
- <path d="M600 318C760 230 862 210 1025 210"/>
- <path d="M600 318C438 390 330 442 190 475"/>
- <path d="M600 318C615 432 654 486 770 488"/>
- <path d="M600 318C760 395 910 438 1030 475"/>
-</g>
-
-<g class="orbit"><circle cx="600" cy="109" r="6" fill="#ffd75f" filter="url(#glow)"/></g>
-
-<!-- central QBEAST -->
-<g transform="translate(470 218)" filter="url(#glow)">
- <circle cx="130" cy="100" r="92" fill="url(#core)" stroke="#83efff" stroke-width="3"/>
- <path class="bob" d="M130 45l26 34 42 3-31 27 10 43-47-24-46 24 10-43-31-27 41-3z" fill="#1d1838" stroke="#ffd263" stroke-width="3"/>
- <circle cx="113" cy="95" r="7" fill="#72f2ff"/><circle cx="147" cy="95" r="7" fill="#72f2ff"/>
- <text x="130" y="184" text-anchor="middle" fill="#fff" font-size="22" font-weight="900">QBEAST</text>
- <text x="130" y="205" text-anchor="middle" fill="#a9bbd5" font-size="12">IDENTITY / STATE CORE</text>
-</g>
-
-<!-- RAWRPHOS -->
-<g transform="translate(55 132)">
- <rect width="270" height="150" rx="22" fill="#17133a" stroke="#a78cff"/>
- <path class="bob" d="M62 28l13 19 23 1-17 15 6 24-25-13-25 13 6-24-18-15 24-1z" fill="#9f80ff"/>
- <text x="127" y="48" fill="#fff" font-size="21" font-weight="900">RAWRPHØS</text>
- <text x="127" y="75" fill="#cbd5ea" font-size="13">NAVISWORLD MODEL WORK</text>
- <text x="127" y="101" fill="#9eeeff" font-size="12">native / local research line</text>
- <text x="127" y="126" fill="#7187a9" font-size="11">actual model • not the Beast</text>
-</g>
-
-<!-- PHOS -->
-<g transform="translate(275 94)">
- <rect width="260" height="142" rx="22" fill="#0c2533" stroke="#61e6f5"/>
- <circle class="pulse" cx="58" cy="57" r="32" fill="#47d9ea"/><circle cx="48" cy="52" r="5" fill="#07111d"/><circle cx="68" cy="52" r="5" fill="#07111d"/>
- <text x="111" y="45" fill="#fff" font-size="21" font-weight="900">PHOS</text>
- <text x="111" y="71" fill="#cbd5ea" font-size="13">NAVISWORLD MODEL WORK</text>
- <text x="111" y="96" fill="#82efff" font-size="12">experimental published weights</text>
- <text x="111" y="119" fill="#7187a9" font-size="11">QC67 native adapter path</text>
-</g>
-
-<!-- SAMGO -->
-<g transform="translate(650 94)">
- <rect width="260" height="142" rx="22" fill="#30200d" stroke="#f3bd58"/>
- <path class="sway" d="M58 28c-31 0-34 36-17 43h35c17-7 14-43-18-43z" fill="#f1a746"/><rect x="51" y="69" width="14" height="28" rx="6" fill="#e7d6a8"/>
- <text x="111" y="45" fill="#fff" font-size="21" font-weight="900">SAMGO</text>
- <text x="111" y="71" fill="#ddd4c3" font-size="13">NAVISWORLD MODEL WORK</text>
- <text x="111" y="96" fill="#f7cd77" font-size="12">experimental 54D lineage</text>
- <text x="111" y="119" fill="#8d826e" font-size="11">QC67 native adapter path</text>
-</g>
-
-<!-- QC67 / Zeref -->
-<g transform="translate(900 132)">
- <rect width="245" height="150" rx="22" fill="#251634" stroke="#ec86d4"/>
- <circle class="pulse" cx="54" cy="55" r="29" fill="none" stroke="#ec86d4" stroke-width="4"/><path d="M54 26v58M25 55h58" stroke="#ec86d4" stroke-width="3"/>
- <text x="101" y="43" fill="#fff" font-size="19" font-weight="900">QC67 / ZEREF</text>
- <text x="101" y="70" fill="#decde3" font-size="12">PUBLISHED LOCAL LINEAGE</text>
- <text x="101" y="96" fill="#f6a7de" font-size="12">model ↔ memory kept separate</text>
- <text x="101" y="121" fill="#86738b" font-size="11">frozen lineage / runtime kit</text>
-</g>
-
-<!-- Cypher -->
-<g transform="translate(55 407)">
- <rect width="285" height="150" rx="22" fill="#10263c" stroke="#63e7ff"/>
- <path class="scan" d="M31 62h66M31 76h52M31 90h73" stroke="#63e7ff" stroke-width="4" fill="none"/>
- <circle cx="70" cy="62" r="39" fill="none" stroke="#395b7a"/>
- <text x="122" y="45" fill="#fff" font-size="20" font-weight="900">COSMIC.CYPHER</text>
- <text x="122" y="71" fill="#cbd7e8" font-size="12">ROUTER / CODING AGENT</text>
- <text x="122" y="97" fill="#82efff" font-size="12">Ollama • GGUF • llama.cpp</text>
- <text x="122" y="121" fill="#7187a9" font-size="11">not a checkpoint itself</text>
-</g>
-
-<!-- Nebula -->
-<g transform="translate(650 415)">
- <rect width="255" height="142" rx="22" fill="#21143a" stroke="#aa86ff"/>
- <g class="nebula"><circle cx="57" cy="60" r="31" fill="#704fc9" opacity=".65"/><circle cx="77" cy="51" r="27" fill="#35cbe3" opacity=".48"/><circle cx="46" cy="75" r="24" fill="#f07bcf" opacity=".36"/></g>
- <text x="116" y="43" fill="#fff" font-size="21" font-weight="900">NEBULA</text>
- <text x="116" y="69" fill="#d7cee8" font-size="12">FAMILY / WORLD IDENTITY</text>
- <text x="116" y="95" fill="#c19cff" font-size="12">creature look • Memory Nebula</text>
- <text x="116" y="119" fill="#85789b" font-size="11">not mislabeled as a model</text>
-</g>
-
-<!-- open slot -->
-<g transform="translate(930 405)">
- <rect class="slot" width="215" height="155" rx="22" fill="#122d2d" stroke="#65e1b3" stroke-dasharray="8 8"/>
- <circle cx="107" cy="55" r="29" fill="none" stroke="#65e1b3" stroke-width="4"/>
- <path d="M107 37v36M89 55h36" stroke="#65e1b3" stroke-width="5" stroke-linecap="round"/>
- <text x="107" y="104" text-anchor="middle" fill="#fff" font-size="17" font-weight="900">YOUR MODEL HERE</text>
- <text x="107" y="128" text-anchor="middle" fill="#9defc9" font-size="12">compatible Brain Bay adapter</text>
-</g>
-
-<g fill="#d7f7ff">
- <circle class="tw" cx="44" cy="84" r="3"/><circle class="tw" cx="1140" cy="91" r="4" style="animation-delay:.8s"/>
- <circle class="tw" cx="385" cy="300" r="3" style="animation-delay:1.5s"/><circle class="tw" cx="842" cy="330" r="3" style="animation-delay:2.2s"/>
- <circle class="tw" cx="576" cy="574" r="4" style="animation-delay:2.8s"/>
-</g>
-<text x="600" y="608" text-anchor="middle" fill="#aebed7" font-size="14">ONE BEAST • MANY POSSIBLE BRAINS • ROUTERS ARE NOT MODELS • WORLDS ARE NOT CHECKPOINTS</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 690" role="img" aria-labelledby="t d">
+<title id="t">NavisWORLD Cosmic Brain Menagerie</title><desc id="d">A whimsical animated menagerie separates NavisWORLD model work RAWRPHOS, PHOS, SAMGO and QC67 Zeref lineage from COSMIC.CYPHER routing, Nebula world identity and an open compatible-model portal around one persistent QBEAST.</desc>
+<style>text{font-family:system-ui,-apple-system,"Segoe UI",sans-serif}.bob{animation:bob 3.5s ease-in-out infinite;transform-origin:center;transform-box:fill-box}.sway{animation:sway 4.8s ease-in-out infinite;transform-origin:center;transform-box:fill-box}.pulse{animation:pulse 3.2s ease-in-out infinite;transform-origin:center;transform-box:fill-box}.nebula{animation:nebula 7s ease-in-out infinite;transform-origin:center;transform-box:fill-box}.wire{stroke-dasharray:9 11;animation:flow 6s linear infinite}.tw{animation:tw 2.8s ease-in-out infinite}.portal{animation:portal 4s ease-in-out infinite}@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}@keyframes sway{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}@keyframes pulse{0%,100%{transform:scale(.96);opacity:.66}50%{transform:scale(1.04);opacity:1}}@keyframes nebula{0%,100%{transform:scale(.95) rotate(-2deg);opacity:.65}50%{transform:scale(1.05) rotate(2deg);opacity:1}}@keyframes flow{to{stroke-dashoffset:-120}}@keyframes tw{0%,100%{opacity:.15}50%{opacity:1}}@keyframes portal{0%,100%{opacity:.55}50%{opacity:1}}@media(prefers-reduced-motion:reduce){.bob,.sway,.pulse,.nebula,.wire,.tw,.portal{animation:none!important}}</style>
+<defs><radialGradient id="bg"><stop stop-color="#21144b"/><stop offset=".5" stop-color="#09142d"/><stop offset="1" stop-color="#050817"/></radialGradient><filter id="g"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+<rect width="1200" height="690" rx="32" fill="url(#bg)" stroke="#445a87"/><text x="52" y="56" fill="#f5f8ff" font-size="31" font-weight="900">THE COSMIC BRAIN MENAGERIE</text><text x="52" y="86" fill="#99acc9" font-size="15">not every cosmic name is the same kind of thing — and that is the point</text>
+<g class="wire" fill="none" stroke="#63e7ff" stroke-width="2.5" opacity=".36"><path d="M600 345L185 205M600 345L425 185M600 345L775 185M600 345L1020 205M600 345L240 520M600 345L750 520M600 345L1008 520"/></g>
+<g transform="translate(480 255)" filter="url(#g)"><circle class="pulse" cx="120" cy="90" r="88" fill="#251449" stroke="#74efff" stroke-width="4"/><g class="bob"><path d="M103 64L79 32l40 16 24-21-4 42z" fill="#ff6c35"/><path d="M85 118q7-47 54-47 49 0 57 45l-22 33h-67z" fill="#58403a"/><circle cx="164" cy="96" r="7" fill="#ffd24c"/><path d="M101 98L62 111l36 13z" fill="#df5e31"/></g><text x="120" y="190" text-anchor="middle" fill="#fff" font-size="21" font-weight="900">QBEAST</text><text x="120" y="212" text-anchor="middle" fill="#9cb2cf" font-size="12">IDENTITY / STATE CORE</text></g>
+<g transform="translate(42 122)"><rect width="270" height="160" rx="24" fill="#18123c" stroke="#a88cff"/><g class="bob" transform="translate(20 36)"><path d="M35 0l10 14 17 1-13 11 5 17-19-9-18 9 5-17L9 15l17-1z" fill="#9f7fff"/></g><text x="112" y="45" fill="#fff" font-size="20" font-weight="900">RAWRPHØS</text><text x="112" y="75" fill="#d1d9ec" font-size="13">NAVISWORLD MODEL WORK</text><text x="112" y="104" fill="#9eeeff" font-size="12">native / local research line</text><text x="112" y="131" fill="#778aaa" font-size="11">model • not the Beast</text></g>
+<g transform="translate(278 102)"><rect width="250" height="150" rx="24" fill="#0d2534" stroke="#61e7f6"/><g class="pulse"><circle cx="57" cy="57" r="34" fill="#4ad9ea"/><circle cx="47" cy="52" r="5" fill="#07111e"/><circle cx="67" cy="52" r="5" fill="#07111e"/></g><text x="106" y="45" fill="#fff" font-size="21" font-weight="900">PHOS</text><text x="106" y="74" fill="#d4deed" font-size="13">MODEL WORK</text><text x="106" y="101" fill="#82efff" font-size="12">experimental / published</text><text x="106" y="126" fill="#7286a5" font-size="11">QC67 adapter path</text></g>
+<g transform="translate(668 102)"><rect width="250" height="150" rx="24" fill="#30200d" stroke="#f1bd5a"/><g class="sway"><path d="M57 28c-30 0-34 36-17 43h35c17-7 14-43-18-43z" fill="#f1a746"/><rect x="50" y="68" width="14" height="29" rx="6" fill="#e7d6a8"/></g><text x="106" y="45" fill="#fff" font-size="21" font-weight="900">SAMGO</text><text x="106" y="74" fill="#ddd4c4" font-size="13">MODEL-FAMILY WORK</text><text x="106" y="101" fill="#f6cd78" font-size="12">experimental lineage</text><text x="106" y="126" fill="#8e836f" font-size="11">QC67 adapter path</text></g>
+<g transform="translate(900 122)"><rect width="258" height="160" rx="24" fill="#261635" stroke="#ec86d2"/><g class="pulse"><circle cx="55" cy="55" r="31" fill="none" stroke="#ec86d2" stroke-width="4"/><path d="M55 25v60M25 55h60" stroke="#ec86d2" stroke-width="3"/></g><text x="105" y="45" fill="#fff" font-size="20" font-weight="900">QC67 / ZEREF</text><text x="105" y="75" fill="#e2d1e7" font-size="12">PUBLISHED LOCAL LINEAGE</text><text x="105" y="103" fill="#f5a6db" font-size="12">model ↔ memory kept separate</text><text x="105" y="130" fill="#88758d" font-size="11">frozen lineage / runtime kit</text></g>
+<g transform="translate(70 472)"><rect width="310" height="150" rx="24" fill="#10273e" stroke="#61e7ff"/><circle cx="60" cy="60" r="38" fill="none" stroke="#395b78"/><path class="wire" d="M28 48h67M28 62h54M28 76h73" stroke="#61e7ff" stroke-width="4"/><text x="116" y="45" fill="#fff" font-size="20" font-weight="900">COSMIC.CYPHER</text><text x="116" y="73" fill="#cbd6e6" font-size="12">ROUTER / REGISTRY / AGENT</text><text x="116" y="101" fill="#82efff" font-size="12">Ollama • GGUF • llama.cpp</text><text x="116" y="126" fill="#7185a3" font-size="11">routing layer • not a checkpoint</text></g>
+<g transform="translate(630 474)"><rect width="260" height="148" rx="24" fill="#21143a" stroke="#aa86ff"/><g class="nebula"><circle cx="55" cy="59" r="31" fill="#704fc9" opacity=".66"/><circle cx="75" cy="50" r="27" fill="#35cbe3" opacity=".48"/><circle cx="44" cy="73" r="24" fill="#f07bcf" opacity=".36"/></g><text x="112" y="43" fill="#fff" font-size="20" font-weight="900">NEBULA</text><text x="112" y="72" fill="#d7cee8" font-size="12">FAMILY / WORLD IDENTITY</text><text x="112" y="100" fill="#c29cff" font-size="12">creature look • Memory Nebula</text><text x="112" y="125" fill="#85789b" font-size="11">world language • not a model claim</text></g>
+<g transform="translate(920 470)"><rect class="portal" width="240" height="154" rx="24" fill="#112d2d" stroke="#65e1b3" stroke-width="2" stroke-dasharray="9 8"/><circle cx="120" cy="52" r="30" fill="none" stroke="#65e1b3" stroke-width="4"/><path d="M120 34v36M102 52h36" stroke="#65e1b3" stroke-width="5" stroke-linecap="round"/><text x="120" y="102" text-anchor="middle" fill="#fff" font-size="18" font-weight="900">YOUR MODEL HERE</text><text x="120" y="128" text-anchor="middle" fill="#9defca" font-size="12">compatible Brain Bay adapter</text></g>
+<g fill="#d9f8ff"><circle class="tw" cx="50" cy="82" r="3"/><circle class="tw" cx="1130" cy="88" r="4" style="animation-delay:1s"/><circle class="tw" cx="397" cy="329" r="3" style="animation-delay:1.6s"/><circle class="tw" cx="845" cy="350" r="3" style="animation-delay:2.3s"/><circle class="tw" cx="576" cy="648" r="4" style="animation-delay:2.8s"/></g><text x="600" y="666" text-anchor="middle" fill="#aebed7" font-size="14">ONE BEAST • MANY POSSIBLE BRAINS • ROUTERS ARE NOT MODELS • WORLDS ARE NOT CHECKPOINTS</text>
 </svg>
