@@ -582,12 +582,22 @@ if (String((live.diary || {}).mood).toLowerCase() === 'content') {
   if (a.iris === MOOD_IRIS.default && a.iris === MOOD_IRIS.content) throw new Error('content iris');
 }
 if (!a.proud) throw new Error('committed live card has live_step === pin_step with a pin_release; proud should be on');
-if (!(a.glow > 0.9) || a.stale) throw new Error('CONNECTED + energy 100 should be a bright, not-STALE glow');
-if (!(a.sleepy === 0) || !(a.lids > 0.6)) throw new Error('content + high energy should have open lids, not a sleepy pose');
-const staleLive = JSON.parse(JSON.stringify(live));
-staleLive.spark = { ...(live.spark || {}), state: 'STALE', label: 'STALE' };
+// Bright glow and open lids are properties of energy 100 + a CONNECTED, not-STALE
+// spark — not of whatever the ticking committed snapshot currently holds. The
+// live card refresh can honestly record mid energy (e.g. ~15) and a sleepy mood;
+// mapExpression should follow those numbers, and this fixture checks the
+// documented high-energy path.
+const bright = JSON.parse(JSON.stringify(live));
+bright.spark = { ...(live.spark || {}), state: 'CONNECTED', label: (live.spark && live.spark.label) || 'LOCAL SIMULATED' };
+bright.heartbeat = { ...(live.heartbeat || {}), state: 'CONNECTED', label: (live.heartbeat && live.heartbeat.label) || 'SIMULATED', signals: { ...(((live.heartbeat || {}).signals) || {}), energy: 100 } };
+if (bright.diary) bright.diary = { ...bright.diary, mood: 'content' };
+const lit = mapExpression(bright);
+if (!(lit.glow > 0.9) || lit.stale) throw new Error('CONNECTED + energy 100 should be a bright, not-STALE glow');
+if (!(lit.sleepy === 0) || !(lit.lids > 0.6)) throw new Error('content + high energy should have open lids, not a sleepy pose');
+const staleLive = JSON.parse(JSON.stringify(bright));
+staleLive.spark = { ...(bright.spark || {}), state: 'STALE', label: 'STALE' };
 const dim = mapExpression(staleLive);
-if (!(dim.stale && dim.glow < a.glow * 0.5 + 0.01)) throw new Error('STALE spark should dim the glow');
+if (!(dim.stale && dim.glow < lit.glow * 0.5 + 0.01)) throw new Error('STALE spark should dim the glow');
 const empty = mapExpression({});
 if (empty.iris !== MOOD_IRIS.default) throw new Error('missing mood should use the documented default iris');
 if (!empty.missing.some((m) => m.id === 'mood')) throw new Error('missing mood should be listed');
