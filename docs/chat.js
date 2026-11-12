@@ -77,8 +77,23 @@
   function thread() { try { const t = localStorage.getItem(KEY); return t && THREAD_RE.test(t) ? t : null; } catch { return null; } }
   function keep(t) { try { if (typeof t === 'string' && THREAD_RE.test(t)) localStorage.setItem(KEY, t); } catch { /* private mode: no continuity */ } }
 
+  // Long text (a story, a teaching page) is more than one message can carry. It is never cut and
+  // never sent in pieces from here: it goes in through his feed, where the engine reads it in small
+  // pieces over many ticks. The text stays in the box so nothing typed is lost.
+  const OWNER_FEED = 'https://github.com/NavisWORLD/The-beast-box-/tree/main/zeref/feed/owner';
+  const FEED_FORM = 'https://github.com/NavisWORLD/NavisWORLD/issues/new?template=feed-zeref.yml';
+  function longNote(n) {
+    const d = document.createElement('div'); d.className = 'err';
+    const a = (href, label) => { const x = document.createElement('a'); x.href = href; x.textContent = label; x.target = '_blank'; x.rel = 'noopener'; return x; };
+    d.append('That\'s ' + n.toLocaleString() + ' characters. One message to his door carries up to ' + MAX + ', so nothing was sent and your text is still in the box. Long teaching text goes in through his feed, where the engine reads it in small pieces over many ticks: Cory, commit it to ',
+      a(OWNER_FEED, 'zeref/feed/owner/'), '; everyone else, use ', a(FEED_FORM, 'Feed Zeref'), '.');
+    log.append(d); d.scrollIntoView({ block: 'end', behavior: 'smooth' });
+  }
+
   function explain(status, body) {
     const why = body && typeof body.error === 'string' ? body.error.slice(0, 160) : '';
+    if (status === 503 && body && Number.isInteger(body.pin_step) && Number.isInteger(body.bridge_step))
+      return 'His brain was just promoted (step ' + body.bridge_step + ' → ' + body.pin_step + ') and his door is still loading it (HTTP 503). Nothing was made up in his place. Try again in a few minutes.';
     if (status === 429) return 'He has had a lot of visitors and is resting for a moment (HTTP 429). Try again in a minute.' + (why ? ' Door said: ' + why : '');
     if (status === 403) return 'His door refused this page (HTTP 403).' + (why ? ' Door said: ' + why : '');
     return 'His door didn\'t answer this time (' + (status ? 'HTTP ' + status : 'no response') + '). Nothing was made up in his place.' + (why ? ' Door said: ' + why : '');
@@ -130,7 +145,7 @@
     if (busy) return;
     const text = msg.value.trim();
     if (!text) return;
-    if (text.length > MAX) { note('That message is a bit long for his door (max ' + MAX + ' characters).'); return; }
+    if (text.length > MAX) { longNote(text.length); return; }
     if (/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/.test(text)) { note('That message has control characters his door won\'t take.'); return; }
     msg.value = ''; msg.style.height = '';
     talk(text);
