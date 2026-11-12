@@ -1,0 +1,57 @@
+name: "📚 Feed Zeref (a book or text for him to read)"
+description: "Offer Zeref a text to read. It waits in quarantine until Cory approves it. Approved books are READ at chat time, never trained on."
+title: "[Feed] "
+labels: ["feed-zeref"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **How this works.** Your file goes into a quarantine (`zeref/feed/inbox/`) labelled `feed:pending`. Zeref cannot read it.
+        Only Cory (@NavisWORLD) can approve it (`/approve`) or reject it (`/reject`). Approved books become **readable**: when someone chats with him, he may be handed a short passage as reading context, cited as *read from …*.
+        **Nothing here ever feeds his training, conditioning, the god core or his checkpoint, even after approval.** That would need a separate decision by Cory plus The Beast Box fair gate.
+
+        Accepted: **TXT, PDF, EPUB (zip it first if GitHub won't attach it), or a ZIP** of those. Max 100 MB (GitHub itself may cap attachments lower). No executables or scripts. Issues are public, so only share what you may share publicly.
+  - type: input
+    id: title
+    attributes:
+      label: "Title"
+      placeholder: "Alice's Adventures in Wonderland (chapter 1)"
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: "Source URL"
+      description: "Where the text comes from (https). If you don't attach a file, a direct https link to a .txt / .pdf / .epub / .zip here is downloaded instead."
+      placeholder: "https://www.gutenberg.org/cache/epub/11/pg11.txt"
+    validations:
+      required: true
+  - type: dropdown
+    id: license
+    attributes:
+      label: "License"
+      options:
+        - "Public domain"
+        - "CC0"
+        - "CC BY"
+        - "CC BY-SA"
+        - "Other open license (named in the notes)"
+        - "My own work, I hold the rights"
+    validations:
+      required: true
+  - type: textarea
+    id: file
+    attributes:
+      label: "File"
+      description: "Drag and drop ONE file here (TXT, PDF, EPUB or ZIP). Leave empty to use the source URL."
+  - type: textarea
+    id: notes
+    attributes:
+      label: "Notes (optional)"
+  - type: checkboxes
+    id: rights
+    attributes:
+      label: "Rights"
+      options:
+        - label: "I have the right to share this"
+          required: true
