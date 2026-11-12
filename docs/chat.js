@@ -129,7 +129,10 @@
       if (!r.ok || !body || typeof body.reply !== 'string') { note(explain(r.status, body)); signal('error'); return; }
       keep(body.continuity && body.continuity.thread_id);
       const te = body.continuity && body.continuity.training_eligible;
-      const b = bubble('him', 'Zeref · unedited · pinned step ' + v(body.step) + ' · training_eligible:' + (te === false ? 'false' : v(te)) + ' · ' + hhmm(new Date()), body.reply);
+      // Since Nov 12 2026 his door serves whatever step his bridge actually loaded; the label names that step, and the pin when it differs.
+      const offPin = Number.isInteger(body.pin_step) && Number.isInteger(body.step) && body.step !== body.pin_step;
+      const which = offPin ? 'answered by step ' + body.step + ', pin is ' + body.pin_step : 'pinned step ' + v(body.step);
+      const b = bubble('him', 'Zeref · unedited · ' + which + ' · training_eligible:' + (te === false ? 'false' : v(te)) + ' · ' + hhmm(new Date()), body.reply);
       cite(b, body.read_from);
       signal('reply');
     } catch (err) {
