@@ -9,6 +9,7 @@ import { RoomEnvironment } from '../robot/vendor/RoomEnvironment.js';
 import { loadLive, planFromLive, livePose, applyReaction, ZERO_POSE } from './motion.mjs';
 import { tickDance, applyDanceCSS, dancePose, DANCE_CAPTION } from './dance.mjs';
 import { applyCosmic, makeQualityGuard } from './cosmic.mjs';
+import { enrichFur } from './fur.mjs';
 import { makeCosmicParticles, makeSignalRing, ensureSignalReadout } from './particles.mjs';
 import { applyEyes, ensureExpressionLegend } from './expression.mjs';
 import { makeWorld, WORLD_CAPTION } from './world.mjs';
@@ -173,12 +174,20 @@ export async function mount(el, {
   });
   scene.add(world.group);
   if (live) world.setLive(live);
+  const fur = enrichFur(THREE, model, {
+    seedHex,
+    quality: startQ,
+    bones: named,
+    cosmic,
+    reducedMotion,
+  });
   const watchQuality = makeQualityGuard({
     setQuality(q) {
       cosmic.setQuality(q);
       particles.setQuality(q);
       ring.setQuality(q);
       world.setQuality(q);
+      fur.setQuality(q);
     },
   }, { start: startQ, narrow });
   ensureSignalReadout(el);
@@ -356,6 +365,7 @@ export async function mount(el, {
       camBob: bob,
       dt,
     });
+    fur.update(t, sig, { reducedMotion, dt });
     const label = (dancing ? DANCE_CAPTION : (plan.caption + (phase !== 'idle' ? ' · ' + phase : ''))) + ' · ' + WORLD_CAPTION;
     if (label !== lastLabel) { onStatus(label); lastLabel = label; }
     renderer.render(scene, camera);

@@ -69,6 +69,9 @@ function injectUniforms(shader, extras) {
   // Default iris matches the previous fixed eye wash, until expression.mjs sets the recorded color.
   shader.uniforms.uIris = { value: [0.90, 0.55, 1.0] };
   shader.uniforms.uIrisGlow = { value: 1 };
+  // Moon direction (world, matches the visible moon) and fur follow-through.
+  shader.uniforms.uMoonDir = { value: [0.55, 0.70, -0.45] };
+  shader.uniforms.uFurFollow = { value: [0, 0, 0] };
 }
 
 function patchWorld(shader) {
@@ -80,7 +83,7 @@ function patchWorld(shader) {
       '#include <project_vertex>',
     ].join('\n'));
   shader.fragmentShader = shader.fragmentShader
-    .replace('#include <common>', '#include <common>\nvarying vec3 vCwPos;\nvarying vec3 vCwNrm;\nuniform float uCwTime;\nuniform float uCwSeed;\nuniform float uCwPulse;\nuniform float uCwGlow;\nuniform vec3 uIris;\nuniform float uIrisGlow;\n' + STAR_GLSL);
+    .replace('#include <common>', '#include <common>\nvarying vec3 vCwPos;\nvarying vec3 vCwNrm;\nuniform float uCwTime;\nuniform float uCwSeed;\nuniform float uCwPulse;\nuniform float uCwGlow;\nuniform vec3 uIris;\nuniform float uIrisGlow;\nuniform vec3 uMoonDir;\nuniform vec3 uFurFollow;\n' + STAR_GLSL);
 }
 
 function patchFur(shader) {
@@ -100,6 +103,19 @@ function patchFur(shader) {
      vec3 N = normalize(vCwNrm);
      float fres = pow(clamp(1.0 - abs(dot(N, V)), 0.0, 1.0), 2.4);
      totalEmissiveRadiance += vec3(0.20, 0.90, 1.0) * fres * (0.22 + 0.38 * uCwPulse);
+     // Volume: soft wrap AO so the underside and folds read darker, not flat.
+     float wrap = clamp(dot(N, vec3(0.0, 1.0, 0.0)) * 0.65 + 0.35, 0.35, 1.0);
+     float cavity = pow(fres, 1.35);
+     diffuseColor.rgb *= mix(vec3(0.58, 0.46, 0.72), vec3(1.0), wrap);
+     diffuseColor.rgb *= (1.0 - cavity * 0.18);
+     // Soft moon rim + a cyan / violet sheen on the silhouette.
+     vec3 moonD = normalize(uMoonDir);
+     float rimM = pow(clamp(1.0 - abs(dot(N, V)), 0.0, 1.0), 2.15);
+     float moonFacing = pow(clamp(dot(N, moonD), 0.0, 1.0), 0.7);
+     totalEmissiveRadiance += vec3(0.75, 0.88, 1.0) * rimM * moonFacing * 0.50;
+     totalEmissiveRadiance += vec3(0.62, 0.22, 1.0) * rimM * (1.0 - moonFacing * 0.45) * 0.30;
+     float tickle = 0.5 + 0.5 * sin(vCwPos.y * 28.0 + uCwTime * 2.2 + uCwSeed);
+     totalEmissiveRadiance += vec3(0.55, 0.85, 1.0) * tickle * length(uFurFollow) * 1.35;
     `,
   );
 }
@@ -132,9 +148,24 @@ function patchGlow(shader, kind) {
   injectUniforms(shader, { seed: 0 });
   patchWorld(shader);
   const extra = kind === 'eye'
-    ? `totalEmissiveRadiance *= uIris * (0.28 + 0.40 * uIrisGlow);
-       totalEmissiveRadiance += uIris * (0.18 + 0.42 * uIrisGlow) * (1.0 + 0.22 * uCwPulse);
-       totalEmissiveRadiance += vec3(1.0) * 0.05;`
+    ? `// Iris depth from the recorded uIris: a darker rim, a brighter wet
+       // center, a specular glint from the moon. No made-up UV pupil —
+       // both eyes share one material and there is no pupil morph.
+       vec3 eN = normalize(vCwNrm);
+       vec3 eV = normalize(-vViewPosition);
+       float ndv = clamp(dot(eN, eV), 0.0, 1.0);
+       float wet = pow(1.0 - ndv, 3.2);
+       float fall = pow(ndv, 0.65);
+       vec3 irisDeep = uIris * 0.42;
+       vec3 irisLit = uIris * (0.95 + 0.55 * uIrisGlow);
+       totalEmissiveRadiance *= uIris * (0.16 + 0.18 * uIrisGlow);
+       totalEmissiveRadiance += mix(irisDeep, irisLit, fall) * (0.55 + 0.70 * uIrisGlow);
+       totalEmissiveRadiance += uIris * (0.08 + 0.16 * uCwPulse);
+       totalEmissiveRadiance += vec3(0.85, 0.95, 1.0) * wet * (0.22 + 0.20 * uIrisGlow);
+       vec3 eH = normalize(normalize(uMoonDir) + eV);
+       float glint = pow(clamp(dot(eN, eH), 0.0, 1.0), 80.0);
+       totalEmissiveRadiance += vec3(1.0) * glint * (0.60 + 0.35 * uIrisGlow);
+       totalEmissiveRadiance += vec3(1.0) * 0.03;`
     : `totalEmissiveRadiance += vec3(0.98, 0.86, 1.0) * (1.05 + 1.2 * uCwPulse) * uCwGlow;
        float stars = cwStars(vCwPos * 14.0, uCwTime);
        totalEmissiveRadiance += vec3(1.0, 0.92, 1.0) * stars * 1.35;`;
@@ -153,7 +184,7 @@ function hook(mat, kind, store) {
     else patchGlow(shader, kind);
     store.push(shader);
   };
-  mat.customProgramCacheKey = () => 'cw-' + kind + '-v3';
+  mat.customProgramCacheKey = () => 'cw-' + kind + '-v4';
   mat.needsUpdate = true;
 }
 
@@ -296,6 +327,7 @@ export function applyCosmic(THREE, model, { seedHex = 'zeref', quality = 'high',
       if (sh.uniforms.uCwTime) sh.uniforms.uCwTime.value = t;
       if (sh.uniforms.uCwSeed) sh.uniforms.uCwSeed.value = seed;
       if (sh.uniforms.uCwPulse) sh.uniforms.uCwPulse.value = pulse;
+      if (sh.uniforms.uMoonDir) sh.uniforms.uMoonDir.value = [0.55, 0.70, -0.45];
     }
     const glow = 1 + pulse * 0.95;
     for (const h of halos) {
@@ -341,7 +373,16 @@ export function applyCosmic(THREE, model, { seedHex = 'zeref', quality = 'high',
     }
   }
 
-  return { update, setQuality: pushQuality, setIris, get quality() { return q; } };
+  function setFurFollow(v) {
+    const x = v && v.x != null ? v.x : (Array.isArray(v) ? v[0] : 0);
+    const y = v && v.y != null ? v.y : (Array.isArray(v) ? v[1] : 0);
+    const z = v && v.z != null ? v.z : (Array.isArray(v) ? v[2] : 0);
+    for (const sh of shaders) {
+      if (sh.uniforms.uFurFollow) sh.uniforms.uFurFollow.value = [x, y, z];
+    }
+  }
+
+  return { update, setQuality: pushQuality, setIris, setFurFollow, get quality() { return q; } };
 
 }
 

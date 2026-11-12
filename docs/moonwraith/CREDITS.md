@@ -167,3 +167,17 @@
   `--world-energy`. The honest caption is `world SIMULATED`. The world
   sits around him; it does not cover his body, the chat, or the card.
 
+- **Richer fur and eye depth (SIMULATED shading on the real sculpt)**: the
+  Moonwraith art is unchanged — this only enriches it. The fur shader in
+  `docs/moonwraith/cosmic.mjs` now has soft wrap ambient occlusion for
+  volume, a moon rim light, and a cyan / violet sheen. Layered strand
+  shells and a few short tuft fins along the ears, tail and chest
+  (`docs/moonwraith/fur.mjs`) follow the body with the same spring-damper
+  family as `physics.mjs`, so the fur has momentum and follow-through and
+  ripples with the live audio bands. Eyes keep the iris color mapped from
+  his recorded state, with a darker-to-brighter iris gradient, a wet
+  fresnel rim, and a specular glint from the moon — no made-up UV pupil.
+  Seeded with `mulberry32`. No `Math.random`, no new network call. Quality
+  steps the shell and tuft counts so a 393 px iPhone stays light.
+
+
