@@ -190,6 +190,7 @@ check("Zeref is thinking…" in js and "setTimeout(res, wait * 1000)" in js, "ho
 check('id="msg"' in html and not re.search(r'<textarea id="msg"[^>]*maxlength', html), "long pastes are never silently cut by the text box")
 check("longNote(text.length); return;" in js and "zeref/feed/owner" in js and "feed-zeref.yml" in js, "over-long text is not sent; it is routed to the owner feed / Feed Zeref")
 check("status === 503 && body && Number.isInteger(body.pin_step)" in js and "Nothing was made up in his place" in js, "honest promotion-lag message (503 with pin/bridge steps)")
+check("'answered by step ' + body.step + ', pin is ' + body.pin_step" in js, "off-pin reply names the step that answered and the pin (own-step door, 2026-11-12)")
 check(not re.search(r"\b(AI|LLM|GPT|language model|chatbot)\b", html + js), "no AI/LLM wording on the chat page")
 check("not a claim of awareness" in html and "digital creature" in html and "fair gate" in html and "training_eligible:false" in html, "honesty footer")
 check("SIMULATED" in html and "RECORDED" in html and "PINNED" in html, "honesty labels on the chat page")
