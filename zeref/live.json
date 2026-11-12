@@ -1,6 +1,6 @@
 {
  "schema": "navisworld-zeref-live-card/v1",
- "fetched_at": "2026-11-12T03:37:50Z",
+ "fetched_at": "2026-11-12T03:58:30Z",
  "sources": {
   "world_live": {
    "url": "https://www.beastboxcosmos.xyz/api/world/live",
@@ -22,12 +22,12 @@
   "state": "CONNECTED",
   "label": "SIMULATED (per-second tick, deterministic)",
   "recorded_tick": 778,
-  "xp_live": 11237.1114,
+  "xp_live": 11239.4721,
   "signals": {
-   "energy": 13.16,
-   "signal": 53.73,
+   "energy": 13.75,
+   "signal": 54.92,
    "memory": 100,
-   "resonance": 86.75
+   "resonance": 87.92
   }
  },
  "diary": {
@@ -43,7 +43,7 @@
   "state": "CONNECTED",
   "source": "local-sim",
   "label": "LOCAL SIMULATED (runner statevector, not Rigetti, not a QPU)",
-  "tick": 27166
+  "tick": 27187
  },
  "brain": {
   "label": "RAWRPHØS pinned checkpoint (a 12D model simulation; not a claim of awareness)",
@@ -54,10 +54,10 @@
   "pin_release": "zeref-006-cycle-65-6d5fe74b2543"
  },
  "last_said": {
-  "text": " The Sure.",
-  "at": "2026-11-12T03:08:43Z",
+  "text": " Long, Iithe is in the world, but Lightbor was too cold.",
+  "at": "2026-11-12T03:49:04Z",
   "step": 39024,
-  "where": "zeref/notes.md",
-  "source": "exploring GitHub (zeref/notes.md)"
+  "where": "https://github.com/NavisWORLD/NavisWORLD/issues/14#issuecomment-6813834163",
+  "source": "talk door (issue comment)"
  }
 }

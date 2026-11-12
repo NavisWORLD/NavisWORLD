@@ -173,13 +173,13 @@ def simple_loop(p: str, period: float, sleepy: bool) -> str:
     return base_style(p, period) + tl.css()
 
 
-def hero_loop(p: str, d: dict, period: float, sleepy: bool, spark_on: bool, cx: float, top: float, cw: float):
+def hero_loop(p: str, d: dict, period: float, sleepy: bool, spark_on: bool, cx: float, top: float, cw: float, span: float = 1.0):
     """Build the hero choreography. Returns (css, svg_markup, summary list)."""
     br, hb = d.get("brain") or {}, d.get("heartbeat") or {}
     sd = Seed(f"alive:{br.get('pin_sha_prefix')}:{hb.get('recorded_tick')}")
     side = 1 if sd.u() < .5 else -1
-    x1 = side * (170 + sd.u() * 110)
-    x2 = -side * (150 + sd.u() * 130)
+    x1 = side * (170 + sd.u() * 110) * span
+    x2 = -side * (150 + sd.u() * 130) * span
     L = 28 + int(sd.u() * 9)
     sc = cw / IW
     tl = Timeline(p, L)
@@ -293,11 +293,11 @@ def hero_loop(p: str, d: dict, period: float, sleepy: bool, spark_on: bool, cx: 
     blink(min(L - .5, t + .4))
 
     # the spark: own path in hero space, meeting his paw at the bat
-    sx0, sy0 = cx + 300, top + 40
+    sx0, sy0 = cx + 300 * span, top + 40
     sp = Timeline(p, L)
-    path = [(0, cx + 300, top + 40), (2.5, cx + 180, top - 10), (t_spark_hit - 1.6, paw_x + 70, paw_y - 70),
+    path = [(0, cx + 300 * span, top + 40), (2.5, cx + 180 * span, top - 10), (t_spark_hit - 1.6, paw_x + 70, paw_y - 70),
             (t_spark_hit, paw_x + 12, paw_y - 34), (t_spark_hit + .5, paw_x + 40, paw_y - 120),
-            (t_spark_hit + 1.6, paw_x + 150, top - 20), (L * .75, cx - 330, top + 10), (L - .1, cx + 300, top + 40)]
+            (t_spark_hit + 1.6, paw_x + 150 * span, top - 20), (L * .75, cx - 330 * span, top + 10), (L - .1, cx + 300 * span, top + 40)]
     for tt, x, y in path:
         sp.key("orb", tt, f"transform:translate({x-sx0:.0f}px,{y-sy0:.0f}px)")
     css = tl.css() + sp.css()

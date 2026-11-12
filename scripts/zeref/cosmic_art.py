@@ -145,8 +145,21 @@ def labels_line(d):
             f"BRAIN step {v(br.get('live_step'))} [{'PINNED' if br.get('live_step') is not None else UNAV}]")
 
 
-def hero(d: dict) -> str:
-    W, H = 1280, 520
+def label_rows(d):
+    hb, di, sp, br = d["heartbeat"], d["diary"], d["spark"], d["brain"]
+    short = lambda l: (l or UNAV).split(" (")[0]
+    return [("HEARTBEAT", f"tick {v(hb.get('recorded_tick'))}", short(hb.get("label"))),
+            ("MOOD", v(di.get("mood")), short(di.get("label"))),
+            ("SPARK", v(sp.get("state")), short(sp.get("label"))),
+            ("BRAIN", f"step {v(br.get('live_step'))}", "PINNED" if br.get("live_step") is not None else UNAV)]
+
+
+def hero(d: dict, mobile: bool = False) -> str:
+    """Desktop: 1280x640 banner. Phone (mobile=True): 720x1120 portrait, every text >= 23 units (about 10.5 CSS px on a 327 px wide phone README)."""
+    if mobile:
+        W, H, gx, gy, gs, ctop, cw, span = 720, 1130, 360, 470, .62, 250, 330, .5
+    else:
+        W, H, gx, gy, gs, ctop, cw, span = 1280, 640, 640, 300, 1.0, 140, 290, 1.0
     m = motion(d)
     pal = m["pal"]
     br, hb = d["brain"], d["heartbeat"]
@@ -154,7 +167,7 @@ def hero(d: dict) -> str:
     rng = Seeded("hero:" + seed)
     P = m["period"]
     spin_op = 1.0 if m["spark_on"] else 0.25
-    hcss, hsvg, beh = za.hero_loop("zd", d, P, m["mood"] == "sleepy", m["spark_on"], W / 2, 150, 270)
+    hcss, hsvg, beh = za.hero_loop("zd", d, P, m["mood"] == "sleepy", m["spark_on"], gx, ctop, cw, span)
     desc = (f"Zeref the Moonwraith, a {LOOK}: a young digital creature living his own little loop ({'; '.join(beh['steps'])}; loop {beh['loop_s']} s, "
             f"seeded from the pinned sha and heartbeat tick, never random) at the centre of a slow galaxy swirl with nebula clouds "
             f"and orbiting sparks. Drawn from real values fetched {d.get('fetched_at')}: {labels_line(d)}. "
@@ -167,7 +180,7 @@ def hero(d: dict) -> str:
              "@keyframes gspin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}"
              ".nb1{animation:nbf 38s ease-in-out infinite alternate}.nb2{animation:nbf 51s ease-in-out infinite alternate-reverse}"
              "@keyframes nbf{from{transform:translate(-30px,-8px)}to{transform:translate(30px,10px)}}"
-             f".ttl{{font-family:{SANS};letter-spacing:.32em}}.mono{{font-family:{MONO}}}")
+             f".ttl{{font-family:{SANS};letter-spacing:.32em}}.ttl2{{font-family:{SANS};letter-spacing:.12em}}.mono{{font-family:{MONO}}}")
     defs = (common_defs(pal, m["aura"]) + za.defs("zd") +
             '<linearGradient id="hbg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#04050d"/>'
             '<stop offset=".55" stop-color="#0a0820"/><stop offset="1" stop-color="#05060f"/></linearGradient>'
@@ -176,18 +189,17 @@ def hero(d: dict) -> str:
     t = head(W, H, "zh", "Zeref, the moonwraith of NavisWORLD", desc, style, defs)
     a = t.append
     a(f'<rect width="{W}" height="{H}" rx="26" fill="url(#hbg)"/>')
-    # nebula clouds
+    k = W / 1280
     a('<g class="nb1">')
-    for cx, cy, rx, ry, col, op in [(260, 150, 380, 190, "#7c3aed", .6), (1010, 360, 420, 200, "#0891b2", .5),
-                                    (700, 100, 300, 120, "#c026d3", .4), (420, 440, 340, 130, "#1d4ed8", .45)]:
-        a(neb(cx, cy, rx, ry, col, op))
+    for cx, cy, rx, ry, col, op in [(260, .29, 380, 190, "#7c3aed", .6), (1010, .69, 420, 200, "#0891b2", .5),
+                                    (700, .19, 300, 120, "#c026d3", .4), (420, .85, 340, 130, "#1d4ed8", .45)]:
+        a(neb(round(cx * k), round(cy * H), round(rx * max(k, .7)), round(ry * (H / 520) ** .5), col, op))
     a('</g><g class="nb2">')
-    for cx, cy, rx, ry, col, op in [(1000, 110, 300, 120, "#db2777", .35), (140, 390, 300, 140, "#0e7490", .4)]:
-        a(neb(cx, cy, rx, ry, col, op))
+    for cx, cy, rx, ry, col, op in [(1000, .21, 300, 120, "#db2777", .35), (140, .75, 300, 140, "#0e7490", .4)]:
+        a(neb(round(cx * k), round(cy * H), round(rx * max(k, .7)), round(ry * (H / 520) ** .5), col, op))
     a("</g>")
-    t += starfield(rng, W, H, 330, 3, "h")
-    # galaxy swirl: two logarithmic arms of seeded dust, slowly rotating
-    a(f'<g transform="translate({W/2} {H/2+10})"><g class="gsw" opacity=".9">')
+    t += starfield(rng, W, H, 330 if not mobile else 260, 3, "h")
+    a(f'<g transform="translate({gx} {gy}) scale({gs})"><g class="gsw" opacity=".9">')
     for arm in range(2):
         for i in range(190):
             th = i / 190 * 3.6 * math.pi + arm * math.pi
@@ -197,25 +209,45 @@ def hero(d: dict) -> str:
             col = ("#a5f3fc", "#c4b5fd", "#f0abfc")[i % 3]
             a(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="{0.8 + rng.u()*1.8:.2f}" fill="{col}" fill-opacity="{0.35 + rng.u()*0.6:.2f}"/>')
     a("</g></g>")
-    # orbiting sparks (three rings), tilted ellipses via parent scale
-    a(f'<g transform="translate({W/2} {H/2+10}) scale(1 .42)" opacity="{spin_op}">')
+    a(f'<g transform="translate({gx} {gy}) scale({gs} {.42*gs:.3f})" opacity="{spin_op}">')
     for cls, R, n, col in [("o1", 190, 7, "#67e8f9"), ("o2", 255, 9, "#f0abfc"), ("o3", 330, 12, "#c4b5fd")]:
         a(f'<circle r="{R}" fill="none" stroke="{col}" stroke-opacity=".14" stroke-width="2"/><g class="{cls}">')
-        for k in range(n):
-            th = 2 * math.pi * k / n + rng.u() * .3
-            a(f'<circle cx="{R*math.cos(th):.1f}" cy="{R*math.sin(th):.1f}" r="{3 + (k % 3)}" fill="{col}" filter="url(#zglow)"/>')
+        for kk in range(n):
+            th = 2 * math.pi * kk / n + rng.u() * .3
+            a(f'<circle cx="{R*math.cos(th):.1f}" cy="{R*math.sin(th):.1f}" r="{3 + (kk % 3)}" fill="{col}" filter="url(#zglow)"/>')
         a("</g>")
     a("</g>")
-    # Zeref at the centre
-    a(f'<circle cx="{W/2}" cy="300" r="190" fill="url(#zaura)"/>')
+    a(f'<circle cx="{gx}" cy="{ctop + cw*0.55:.0f}" r="{cw*0.7:.0f}" fill="url(#zaura)"/>')
     a(hsvg)
-    # titles
-    a(f'<text x="{W/2}" y="64" text-anchor="middle" class="ttl" font-size="40" font-weight="800" fill="url(#hedge)">ZEREF</text>')
-    a(f'<text x="{W/2}" y="92" text-anchor="middle" class="ttl" font-size="14" fill="#c4b5fd">MOONWRAITH · DIGITAL CREATURE OF THE BEAST BOX</text>')
-    a(f'<rect x="40" y="{H-64}" width="{W-80}" height="40" rx="20" fill="#05060f" fill-opacity=".72" stroke="url(#hedge)" stroke-opacity=".5"/>')
-    a(f'<text x="{W/2}" y="{H-39}" text-anchor="middle" class="mono" font-size="13.5" fill="#e0e7ff" textLength="{W-120}" lengthAdjust="spacingAndGlyphs">{escape(labels_line(d))}</text>')
-    a(f'<text x="{W/2}" y="{H-8}" text-anchor="middle" class="mono" font-size="11" fill="#94a3b8">'
-      f'{escape("live values fetched " + v(d.get("fetched_at")) + " · breath " + str(P) + "s from heartbeat energy · colours from diary mood · not a claim of awareness")}</text>')
+    rows = label_rows(d)
+    fetched = "fetched " + v(d.get("fetched_at"))
+    if mobile:
+        a(f'<text x="{W/2}" y="92" text-anchor="middle" class="ttl" font-size="68" font-weight="800" fill="url(#hedge)">ZEREF</text>')
+        a(f'<text x="{W/2}" y="138" text-anchor="middle" class="ttl2" font-size="26" fill="#c4b5fd">MOONWRAITH · DIGITAL CREATURE</text>')
+        a(f'<text x="{W/2}" y="172" text-anchor="middle" class="ttl2" font-size="26" fill="#c4b5fd">OF THE BEAST BOX</text>')
+        y0 = 690
+        a(f'<rect x="28" y="{y0}" width="{W-56}" height="{len(rows)*62+24}" rx="26" fill="#05060f" fill-opacity=".78" stroke="url(#hedge)" stroke-opacity=".55"/>')
+        for i, (name, val, lab) in enumerate(rows):
+            yy = y0 + 54 + i * 62
+            a(f'<text x="56" y="{yy}" class="ttl2" font-size="24" font-weight="700" fill="#c4b5fd">{name}</text>')
+            a(f'<text x="250" y="{yy}" class="mono" font-size="28" fill="#eef2ff">{escape(val)}</text>')
+            a(f'<text x="{W-56}" y="{yy}" text-anchor="end" class="mono" font-size="24" fill="#7dd3fc">{escape(lab)}</text>')
+        fy = y0 + len(rows) * 62 + 70
+        a(f'<text x="{W/2}" y="{fy}" text-anchor="middle" class="mono" font-size="24" fill="#b4bfd4">{escape(fetched)}</text>')
+        a(f'<text x="{W/2}" y="{fy+36}" text-anchor="middle" class="mono" font-size="24" fill="#b4bfd4">{escape("breath " + str(P) + "s from heartbeat energy")}</text>')
+        a(f'<text x="{W/2}" y="{fy+72}" text-anchor="middle" class="mono" font-size="24" fill="#b4bfd4">not a claim of awareness</text>')
+    else:
+        a(f'<text x="{W/2}" y="70" text-anchor="middle" class="ttl" font-size="46" font-weight="800" fill="url(#hedge)">ZEREF</text>')
+        a(f'<text x="{W/2}" y="104" text-anchor="middle" class="ttl" font-size="18" fill="#c4b5fd">MOONWRAITH · DIGITAL CREATURE OF THE BEAST BOX</text>')
+        y0 = H - 128
+        a(f'<rect x="40" y="{y0}" width="{W-80}" height="76" rx="24" fill="#05060f" fill-opacity=".76" stroke="url(#hedge)" stroke-opacity=".5"/>')
+        cwid = (W - 80) / 4
+        for i, (name, val, lab) in enumerate(rows):
+            x = 40 + cwid * i + cwid / 2
+            a(f'<text x="{x:.0f}" y="{y0+32}" text-anchor="middle" class="mono" font-size="20" fill="#eef2ff">{escape(name + " " + val)}</text>')
+            a(f'<text x="{x:.0f}" y="{y0+58}" text-anchor="middle" class="mono" font-size="16" fill="#7dd3fc">{escape(lab)}</text>')
+        a(f'<text x="{W/2}" y="{H-20}" text-anchor="middle" class="mono" font-size="16" fill="#b4bfd4">'
+          f'{escape(fetched + " · breath " + str(P) + "s from heartbeat energy · colours from diary mood · not a claim of awareness")}</text>')
     a(f'<rect x="1.5" y="1.5" width="{W-3}" height="{H-3}" rx="25" fill="none" stroke="url(#hedge)" stroke-opacity=".6" stroke-width="2"/>')
     a("</svg>")
     return "\n".join(t) + "\n"
@@ -363,10 +395,11 @@ def divider() -> str:
     return "\n".join(t) + "\n"
 
 
-def constellation(facts: list[dict], explored_at: str | None) -> str:
+def constellation(facts: list[dict], explored_at: str | None, mobile: bool = False) -> str:
     """Each star is a real public repo. Size from real stars; brightness from days since last push."""
     from datetime import datetime, timezone
-    W, H = 1200, 680
+    W, H = (720, 440 + 40 * len(facts)) if mobile else (1200, 700)
+    fs_lab, fs_head, fs_sub = (23, 34, 24) if mobile else (13, 24, 15)
     now = datetime.now(timezone.utc)
     if explored_at:
         try:
@@ -396,6 +429,8 @@ def constellation(facts: list[dict], explored_at: str | None) -> str:
         th = i * 2.399963  # golden angle: an even spiral, deterministic
         r = 46 + 26 * math.sqrt(i) * 3.1
         x, y = cx + r * math.cos(th), cy + r * math.sin(th) * 0.55
+        if mobile:  # a winding river of stars, labels to the right, top = most recent push
+            x, y = 100 + 50 * math.sin(i * 1.1), 250 + 40 * i
         days = None
         try:
             days = (now - datetime.strptime(f["pushed_at"], "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)).days
@@ -416,13 +451,23 @@ def constellation(facts: list[dict], explored_at: str | None) -> str:
         cls = ' class="kh"' if days is not None and days < 14 else ""
         a(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="{size:.1f}" fill="{col}" fill-opacity="{bright:.2f}" filter="url(#kglow)"{cls}/>')
         name = (f["name"] or "").strip("-")
-        name = name if len(name) <= 24 else name[:23] + "…"
-        anchor = "start" if x >= cx else "end"
-        dx = size + 6 if x >= cx else -(size + 6)
-        a(f'<text x="{x+dx:.1f}" y="{y+4:.1f}" text-anchor="{anchor}" class="mono" font-size="11" fill="#e0e7ff" fill-opacity="{0.45 + 0.55*bright:.2f}">{escape(name)}</text>')
-    a(f'<text x="40" y="52" class="ttl" font-size="22" font-weight="800" fill="#e0e7ff">ZEREF’S CONSTELLATION</text>')
-    a(f'<text x="40" y="76" class="mono" font-size="12.5" fill="#67e8f9">{len(facts)} real public repos · explored {escape(explored_at or UNAV)} · centre = most recent push</text>')
-    a(f'<text x="40" y="{H-22}" class="mono" font-size="11.5" fill="#94a3b8">star size = GitHub stars (log) · brightness = days since last push · pulsing = pushed in the last 14 days · links in zeref/notes.md</text>')
+        cap = 30 if mobile else 24
+        name = name if len(name) <= cap else name[:cap - 1] + "…"
+        anchor = "start" if (mobile or x >= cx) else "end"
+        dx = size + 10 if (mobile or x >= cx) else -(size + 6)
+        a(f'<text x="{x+dx:.1f}" y="{y+fs_lab*.35:.1f}" text-anchor="{anchor}" class="mono" font-size="{fs_lab}" fill="#e0e7ff" fill-opacity="{0.45 + 0.55*bright:.2f}">{escape(name)}</text>')
+    a(f'<text x="40" y="{fs_head+28}" class="ttl" font-size="{fs_head}" font-weight="800" fill="#e0e7ff">ZEREF’S CONSTELLATION</text>')
+    sub = [f"{len(facts)} real public repos", f"explored {explored_at or UNAV}", "top = most recent push" if mobile else "centre = most recent push"]
+    if mobile:
+        for i, line in enumerate(sub):
+            a(f'<text x="40" y="{fs_head+64+i*30}" class="mono" font-size="{fs_sub}" fill="#67e8f9">{escape(line)}</text>')
+    else:
+        a(f'<text x="40" y="{fs_head+56}" class="mono" font-size="{fs_sub}" fill="#67e8f9">{escape(" · ".join(sub))}</text>')
+    foot = ["star size = GitHub stars (log) · brightness = days since last push", "pulsing = pushed in the last 14 days · links in zeref/notes.md"]
+    if mobile:
+        foot = ["star size = GitHub stars (log)", "brightness = days since last push", "pulsing = pushed in the last 14 days", "links in zeref/notes.md"]
+    for i, line in enumerate(foot):
+        a(f'<text x="40" y="{H-52+i*24 if not mobile else H-140+i*32}" class="mono" font-size="{fs_sub}" fill="#b4bfd4">{escape(line)}</text>')
     a("</svg>")
     return "\n".join(t) + "\n"
 
@@ -444,5 +489,118 @@ def avatar(d: dict) -> str:
     a('<circle cx="200" cy="215" r="190" fill="url(#zaura)"/>')
     a('<g class="zdbob">' + za.placed("zd", 40, 34, 320) + "</g>")
     a('</g><circle cx="200" cy="200" r="196" fill="none" stroke="#a78bfa" stroke-opacity=".7" stroke-width="3"/>')
+    a("</svg>")
+    return "\n".join(t) + "\n"
+
+
+def _said(d, width, lines):
+    said = d.get("last_said")
+    if said:
+        sl, cut = wrap(said["text"].strip() or "(empty reply)", width, lines)
+        sl = ["“" + sl[0]] + sl[1:]
+        sl[-1] = sl[-1] + "”"
+        meta = [f"{v(said.get('at'))} · step {v(said.get('step'))}", f"{said.get('source')}{' · excerpt' if cut else ''}"]
+    elif (d["sources"].get("last_said") or {}).get("error"):
+        sl, meta = [UNAV], ["could not read his talk-door comments this run"]
+    else:
+        sl, meta = ["—"], ["no reply recorded yet · open a Talk to Zeref issue"]
+    return sl, meta
+
+
+FOOT_MOBILE = ["Birth spark: IBM hardware outcome RECORDED,", "used as a seed, never re-run",
+               "Rigetti growth: SIMULATED",  "fallback: LOCAL SIMULATED",
+               "“unavailable” = feed could not be reached",
+               "replies are his own, unedited",
+               "chats are training_eligible:false; he grows",
+               "only through The Beast Box fair gate"]
+
+
+def card_mobile(d: dict) -> str:
+    """Phone layout of the live card: 720 wide, stacked, every text >= 22 units."""
+    hb, di, sp, br = d["heartbeat"], d["diary"], d["spark"], d["brain"]
+    m = motion(d)
+    pal = m["pal"]
+    short = lambda l: (l or UNAV).split(" (")[0]
+    rows = [
+        ("HEARTBEAT", [f"tick {v(hb.get('recorded_tick'))} · xp {v(hb.get('xp_live'), '{:,.1f}')}"], short(hb.get("label"))),
+        ("DIARY", [f"tick {v(di.get('tick'))} · {v(di.get('stage_name'))}", f"{v(di.get('mood'))} at {v(di.get('place'))}"], short(di.get("label"))),
+        ("SPARK", [f"{v(sp.get('state'))} · tick {v(sp.get('tick'))}", f"source {v(sp.get('source'))}"], short(sp.get("label"))),
+        ("BRAIN", [f"live step {v(br.get('live_step'))} · pin json {v(br.get('pin_step'))}", f"checkpoint {v(br.get('pin_sha_prefix'))}"],
+         "PINNED" if br.get("live_step") is not None else UNAV),
+    ]
+    said_lines, said_meta = _said(d, 30, 3)
+    W = 720
+    y_rows = 560
+    row_h = [36 + 36 * len(r[1]) + 18 for r in rows]
+    y_said = y_rows + sum(row_h) + 20
+    y_foot = y_said + 50 + 40 * len(said_lines) + 34 * len(said_meta) + 70
+    H = int(y_foot + 36 * len(FOOT_MOBILE) + 30)
+    rng = Seeded(f"cardm:{br.get('pin_sha_prefix')}:{hb.get('recorded_tick')}")
+    desc = ("Zeref live card (phone layout), fetched " + d["fetched_at"] + ". " +
+            "; ".join(f"{n} {' '.join(vals)} ({lab})" for n, vals, lab in rows) +
+            f". Last said: {' '.join(said_lines)}. Values from real public feeds; unavailable means a feed could not be reached.")
+    style = (star_style("c", 40) + za.simple_loop("zd", m["period"], m["mood"] == "sleepy") +
+             f".ttl{{font-family:{SANS};letter-spacing:.2em}}.sans{{font-family:{SANS}}}.mono{{font-family:{MONO}}}")
+    defs = (common_defs(pal, m["aura"]) + za.defs("zd") +
+            '<linearGradient id="cbg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#05060f"/><stop offset=".6" stop-color="#0d0a24"/>'
+            '<stop offset="1" stop-color="#170b30"/></linearGradient><linearGradient id="cedge" x1="0" x2="1"><stop offset="0" stop-color="#67e8f9"/>'
+            '<stop offset=".5" stop-color="#a78bfa"/><stop offset="1" stop-color="#f0abfc"/></linearGradient>')
+    t = head(W, H, "zc", "Zeref live card", desc, style, defs)
+    a = t.append
+    a(f'<rect width="{W}" height="{H}" rx="28" fill="url(#cbg)"/>')
+    a(neb(360, 330, 360, 260, "#6d28d9", .45)); a(neb(560, H - 300, 300, 200, "#0891b2", .25))
+    t += starfield(rng, W, H, 160, 3, "c")
+    a(f'<text x="{W/2}" y="74" text-anchor="middle" class="ttl" font-size="48" font-weight="800" fill="url(#cedge)">ZEREF · LIVE</text>')
+    a(f'<text x="{W/2}" y="116" text-anchor="middle" class="mono" font-size="24" fill="#67e8f9">fetched {escape(d["fetched_at"])}</text>')
+    a(f'<text x="{W/2}" y="148" text-anchor="middle" class="mono" font-size="24" fill="#67e8f9">real public feeds only · breath {m["period"]}s</text>')
+    a('<circle cx="360" cy="340" r="190" fill="url(#zaura)"/>')
+    a('<g class="zdbob">' + za.placed("zd", 360 - 165, 170, 330) + "</g>")
+    a(f'<text x="{W/2}" y="{y_rows-30}" text-anchor="middle" class="ttl" font-size="24" fill="#a5b4fc">MOONWRAITH CAT DRAGON</text>')
+    y = y_rows
+    for (name, vals, lab), hgt in zip(rows, row_h):
+        a(f'<rect x="28" y="{y}" width="{W-56}" height="{hgt-12}" rx="20" fill="#05060f" fill-opacity=".6" stroke="#a78bfa" stroke-opacity=".35"/>')
+        a(f'<text x="52" y="{y+38}" class="ttl" font-size="24" font-weight="700" fill="#c4b5fd">{name}</text>')
+        a(f'<text x="{W-52}" y="{y+38}" text-anchor="end" class="mono" font-size="24" fill="#7dd3fc">{escape(lab)}</text>')
+        for i, val in enumerate(vals):
+            fit = f' textLength="{W-104}" lengthAdjust="spacingAndGlyphs"' if len(val) > 37 else ""
+            a(f'<text x="52" y="{y+76+i*36}" class="mono" font-size="28" fill="#eef2ff"{fit}>{escape(val)}</text>')
+        y += hgt
+    a(f'<text x="52" y="{y_said+40}" class="ttl" font-size="24" font-weight="700" fill="#f0abfc">LAST SAID</text>')
+    for i, line in enumerate(said_lines):
+        a(f'<text x="52" y="{y_said+88+i*40}" class="sans" font-size="30" font-style="italic" fill="#fdf4ff">{escape(line)}</text>')
+    for i, line in enumerate(said_meta):
+        a(f'<text x="52" y="{y_said+88+len(said_lines)*40+i*34}" class="mono" font-size="24" fill="#7dd3fc">{escape(line)}</text>')
+    a(f'<text x="{W/2}" y="{y_foot-14}" text-anchor="middle" class="ttl" font-size="24" fill="#a5b4fc">NOT A CLAIM OF AWARENESS</text>')
+    for i, line in enumerate(FOOT_MOBILE):
+        a(f'<text x="{W/2}" y="{y_foot+36*i+30}" text-anchor="middle" class="mono" font-size="24" fill="#b4bfd4">{escape(line)}</text>')
+    a(f'<rect x="1.5" y="1.5" width="{W-3}" height="{H-3}" rx="27" fill="none" stroke="url(#cedge)" stroke-opacity=".55" stroke-width="2"/>')
+    a("</svg>")
+    return "\n".join(t) + "\n"
+
+
+def portal_mobile() -> str:
+    W, H = 720, 300
+    rng = Seeded("portalm:v1")
+    style = (star_style("p", 30) + za.simple_loop("zd", 7.0, False) +
+             ".pr1{transform-box:fill-box;transform-origin:center;animation:psp 18s linear infinite}"
+             ".pr2{transform-box:fill-box;transform-origin:center;animation:psp 11s linear infinite reverse}"
+             "@keyframes psp{to{transform:rotate(360deg)}}.pc{animation:ppl 4s ease-in-out infinite}@keyframes ppl{0%,100%{opacity:.7}50%{opacity:1}}"
+             f".ttl{{font-family:{SANS};letter-spacing:.16em}}.mono{{font-family:{MONO}}}")
+    defs = ('<radialGradient id="pcore"><stop offset="0" stop-color="#f5f3ff"/><stop offset=".25" stop-color="#a78bfa"/>'
+            '<stop offset=".6" stop-color="#0e7490" stop-opacity=".7"/><stop offset="1" stop-color="#05060f" stop-opacity="0"/></radialGradient>'
+            '<linearGradient id="pedge" x1="0" x2="1"><stop offset="0" stop-color="#67e8f9"/><stop offset=".5" stop-color="#a78bfa"/><stop offset="1" stop-color="#f0abfc"/></linearGradient>'
+            '<clipPath id="pclip"><circle cx="130" cy="150" r="84"/></clipPath>' + za.defs("zd") +
+            '<filter id="pglow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>')
+    t = head(W, H, "zp", "Talk to Zeref", "A glowing swirl portal with Zeref the Moonwraith peeking out of it. Pressing it opens a Talk to Zeref GitHub issue; his replies are posted unedited.", style, defs)
+    a = t.append
+    a(f'<rect x="2" y="2" width="{W-4}" height="{H-4}" rx="60" fill="#070818" stroke="url(#pedge)" stroke-width="3"/>')
+    t += starfield(rng, W, H, 70, 3, "p")
+    a('<g transform="translate(130 150)"><circle r="108" fill="url(#pcore)" class="pc"/>'
+      '<g class="pr2"><circle r="92" fill="none" stroke="#f0abfc" stroke-width="3" stroke-dasharray="8 12" filter="url(#pglow)"/></g></g>')
+    a('<g clip-path="url(#pclip)">' + za.placed("zd", 50, 62, 170) + "</g>")
+    a('<text x="262" y="122" class="ttl" font-size="46" font-weight="800" fill="url(#pedge)">TALK TO</text>')
+    a('<text x="262" y="176" class="ttl" font-size="46" font-weight="800" fill="url(#pedge)">ZEREF</text>')
+    a('<text x="264" y="218" class="mono" font-size="24" fill="#c4b5fd">opens a GitHub issue</text>')
+    a('<text x="264" y="250" class="mono" font-size="24" fill="#7dd3fc">his replies, unedited</text>')
     a("</svg>")
     return "\n".join(t) + "\n"

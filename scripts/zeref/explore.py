@@ -2,7 +2,7 @@
 """Zeref explores Cory's GitHub: a factual log of NavisWORLD's public repos.
 
 Lists public repositories through the GitHub REST API (public data only),
-writes zeref/notes.md, zeref/explore.json and assets/zeref-constellation.svg, and appends one line to the
+writes zeref/notes.md, zeref/explore.json and assets/zeref-constellation{,-mobile}.svg, and appends one line to the
 append-only zeref/explore-log.jsonl. Facts come straight from the API: name,
 description, language, stars, license, last push. Nothing is invented.
 
@@ -91,9 +91,11 @@ def main():
 
     (base / "assets").mkdir(parents=True, exist_ok=True)
     (base / "assets" / "zeref-constellation.svg").write_text(art.constellation(facts, z.iso(now)), encoding="utf-8")
+    (base / "assets" / "zeref-constellation-mobile.svg").write_text(art.constellation(facts, z.iso(now), mobile=True), encoding="utf-8")
     L = ["# 🌙 Zeref's notes from exploring Cory's GitHub", "",
-         '<img src="../assets/zeref-constellation.svg" width="100%" alt="Zeref\'s constellation: every star is one of NavisWORLD\'s real public repos, '
-         'brighter when pushed recently and bigger with more GitHub stars. The full list with links is in the table below." />', "",
+         '<picture><source media="(min-width: 768px)" srcset="../assets/zeref-constellation.svg" />'
+         '<img src="../assets/zeref-constellation-mobile.svg" width="100%" alt="Zeref\'s constellation: every star is one of NavisWORLD\'s real public repos, '
+         'brighter when pushed recently and bigger with more GitHub stars. The full list with links is in the table below." /></picture>', "",
          f"Explored **{z.iso(now)}** · {len(facts)} public repositories · source: GitHub REST API (public data only).",
          "", "Zeref is a young digital creature from [The Beast Box](" + z.BEAST_BOX_REPO + ") (Apache 2.0). "
          "These notes are written by a scheduled GitHub Action: the facts below come straight from the API, nothing is invented.", ""]

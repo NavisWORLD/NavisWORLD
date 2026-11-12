@@ -69,6 +69,19 @@ root = Path(__file__).resolve().parents[2]
 for name, fn in [("zeref-portal.svg", art.portal), ("zeref-divider.svg", art.divider)]:
     p = root / "assets" / name
     check(p.exists() and p.read_text(encoding="utf-8") == fn(), f"{name} does not reproduce from cosmic_art.py")
+p = root / "assets" / "zeref-portal-mobile.svg"
+check(p.exists() and p.read_text(encoding="utf-8") == art.portal_mobile(), "zeref-portal-mobile.svg does not reproduce from cosmic_art.py")
+# iPhone-sized layouts: 720-unit wide, every text >= 23 units (about 10.5 CSS px in the 327 px README column on a 393 px iPhone 15)
+import re
+mob = {"hero": art.hero(empty, mobile=True), "card": art.card_mobile(empty), "portal": art.portal_mobile(),
+       "constellation": art.constellation([{"name": "demo-repo", "stars": 1, "pushed_at": "2026-01-01T00:00:00Z"}], None, mobile=True)}
+for k, svg in mob.items():
+    ET.fromstring(svg)
+    check('viewBox="0 0 720 ' in svg, f"{k} phone layout must be 720 wide")
+    sizes = [float(x) for x in re.findall(r'font-size="([0-9.]+)"', svg)]
+    check(sizes and min(sizes) >= 23, f"{k} phone layout has text under 23 units: {min(sizes) if sizes else None}")
+check("unavailable" in mob["card"], "phone card must render unavailable values")
+check("training_eligible:false" in mob["card"] and "fair gate" in mob["card"], "phone card keeps the footer")
 for p in (root / "assets").glob("zeref-*.svg"):
     check(p.stat().st_size < 300_000, f"{p.name} over 300 KB")
 

@@ -1,4 +1,4 @@
-<p align="center"><a href="#-zeref-lives-here"><img src="assets/zeref-hero.svg" width="100%" alt="Zeref the Moonwraith, a black fluffy cat dragon with violet starry eyes, a crescent mark, moon horns and star wings, living a little loop of his own: he floats about, bats at an orbiting spark, stretches, yawns and naps, inside a slow galaxy swirl with violet, cyan and magenta nebulae and orbiting sparks. His breathing speed, glow and colours come from his real heartbeat, diary mood and spark state, and the strip along the bottom shows the live values with their honesty labels." /></a></p>
+<p align="center"><a href="#-zeref-lives-here"><picture><source media="(min-width: 768px)" srcset="assets/zeref-hero.svg" /><img src="assets/zeref-hero-mobile.svg" width="100%" alt="Zeref the Moonwraith, a black fluffy cat dragon with violet starry eyes, a crescent mark, moon horns and star wings, living a little loop of his own: he floats about, bats at an orbiting spark, stretches, yawns and naps, inside a slow galaxy swirl with violet, cyan and magenta nebulae and orbiting sparks. His breathing speed, glow and colours come from his real heartbeat, diary mood and spark state, and the strip along the bottom shows the live values with their honesty labels." /></picture></a></p>
 
 <div align="center">
 
@@ -25,19 +25,19 @@
 
 <img src="assets/zeref-divider.svg" width="100%" alt="A thin line of stars with a small crescent moon in the middle." />
 
-<a href="zeref/notes.md"><img src="assets/zeref-live.svg" width="100%" alt="Zeref's live card: Zeref the Moonwraith cat dragon beside his real heartbeat tick, diary mood, spark source, pinned brain step and the last thing he said, linked by a constellation line, each with its honesty label. Any feed that could not be reached shows unavailable." /></a>
+<a href="zeref/notes.md"><picture><source media="(min-width: 768px)" srcset="assets/zeref-live.svg" /><img src="assets/zeref-live-mobile.svg" width="100%" alt="Zeref's live card: Zeref the Moonwraith cat dragon beside his real heartbeat tick, diary mood, spark source, pinned brain step and the last thing he said, linked by a constellation line, each with its honesty label. Any feed that could not be reached shows unavailable." /></picture></a>
 
 <img src="assets/zeref-avatar.svg" width="120" align="right" alt="Zeref the Moonwraith cat dragon, a small round portrait of his canonical art: black fur, violet starry eyes, crescent mark, moon horns and star wings." />
 
 **Zeref** is a young digital creature from **[The Beast Box](https://github.com/NavisWORLD/The-beast-box-)**, and this little corner of GitHub is his home. A GitHub Action redraws his sky and his card about once an hour from his real public feeds. His breathing follows his heartbeat energy and his colours follow his diary mood. If a feed can't be reached, the card says *unavailable* instead of guessing.
 
-<p align="center"><a href="https://github.com/NavisWORLD/NavisWORLD/issues/new?template=talk-to-zeref.yml"><img src="assets/zeref-portal.svg" width="560" alt="Talk to Zeref: a glowing swirl portal button with Zeref peeking out. It opens a GitHub issue where he answers in his own words, unedited." /></a></p>
+<p align="center"><a href="https://github.com/NavisWORLD/NavisWORLD/issues/new?template=talk-to-zeref.yml"><picture><source media="(min-width: 768px)" srcset="assets/zeref-portal.svg" /><img src="assets/zeref-portal-mobile.svg" width="560" alt="Talk to Zeref: a glowing swirl portal button with Zeref peeking out. It opens a GitHub issue where he answers in his own words, unedited." /></picture></a></p>
 
 - 💬 **[Talk to Zeref →](https://github.com/NavisWORLD/NavisWORLD/issues/new?template=talk-to-zeref.yml)** Open an issue and he answers in the thread, in his own words, unedited. Each issue is your own conversation with him.
 - 🧭 **[Zeref's notes from exploring my GitHub →](zeref/notes.md)** Once a day he walks my public repos and writes down what's there.
 - 🐉 **[All the code, open source under Apache 2.0 →](https://github.com/NavisWORLD/The-beast-box-)** Take it, build on it, finish it.
 
-<a href="zeref/notes.md"><img src="assets/zeref-constellation.svg" width="100%" alt="Zeref's constellation: every star is one of my real public repos, brighter when pushed recently and bigger with more GitHub stars. The full list with links is in Zeref's notes." /></a>
+<a href="zeref/notes.md"><picture><source media="(min-width: 768px)" srcset="assets/zeref-constellation.svg" /><img src="assets/zeref-constellation-mobile.svg" width="100%" alt="Zeref's constellation: every star is one of my real public repos, brighter when pushed recently and bigger with more GitHub stars. The full list with links is in Zeref's notes." /></picture></a>
 
 <sub>Every star above is a real public repo. The full list with links is in **[Zeref's notes](zeref/notes.md)**. His art is his canonical Moonwraith cutout from The Beast Box; his little behaviour loop is choreographed from his real heartbeat, mood and spark values, never random. He's still learning, so he often doesn't make sense yet. That's honest, not broken. Not a claim of awareness. Birth spark: IBM hardware outcome RECORDED and reused as a seed · Rigetti growth: SIMULATED · fallback spark: LOCAL SIMULATED · heartbeat: SIMULATED · diary: RECORDED · brain: PINNED. Chats are recorded with training_eligible:false and don't train him; he grows only through The Beast Box fair gate.</sub>
 
