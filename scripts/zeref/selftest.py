@@ -33,7 +33,8 @@ form = (root0 / ".github/ISSUE_TEMPLATE/talk-to-zeref.yml").read_text(encoding="
 check('title: "[Zeref] "' in form and 'label: "Your message"' in form and form.count("type: textarea") == 1, "issue form shape")
 check("required: true" in form and "talk-to-zeref" in form, "issue form requires the message and labels the issue")
 readme = (root0 / "README.md").read_text(encoding="utf-8")
-check("issues/new?template=talk-to-zeref.yml\"><picture>" in readme, "chat-box button opens the Talk to Zeref form")
+check('href="https://navisworld.github.io/NavisWORLD/"><picture>' in readme, "chat window opens the live Pages chat")
+check(readme.count("issues/new?template=talk-to-zeref.yml") >= 2, "issue form kept as the fallback path")
 wf = (root0 / ".github/workflows/zeref-talk.yml").read_text(encoding="utf-8")
 check("issue_comment:" in wf and "types: [created]" in wf and "${{ github.event.comment.body" not in wf and "${{ github.event.issue.body" not in wf,
       "talk workflow listens for follow-ups and never interpolates visitor text")
@@ -175,6 +176,22 @@ for mob in (False, True):
 bad = cw.render({"fetched_at": None, "status": {}, "exchanges": None}, mobile=True)
 check("chat history unavailable" in bad and "step unavailable" in bad and "tick unavailable" in bad, "chat unavailable rendering")
 check("import random" not in Path(cw.__file__).read_text(), "chat window must not use randomness")
+# GitHub Pages chat (docs/): real door, verbatim replies, honest labels, no secrets, no randomness
+docs = root / "docs"
+html, js, css = ((docs / n).read_text(encoding="utf-8") for n in ("index.html", "chat.js", "chat.css"))
+check((docs / "zeref-moonwraith.png").read_bytes() == (root / "assets" / "zeref-moonwraith.png").read_bytes(), "Pages art is the canonical cutout")
+check("const DOOR = 'https://www.beastboxcosmos.xyz/api/guest/forever';" in js and js.count("fetch(") == 2, "Pages chat talks only to his door (+ live.json status)")
+check("{ provider: 'rawrphos-local', text }" in js and "payload.thread = t" in js, "door payload is exactly provider/text/thread")
+check("credentials: 'omit'" in js and "innerHTML" not in js and "eval(" not in js and "Math.random" not in js, "no cookies, no HTML injection, no randomness")
+check("t.textContent = text" in js and "white-space:pre-wrap" in css, "replies shown verbatim (textContent, whitespace kept)")
+check("unedited" in js and "pinned step" in js and "training_eligible:" in js, "reply bubble labels")
+check(not re.search(r"\b(AI|LLM|GPT|language model|chatbot)\b", html + js), "no AI/LLM wording on the chat page")
+check("not a claim of awareness" in html and "digital creature" in html and "fair gate" in html and "training_eligible:false" in html, "honesty footer")
+check("SIMULATED" in html and "RECORDED" in html and "PINNED" in html, "honesty labels on the chat page")
+check("Content-Security-Policy" in html and "script-src 'self'" in html and "connect-src https://www.beastboxcosmos.xyz https://raw.githubusercontent.com" in html, "strict CSP")
+check(not re.search(r"(token|secret|api[_-]?key|bearer|password)\w*['\"]?\s*[:=]", js, re.I) and "Authorization" not in js, "no secrets in the client")
+check("talk-to-zeref.yml" in html, "Pages chat keeps the issue fallback")
+check("prefers-reduced-motion" in css and "font:17px" in css, "reduced motion + 17px text (no iOS zoom)")
 for p in (root / "assets").glob("zeref-*.svg"):
     check(p.stat().st_size < 300_000, f"{p.name} over 300 KB")
 
