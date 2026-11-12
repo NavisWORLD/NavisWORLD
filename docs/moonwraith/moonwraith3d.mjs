@@ -101,16 +101,24 @@ export async function mount(el, {
     neck: bone('neck'),
     head: bone('head'),
     ear0L: bone('ear.0.L'),
+    ear1L: bone('ear.1.L'),
     ear0R: bone('ear.0.R'),
+    ear1R: bone('ear.1.R'),
     wing0L: bone('wing.0.L'),
     wing1L: bone('wing.1.L'),
+    wing2L: bone('wing.2.L'),
     wing0R: bone('wing.0.R'),
     wing1R: bone('wing.1.R'),
+    wing2R: bone('wing.2.R'),
     tail0: bone('tail.0'),
     tail1: bone('tail.1'),
     tail2: bone('tail.2'),
     tail3: bone('tail.3'),
     tail4: bone('tail.4'),
+    legL: bone('leg.L'),
+    legR: bone('leg.R'),
+    pawL: bone('paw.L'),
+    pawR: bone('paw.R'),
   };
   const bind = new Map();
   for (const b of Object.values(named)) {
@@ -216,17 +224,29 @@ export async function mount(el, {
     }
     addLocal(named.ear0L, -(pose.earL || 0) * 0.65, 0, (pose.earL || 0) * 0.42);
     addLocal(named.ear0R, -(pose.earR || 0) * 0.65, 0, -(pose.earR || 0) * 0.42);
+    addLocal(named.ear1L, -(pose.earTipL || 0) * 0.8, 0, (pose.earTipL || 0) * 0.5);
+    addLocal(named.ear1R, -(pose.earTipR || 0) * 0.8, 0, -(pose.earTipR || 0) * 0.5);
     const w = Math.max(-1.7, Math.min(1.7, pose.wing || 0));
-    addLocal(named.wing0L, 0.06 * w, -0.1 * w, -w);
-    addLocal(named.wing1L, 0, 0, -w * 0.55);
-    addLocal(named.wing0R, 0.06 * w, 0.1 * w, w);
-    addLocal(named.wing1R, 0, 0, w * 0.55);
+    const spread = Math.max(-0.6, Math.min(0.9, pose.wingSpread || 0));
+    const tip = Math.max(-1.4, Math.min(1.4, pose.wingTip || 0));
+    addLocal(named.wing0L, 0.06 * w, -0.1 * w - 0.18 * spread, -w - 0.35 * spread);
+    addLocal(named.wing1L, 0, -0.08 * spread, -w * 0.55 - 0.2 * spread);
+    addLocal(named.wing2L, tip * 0.15, 0, -tip * 0.7);
+    addLocal(named.wing0R, 0.06 * w, 0.1 * w + 0.18 * spread, w + 0.35 * spread);
+    addLocal(named.wing1R, 0, 0.08 * spread, w * 0.55 + 0.2 * spread);
+    addLocal(named.wing2R, tip * 0.15, 0, tip * 0.7);
     const tw = Math.max(-1.8, Math.min(1.8, pose.tail || 0));
+    const tipT = Math.max(-1.6, Math.min(1.6, pose.tailTip || 0));
     addLocal(named.tail0, 0.05 * tw, tw * 0.45, 0);
     addLocal(named.tail1, 0, tw * 0.55, 0);
     addLocal(named.tail2, 0, tw * 0.7, 0);
-    addLocal(named.tail3, 0, tw * 0.5, 0);
-    addLocal(named.tail4, 0, tw * 0.35, 0);
+    addLocal(named.tail3, 0, tw * 0.5 + tipT * 0.55, tipT * 0.15);
+    addLocal(named.tail4, 0, tw * 0.35 + tipT * 0.85, tipT * 0.25);
+    addLocal(named.chest, pose.chestPitch || 0, pose.chestYaw || 0, 0);
+    addLocal(named.legL, (pose.legL || 0) * 0.7, 0, 0);
+    addLocal(named.legR, (pose.legR || 0) * 0.7, 0, 0);
+    addLocal(named.pawL, (pose.pawL || 0) * 0.5, 0, 0);
+    addLocal(named.pawR, (pose.pawR || 0) * 0.5, 0, 0);
 
     const weights = {
       blink: Math.min(1, Math.max(0, pose.blink || 0)),

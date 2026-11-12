@@ -344,7 +344,7 @@ _cl = _st.unpack_from("<I", mw_glb, 12)[0]
 _glb_json = _js.loads(mw_glb[20:20 + _cl].split(b"\x00")[0])
 check("EXT_meshopt_compression" not in (_glb_json.get("extensionsRequired") or []) and "EXT_meshopt_compression" not in (_glb_json.get("extensionsUsed") or []), "Moonwraith GLB does not require meshopt/WASM")
 check("blink" in (((_glb_json.get("meshes") or [{}])[0].get("extras") or {}).get("targetNames") or []), "Moonwraith GLB keeps blink/expression morphs")
-for rel in ("moonwraith3d.mjs", "motion.mjs", "panel.mjs", "CREDITS.md", "dance.mjs", "cosmic.mjs", "particles.mjs", "expression.mjs"):
+for rel in ("moonwraith3d.mjs", "motion.mjs", "panel.mjs", "CREDITS.md", "dance.mjs", "cosmic.mjs", "particles.mjs", "expression.mjs", "rhythm.mjs"):
     body = (mw / rel).read_text(encoding="utf-8")
     check("Math.random(" not in body, f"moonwraith {rel} must not use Math.random")
     check(not re.search(r"Zeref is an (AI|LLM)|Zeref is a (GPT|language model|chatbot)", body, re.I), f"moonwraith {rel} must not call Zeref an AI or LLM")
@@ -465,7 +465,7 @@ const perkP = dancePose({}, { bass: 0.2, mid: 0.2, high: 0.1, loud: 0.3, hop: 0,
 const sitP = dancePose({}, { bass: 0.1, mid: 0.1, high: 0.1, loud: 0.1, hop: 0, earFlick: 0, earSide: 1, settle: 1 });
 if (!(perkP.earL > 0.5) || !(perkP.headPitch < 0)) throw new Error('perk should put ears forward and look toward the visitor');
 if (!(sitP.sleepy > 0) || !(sitP.wing < perkP.wing)) throw new Error('settle should sit him down');
-if (!/live audio signal/.test(SIGNAL_CAPTION) || !/bass mid high/.test(SIGNAL_CAPTION)) throw new Error('signal caption');
+if (!/live audio signal/.test(SIGNAL_CAPTION) || !/beat/.test(SIGNAL_CAPTION) || !/harmonics/.test(SIGNAL_CAPTION)) throw new Error('signal caption');
 if (!(PARTICLE_COUNTS.high > PARTICLE_COUNTS.med) || PARTICLE_COUNTS.low !== 0) throw new Error('particle counts should step down');
 console.log(['ok', bass.toFixed(1), n1.toFixed(2), p1.hop.toFixed(3)].join(' '));
 """
@@ -473,6 +473,72 @@ dance_out = _sp.check_output(["node", "--input-type=module", "-e", dance_probe],
 check(dance_out.startswith("ok "), f"dance self-check: {dance_out}")
 print("dance check:", dance_out)
 
+
+
+# Rhythm / harmonics: real FFT analysis, no fake beats
+rhy_src = (mw / "rhythm.mjs").read_text(encoding="utf-8")
+check("estimateTempo" in rhy_src and "chromaVector" in rhy_src and "RHYTHM_BANDS" in rhy_src, "rhythm analyser is present")
+check("40" in rhy_src and "120" in rhy_src and "6000" in rhy_src, "kick / hat bands are documented")
+check("Math.random(" not in rhy_src, "rhythm must not use Math.random")
+check("tickRhythm" in dan and "makeRhythmState" in dan, "dance ticks the rhythm analyser")
+check("live audio signal · beat · harmonics" in (mw / "particles.mjs").read_text(encoding="utf-8"), "readout labels beat and harmonics")
+check("--dance-hue" in css and "--dance-beat" in css and "--dance-kick" in css, "2D fallback gets beat pulse and chroma hue")
+check("wing.2.L" in s3m and "ear.1.L" in s3m and "leg.L" in s3m and "tailTip" in s3m, "3D viewer drives wing tips, ear tips, legs, tail tip")
+check("beat · harmonics" in credits, "credits document the rhythm mapping")
+rhy_probe = r"""
+import { chromaVector, dominantPitchClass, chromaDistance, chromaHue, estimateTempo, tempoFromOnsets, spectralFlatness, spectralFlux, PITCH_CLASSES, RHYTHM_BANDS, hslToHex, makeRhythmState, tickRhythm } from './docs/moonwraith/rhythm.mjs';
+import { bandMean, normalizePeak, smoothToward, detectOnset, dancePose } from './docs/moonwraith/dance.mjs';
+const sr = 44100, fft = 2048;
+const bins = new Uint8Array(1024);
+// A4 = 440 Hz -> bin 440*2048/44100 ≈ 20.4
+bins[20] = 220; bins[21] = 180;
+const ch = chromaVector(bins, sr, fft);
+const d1 = dominantPitchClass(ch);
+const d2 = dominantPitchClass(ch);
+if (JSON.stringify(d1) !== JSON.stringify(d2)) throw new Error('dominantPitchClass must be deterministic');
+if (d1.name !== 'A') throw new Error('440 Hz should be A, got ' + d1.name + ' ' + JSON.stringify(d1));
+if (chromaHue(9) === chromaHue(0)) throw new Error('pitch classes should have distinct hues');
+if (!/^#[0-9a-f]{6}$/.test(chromaHue(0))) throw new Error('hue hex');
+const empty = new Uint8Array(1024);
+const ch0 = chromaVector(empty, sr, fft);
+if (dominantPitchClass(ch0).name !== '—') throw new Error('silence has no pitch class');
+const binsC = new Uint8Array(1024);
+// C4 ≈ 261.6 Hz -> bin 261.6*2048/44100 ≈ 12.15
+binsC[12] = 220; binsC[13] = 160;
+const chC = chromaVector(binsC, sr, fft);
+if (dominantPitchClass(chC).name !== 'C') throw new Error('261 Hz should be C, got ' + dominantPitchClass(chC).name);
+if (!(chromaDistance(ch, chC) > 0.2)) throw new Error('chroma distance should grow for A vs C, got ' + chromaDistance(ch, chC));
+if (Math.abs(chromaDistance(ch, ch)) > 1e-9) throw new Error('identical chroma distance is 0, got ' + chromaDistance(ch, ch));
+// A flat (noisy) spectrum is flatter than a single peak.
+const flatBins = new Uint8Array(1024); for (let i = 4; i < 400; i++) flatBins[i] = 80;
+const peakBins = new Uint8Array(1024); peakBins[20] = 255;
+if (!(spectralFlatness(flatBins, sr, fft) > spectralFlatness(peakBins, sr, fft))) throw new Error('flatness');
+// 120 BPM flux: pulse every 0.5 s at 50 Hz -> period 25 samples
+const hz = 50, n = 400;
+const flux = new Float32Array(n);
+for (let i = 0; i < n; i++) flux[i] = (i % 25 === 0) ? 1 : 0;
+const tempo = estimateTempo(flux, hz);
+if (Math.abs(tempo.bpm - 120) > 4) throw new Error('120 BPM flux should estimate ~120, got ' + tempo.bpm + ' conf ' + tempo.conf);
+if (!(tempo.conf > 0.3)) throw new Error('regular flux should be reasonably confident');
+const times = [];
+for (let i = 0; i < 16; i++) times.push(i * 0.5);
+const ioi = tempoFromOnsets(times);
+if (Math.abs(ioi.bpm - 120) > 1) throw new Error('IOI 0.5s should be 120 BPM, got ' + ioi.bpm);
+// dancePose stays backward compatible and is deterministic with the new fields
+const p1 = dancePose({}, { bass: 0.8, mid: 0.2, high: 0.1, loud: 0.5, hop: 1, earFlick: 0, earSide: 1, kick: 0.8, snare: 0.4, hat: 0.3, harmonic: 0.5, beatConf: 0.8, useGrid: true, beatPhase: 0.0, downbeat: 1, chromaPc: 9, chromaConf: 0.7 });
+const p2 = dancePose({}, { bass: 0.8, mid: 0.2, high: 0.1, loud: 0.5, hop: 1, earFlick: 0, earSide: 1, kick: 0.8, snare: 0.4, hat: 0.3, harmonic: 0.5, beatConf: 0.8, useGrid: true, beatPhase: 0.0, downbeat: 1, chromaPc: 9, chromaConf: 0.7 });
+if (JSON.stringify(p1) !== JSON.stringify(p2)) throw new Error('rhythm dancePose must be deterministic');
+if (!(p1.hop > 0.10) || !(p1.wingSpread > 0) || !('tailTip' in p1) || !('legL' in p1)) throw new Error('structure pose channels missing');
+// Without a confident grid, step legs stay quiet (no invented metronome)
+const loose = dancePose({}, { bass: 0.2, mid: 0.1, high: 0.1, loud: 0.2, hop: 0, earFlick: 0, earSide: 1, beatConf: 0.1, useGrid: false, beatPhase: 0.3, hatHit: 1, hatFollow: 0.8 });
+if (Math.abs(loose.legL) > 0.001 || Math.abs(loose.legR) > 0.001) throw new Error('low-confidence grid must not invent a step cycle');
+if (!(loose.tailTip !== 0) && !(loose.wingTip > 0)) throw new Error('hat hits should still move tail/wing tips without a grid');
+if (!RHYTHM_BANDS.kick || RHYTHM_BANDS.kick[0] !== 40) throw new Error('kick band');
+console.log(['ok', d1.name, tempo.bpm.toFixed(1), tempo.conf.toFixed(2), p1.hop.toFixed(3)].join(' '));
+"""
+rhy_out = _sp.check_output(["node", "--input-type=module", "-e", rhy_probe], cwd=root, text=True).strip()
+check(rhy_out.startswith("ok "), f"rhythm self-check: {rhy_out}")
+print("rhythm check:", rhy_out)
 
 # Recorded-state expression: only real live-card fields, honest missing list, no Math.random
 expr_src = (mw / "expression.mjs").read_text(encoding="utf-8")

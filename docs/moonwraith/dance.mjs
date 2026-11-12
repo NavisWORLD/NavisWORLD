@@ -6,25 +6,29 @@
 // passages both read. Onsets are a rise in a band against its own recent
 // flux, not a clock.
 //
-// Band map:
-//   bass / kick (30–140 Hz)  -> body bounce + onset hops with squash/stretch
-//   mids (250–2000 Hz)       -> head bob + mid-onset ear flicks
-//   highs (3500–10000 Hz)    -> wing flutter + tail swish
-//   overall loudness (RMS)   -> energy / how big the moves are
-//   strong bass onsets       -> flourish pose; every 4th strong kick can spin
-//   audio start              -> perk up, ears forward, look at the visitor
-//   big flux after quiet     -> startle, then pounce (a real drop)
-//   spectral centroid / mids -> melody sway (smoothed)
-//   highs                    -> eyes and crescent flare
-//   fade or pause            -> gradually settle and sit
-//   sudden quiet             -> curious head tilt
+// Band map (legacy 3-band, still used) plus a tighter rhythm/harmonic map
+// in rhythm.mjs, all from the same live FFT:
+//   kick 40–120 Hz            -> body hop / squash, anticipated when tempo is confident
+//   snare 150–400 + 2–5 kHz   -> head snap / ear flick, ear tips follow through
+//   hats 6–12 kHz             -> tail-tip flicks / wing-tip shimmer
+//   beat phase (if confident) -> body sway / step cycle; downbeat emphasis every 4
+//   low tempo confidence      -> pure onsets, no invented grid
+//   harmonic energy           -> wing spread and slow wing beats
+//   chroma dominant pitch     -> aura / particle hue (12-color wheel)
+//   chord / key change        -> a short turn / pose transition
+//   melody (centroid / pitch) -> head tilt / gaze
+//   bass / mids / highs / RMS, perk, drop, settle, curious stay as they were
 //
 // Label: "dancing to Cory's song · driven by the live audio signal".
-// Signal readout: "live audio signal · bass mid high".
+// Signal readout: "live audio signal · beat · harmonics" plus BPM/confidence
+// and the current pitch class.
 // AudioContext is created and resumed inside the visitor's play tap
 // (iPhone Safari will not start a context any other way).
 
+import { makeRhythmState, tickRhythm } from './rhythm.mjs';
+
 export const DANCE_CAPTION = "dancing to Cory's song · driven by the live audio signal";
+export { PITCH_CLASSES, RHYTHM_BANDS, chromaHue, chromaRgb } from './rhythm.mjs';
 
 export const BANDS = Object.freeze({
   bass: [30, 140],
@@ -151,6 +155,11 @@ const ZERO_SIG = Object.freeze({
   bass: 0, mid: 0, high: 0, loud: 0, hop: 0, earFlick: 0, earSide: 1,
   spin: 0, flourish: 0, centroid: 0, sway: 0, perk: 0, settle: 0,
   curious: 0, startle: 0, pounce: 0, drop: 0, flare: 0, playing: false, active: false,
+  kick: 0, snare: 0, hat: 0, kickHit: 0, snareHit: 0, hatHit: 0,
+  kickFollow: 0, snareFollow: 0, hatFollow: 0,
+  bpm: 0, beatConf: 0, beatPhase: 0, barBeat: 0, downbeat: 0, anticip: 0, useGrid: false,
+  chromaPc: -1, chromaName: '—', chromaHue: '#a78bfa', chromaConf: 0,
+  harmonic: 0, percussive: 0, chordChange: 0, beatPulse: 0,
 });
 
 export function dancePose(rest, sig) {
@@ -171,24 +180,49 @@ export function dancePose(rest, sig) {
   const pounce = sig.pounce || 0;
   const sway = sig.sway || 0;
   const flare = sig.flare != null ? sig.flare : high;
+  const kick = (sig.kick != null ? sig.kick : bass) * g;
+  const snare = sig.snare || 0;
+  const hat = sig.hat || 0;
+  const harm = sig.harmonic || 0;
+  const conf = sig.beatConf || 0;
+  const useGrid = !!(sig.useGrid && conf >= 0.5);
+  const phase = sig.beatPhase || 0;
+  const down = sig.downbeat || 0;
+  const anticip = sig.anticip || 0;
+  const chord = sig.chordChange || 0;
+  const kickHit = sig.kickHit || 0;
+  const snareHit = sig.snareHit || 0;
+  const hatHit = sig.hatHit || 0;
+  const kickF = sig.kickFollow || 0;
+  const snareF = sig.snareFollow || 0;
+  const hatF = sig.hatFollow || 0;
+  // Step / sway only from a confident beat phase — otherwise no invented grid.
+  const step = useGrid ? Math.sin(phase * Math.PI * 2) : 0;
+  const swayBeat = useGrid ? Math.sin(phase * Math.PI * 2) * (0.10 + 0.10 * down) * conf : 0;
+  const wingBeat = useGrid ? Math.sin(phase * Math.PI) * harm * 0.55 * conf : harm * 0.22;
+  const pc = sig.chromaPc == null ? -1 : sig.chromaPc;
+  const gaze = pc >= 0 ? ((pc / 11) * 2 - 1) * 0.16 * (sig.chromaConf || 0) : 0;
   // In the air (hop high) he stretches; as the hop lands he squashes; bass also compresses the chest.
-  const squash = bass * 0.22 - hop * 0.7 + fl * 0.08 + startle * 0.7 - pounce * 0.55 + settle * 0.12;
+  // Kick and anticipated beats add to the same squash, so the landing still reads as a kick.
+  const kickHop = hop + anticip * (0.7 + 0.3 * down) + kickHit * 0.25;
+  const squash = bass * 0.22 + kick * 0.18 - hop * 0.7 - anticip * 0.45 + fl * 0.08 + startle * 0.7 - pounce * 0.55 + settle * 0.12 + kickHit * 0.15;
   const engage = 1 - settle * 0.85;
   return {
-    headYaw: (mid * 0.16 * side + fl * 0.22 * side) * (1 - perk) * engage + sway * 0.55 * engage + cur * 0.18 * side,
+    headYaw: (mid * 0.16 * side + fl * 0.22 * side) * (1 - perk) * engage + sway * 0.55 * engage + cur * 0.18 * side + gaze * engage + snareHit * 0.22 * side + chord * 0.35 * side,
     headPitch: (-0.10 - mid * 0.48 - bass * 0.16 - hop * 0.08 + fl * 0.12) * engage
-      + perk * -0.14 + startle * 0.18 + pounce * -0.22 + settle * 0.12 + cur * 0.06,
-    headRoll: (mid * 0.18 * side + fl * 0.28 * side) * engage + cur * 0.32 * side + startle * -0.12 * side,
+      + perk * -0.14 + startle * 0.18 + pounce * -0.22 + settle * 0.12 + cur * 0.06
+      + snareHit * -0.18 + (sig.centroid != null ? (sig.centroid - 0.5) * 0.22 : 0) * engage,
+    headRoll: (mid * 0.18 * side + fl * 0.28 * side) * engage + cur * 0.32 * side + startle * -0.12 * side + snare * 0.2 * side + gaze * 0.4,
     earL: (0.12 + mid * 0.4 + (side > 0 ? flick * 1.05 : flick * 0.2) + fl * 0.25) * engage
-      + perk * 0.7 + startle * -0.45 + pounce * 0.25 + cur * 0.45,
+      + perk * 0.7 + startle * -0.45 + pounce * 0.25 + cur * 0.45 + snareHit * (side > 0 ? 0.7 : 0.2),
     earR: (0.12 + mid * 0.4 + (side < 0 ? flick * 1.05 : flick * 0.2) + fl * 0.25) * engage
-      + perk * 0.7 + startle * -0.45 + pounce * 0.25 + cur * -0.15,
-    wing: (0.18 + high * 1.25 + bass * 0.28 + hop * 0.2 + fl * 0.7) * engage + pounce * 0.7 - startle * 0.15,
-    tail: ((high * 1.35 + mid * 0.5 + fl * 0.4) * side) * engage + pounce * 0.3 * side,
-    hop: (hop * 0.145 + bass * 0.05) * engage + pounce * 0.12 + startle * -0.012,
-    lean: (bass * 0.09 - mid * 0.03 + side * high * 0.05) * engage + perk * 0.05 + pounce * 0.1 + startle * -0.06,
+      + perk * 0.7 + startle * -0.45 + pounce * 0.25 + cur * -0.15 + snareHit * (side < 0 ? 0.7 : 0.2),
+    wing: (0.18 + high * 1.05 + bass * 0.28 + hop * 0.2 + fl * 0.7 + harm * 0.7 + wingBeat) * engage + pounce * 0.7 - startle * 0.15,
+    tail: ((high * 1.15 + mid * 0.5 + fl * 0.4 + hat * 0.35) * side) * engage + pounce * 0.3 * side,
+    hop: (kickHop * 0.145 + bass * 0.05 + kick * 0.04) * engage + pounce * 0.12 + startle * -0.012,
+    lean: (bass * 0.09 - mid * 0.03 + side * high * 0.05) * engage + perk * 0.05 + pounce * 0.1 + startle * -0.06 + swayBeat + step * 0.04 * conf,
     squash,
-    spin: spin * Math.PI * 2,
+    spin: spin * Math.PI * 2 + chord * 0.55 * side,
     blink: startle * 0.35,
     happy: Math.max(r.happy || 0, (0.2 + (sig.loud || 0) * 0.45 + fl * 0.25) * engage + pounce * 0.35 + perk * 0.2),
     curious: fl * 0.2 + perk * 0.45 + cur * 0.75,
@@ -200,6 +234,18 @@ export function dancePose(rest, sig) {
     browsUp: (mid * 0.3 + fl * 0.35) * engage + perk * 0.4 + cur * 0.55 + flare * 0.15,
     breath: 0.5 + (bass * 0.55 + hop * 0.25) * engage,
     flare,
+    // --- his own structure (real bones), layered on the same rest ---
+    earTipL: (snareF * (side > 0 ? 0.9 : 0.25) + hatF * 0.2) * engage,
+    earTipR: (snareF * (side < 0 ? 0.9 : 0.25) + hatF * 0.2) * engage,
+    wingTip: (hatHit * 0.7 + hatF * 0.55 + hat * 0.25) * engage,
+    tailTip: (hatHit * 1.1 + hatF * 0.8 + hat * 0.35) * side * engage,
+    legL: Math.max(0, step) * 0.45 * conf * engage + kickF * 0.12,
+    legR: Math.max(0, -step) * 0.45 * conf * engage + kickF * 0.12,
+    pawL: Math.max(0, step) * 0.25 * conf * engage + kickF * 0.08,
+    pawR: Math.max(0, -step) * 0.25 * conf * engage + kickF * 0.08,
+    chestYaw: (swayBeat + gaze * 0.3 + chord * 0.2 * side) * engage,
+    chestPitch: (kick * 0.08 - hop * 0.06 + harm * 0.05) * engage,
+    wingSpread: (harm * 0.85 + wingBeat) * engage,
   };
 }
 
@@ -243,6 +289,7 @@ const st = {
   dropDet: { prev: 0, quietTime: 0, last: -20, t: 0 },
   quietDet: { prev: 0, last: -20, t: 0 },
   sig: { ...ZERO_SIG },
+  rhythm: makeRhythmState(),
 };
 
 function acCtor() {
@@ -266,10 +313,19 @@ export function attachDance(audio) {
       st.analyser.smoothingTimeConstant = SMOOTH;
       st.analyser.minDecibels = -90;
       st.analyser.maxDecibels = -25;
+      // A second, unsmoothed analyser for flux / onsets / chroma so tempo
+      // tracking is not blurred by the display analyser's 0.38 smoothing.
+      st.analyserRaw = st.ctx.createAnalyser();
+      st.analyserRaw.fftSize = FFT;
+      st.analyserRaw.smoothingTimeConstant = 0;
+      st.analyserRaw.minDecibels = -90;
+      st.analyserRaw.maxDecibels = -25;
       st.src = st.ctx.createMediaElementSource(audio);
       st.src.connect(st.analyser);
+      st.src.connect(st.analyserRaw);
       st.analyser.connect(st.ctx.destination);
       st.freq = new Uint8Array(st.analyser.frequencyBinCount);
+      st.freqRaw = new Uint8Array(st.analyserRaw.frequencyBinCount);
       st.time = new Float32Array(st.analyser.fftSize);
     }
     st.audio = audio;
@@ -307,6 +363,7 @@ export function tickDance(nowMs) {
   if (running) {
     st.analyser.getByteFrequencyData(st.freq);
     st.analyser.getFloatTimeDomainData(st.time);
+    if (st.analyserRaw && st.freqRaw) st.analyserRaw.getByteFrequencyData(st.freqRaw);
     const sr = st.ctx.sampleRate || 44100;
     const fft = st.analyser.fftSize || FFT;
     // byte bins are 0..255
@@ -316,6 +373,18 @@ export function tickDance(nowMs) {
     loudR = Math.min(1, rms(st.time) * 3.2);
     centR = spectralCentroid(st.freq, sr, fft);
   }
+
+  const rhy = tickRhythm(st.rhythm, {
+    bins: running ? (st.freqRaw || st.freq) : null,
+    sampleRate: (st.ctx && st.ctx.sampleRate) || 44100,
+    fftSize: (st.analyser && st.analyser.fftSize) || FFT,
+    dt,
+    running,
+    bandMean,
+    normalizePeak,
+    smoothToward,
+    detectOnset,
+  });
 
   const bassN = normalizePeak(st.bass, bassR, dt);
   const midN = normalizePeak(st.mid, midR, dt);
@@ -349,10 +418,16 @@ export function tickDance(nowMs) {
       if (bassE > 0.62 && loudE > 0.5) st.flourish = 1;
       if (st.spinT <= 0 && st.bassHits % 4 === 0 && (bassE + loudE) > 0.85) st.spinT = 0.001;
     }
-    if (detectOnset(st.onsetM, midE, dt, 0.16)) {
+    if (detectOnset(st.onsetM, midE, dt, 0.16) || (rhy.snareHit > 0.85)) {
       st.earFlick = 1;
       st.earSide = -st.earSide;
     }
+    if (rhy.kickHit > 0.85 || (rhy.useGrid && rhy.anticip > 0.85)) {
+      const boost = 0.85 + 0.15 * (rhy.downbeat || 0);
+      st.hop = Math.max(st.hop, boost);
+      if (rhy.kickHit > 0.85 && rhy.kick > 0.62 && loudE > 0.5) st.flourish = Math.max(st.flourish, 1);
+    }
+    if (st.spinT <= 0 && rhy.chordChange > 0.85) st.spinT = 0.001;
     if (st.playAge > 0.8 && detectDrop(st.dropDet, loudAbs, dt) && st.dropT <= 0) st.dropT = 0.001;
     if (detectSuddenQuiet(st.quietDet, loudAbs, dt, true)) st.curious.env = 1;
   } else {
@@ -398,6 +473,30 @@ export function tickDance(nowMs) {
     flare: flareE,
     playing: running,
     active,
+    kick: rhy.kick,
+    snare: rhy.snare,
+    hat: rhy.hat,
+    kickHit: rhy.kickHit,
+    snareHit: rhy.snareHit,
+    hatHit: rhy.hatHit,
+    kickFollow: rhy.kickFollow,
+    snareFollow: rhy.snareFollow,
+    hatFollow: rhy.hatFollow,
+    bpm: rhy.bpm,
+    beatConf: rhy.beatConf,
+    beatPhase: rhy.beatPhase,
+    barBeat: rhy.barBeat,
+    downbeat: rhy.downbeat,
+    anticip: rhy.anticip,
+    useGrid: rhy.useGrid,
+    chromaPc: rhy.chromaPc,
+    chromaName: rhy.chromaName,
+    chromaHue: rhy.chromaHue,
+    chromaConf: rhy.chromaConf,
+    harmonic: rhy.harmonic,
+    percussive: rhy.percussive,
+    chordChange: rhy.chordChange,
+    beatPulse: rhy.beatPulse,
   };
   return st.sig;
 }
@@ -418,8 +517,23 @@ export function applyDanceCSS(el, sig) {
   el.style.setProperty('--dance-loud', (active ? sig.loud : 0).toFixed(3));
   el.style.setProperty('--dance-hop', (active ? sig.hop : 0).toFixed(3));
   el.style.setProperty('--dance-spin', (active ? (sig.spin || 0) : 0).toFixed(3));
+  el.style.setProperty('--dance-kick', (active ? (sig.kickHit || sig.kick || 0) : 0).toFixed(3));
+  el.style.setProperty('--dance-beat', (active ? ((sig.downbeat ? 1 : 0) * (sig.beatPulse || sig.anticip || 0) + (sig.kickHit || 0) * 0.6) : 0).toFixed(3));
+  el.style.setProperty('--dance-hue', (active && sig.chromaHue) ? sig.chromaHue : '#a78bfa');
   const meter = el.querySelector('.mw-signal');
-  if (meter) meter.hidden = !playing && !(sig && sig.active && (sig.settle || 0) < 0.85);
+  if (meter) {
+    meter.hidden = !playing && !(sig && sig.active && (sig.settle || 0) < 0.85);
+    const label = meter.querySelector('.mw-signal-label');
+    if (label) {
+      const bits = ['live audio signal · beat · harmonics'];
+      if (sig && sig.bpm && sig.useGrid) bits.push(Math.round(sig.bpm) + ' BPM · conf ' + sig.beatConf.toFixed(2));
+      else if (sig && sig.bpm) bits.push('~' + Math.round(sig.bpm) + ' BPM · conf ' + (sig.beatConf || 0).toFixed(2) + ' · onsets only');
+      else if (playing) bits.push('tempo reading…');
+      if (sig && sig.chromaName && sig.chromaName !== '—') bits.push(sig.chromaName);
+      else if (playing) bits.push('pitch —');
+      label.textContent = bits.join(' · ');
+    }
+  }
   let react = '';
   if (sig) {
     if ((sig.startle || 0) > 0.25 || (sig.pounce || 0) > 0.25) react = 'drop';

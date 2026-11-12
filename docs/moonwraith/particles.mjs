@@ -10,7 +10,7 @@
 // On a slow phone the count steps down with the cosmic quality guard.
 import { mulberry32 } from './motion.mjs';
 
-export const SIGNAL_CAPTION = 'live audio signal · bass mid high';
+export const SIGNAL_CAPTION = 'live audio signal · beat · harmonics';
 
 export const PARTICLE_COUNTS = Object.freeze({ high: 192, med: 80, low: 0 });
 
@@ -61,6 +61,8 @@ uniform float uCap;
 uniform float uSize;
 uniform float uPixelRatio;
 uniform float uReduced;
+uniform vec3 uHue;
+uniform float uHueMix;
 varying vec3 vColor;
 varying float vAlpha;
 void main() {
@@ -80,7 +82,8 @@ void main() {
     life = 1.0 - smoothstep(uDensity, uDensity + 0.08, slot);
   }
   life *= 1.0 - hidden;
-  vColor = mix(aColor, vec3(1.0, 0.92, 0.62), clamp(uTwinkle * 0.7, 0.0, 0.85));
+  vec3 lit = mix(aColor, vec3(1.0, 0.92, 0.62), clamp(uTwinkle * 0.7, 0.0, 0.85));
+  vColor = mix(lit, uHue, clamp(uHueMix, 0.0, 0.85));
   vAlpha = life * (0.45 + 0.55 * uTwinkle * step(0.5, aKind) + 0.35 * (1.0 - aKind));
   if (aKind < 0.5) vAlpha *= 0.75 + 0.45 * uDensity;
   vec4 mv = modelViewMatrix * vec4(p, 1.0);
@@ -163,6 +166,8 @@ export function makeCosmicParticles(THREE, parent, { seedHex = 'zeref', quality 
     uSize: { value: 22 },
     uPixelRatio: { value: Math.min(2, (typeof window !== 'undefined' && window.devicePixelRatio) || 1) },
     uReduced: { value: 0 },
+    uHue: { value: [0.62, 0.16, 1.0] },
+    uHueMix: { value: 0 },
     uMap: { value: softSprite(THREE) },
   };
   const mat = new THREE.ShaderMaterial({
@@ -224,7 +229,17 @@ export function makeCosmicParticles(THREE, parent, { seedHex = 'zeref', quality 
     uniforms.uDensity.value = reducedMotion
       ? 0.12
       : (playing ? 0.28 + loud * 0.72 : 0.32);
-    if (!reducedMotion && playing && sig && (sig.hop || 0) > 0.85 && (t - lastBurstAt) > 0.12) {
+    if (playing && sig && sig.chromaPc >= 0 && sig.chromaHue) {
+      const h = sig.chromaHue;
+      const n = parseInt(String(h).replace('#', ''), 16);
+      if (Number.isFinite(n)) {
+        uniforms.uHue.value = [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255];
+        uniforms.uHueMix.value = 0.35 + 0.4 * (sig.chromaConf || 0);
+      }
+    } else {
+      uniforms.uHueMix.value = playing ? uniforms.uHueMix.value * 0.92 : 0;
+    }
+    if (!reducedMotion && playing && sig && ((sig.hop || 0) > 0.85 || (sig.kickHit || 0) > 0.85) && (t - lastBurstAt) > 0.12) {
       // A bass-onset hop is ~1 at the trigger frame; fire a radial burst from that real onset.
       lastBurstAt = t;
       const n = q === 'high' ? 14 : 8;
