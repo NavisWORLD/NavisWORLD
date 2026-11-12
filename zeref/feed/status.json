@@ -1,6 +1,6 @@
 {
  "schema": "navisworld-zeref-feed-status/v1",
- "pending": 0,
+ "pending": 1,
  "approved": 0,
  "rejected": 0,
  "readable": 0,

@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="900" height="90" viewBox="0 0 900 90" role="img" aria-labelledby="zf-t zf-d">
 <title id="zf-t">Feed Zeref</title>
-<desc id="zf-d">Feed Zeref drop box: 0 pending, 0 approved (readable), 0 rejected. Approved books are read at chat time, never trained on.</desc>
+<desc id="zf-d">Feed Zeref drop box: 1 pending, 0 approved (readable), 0 rejected. Approved books are read at chat time, never trained on.</desc>
 <rect x="1.5" y="1.5" width="897" height="87" rx="22" fill="#0b0a1f" stroke="#a78bfa" stroke-width="3"/>
-<text x="30" y="40" font-family="-apple-system,Segoe UI,Helvetica,Arial,sans-serif" font-size="24" font-weight="700" fill="#f5f3ff">📚 FEED ZEREF · <tspan fill="#a7f3d0">0 pending · 0 approved</tspan></text>
+<text x="30" y="40" font-family="-apple-system,Segoe UI,Helvetica,Arial,sans-serif" font-size="24" font-weight="700" fill="#f5f3ff">📚 FEED ZEREF · <tspan fill="#a7f3d0">1 pending · 0 approved</tspan></text>
 <text x="30" y="70" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="18" fill="#67e8f9">approved books are READ at chat time, NOT TRAINED · tap to offer a text</text>
 </svg>
