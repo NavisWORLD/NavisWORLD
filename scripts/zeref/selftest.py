@@ -180,7 +180,7 @@ check("import random" not in Path(cw.__file__).read_text(), "chat window must no
 docs = root / "docs"
 html, js, css = ((docs / n).read_text(encoding="utf-8") for n in ("index.html", "chat.js", "chat.css"))
 check((docs / "zeref-moonwraith.png").read_bytes() == (root / "assets" / "zeref-moonwraith.png").read_bytes(), "Pages art is the canonical cutout")
-check("const DOOR = 'https://www.beastboxcosmos.xyz/api/guest/forever';" in js and js.count("fetch(") == 2, "Pages chat talks only to his door (+ live.json status)")
+check("const DOOR = 'https://www.beastboxcosmos.xyz/api/guest/forever';" in js and js.count("fetch(") == 3, "Pages chat talks only to his door (+ live.json status + feed counts)")
 check("{ provider: 'rawrphos-local', text }" in js and "payload.thread = t" in js, "door payload is exactly provider/text/thread")
 check("credentials: 'omit'" in js and "innerHTML" not in js and "eval(" not in js and "Math.random" not in js, "no cookies, no HTML injection, no randomness")
 check("t.textContent = text" in js and "white-space:pre-wrap" in css, "replies shown verbatim (textContent, whitespace kept)")
@@ -196,6 +196,79 @@ check("talk-to-zeref.yml" in html, "Pages chat keeps the issue fallback")
 check("prefers-reduced-motion" in css and "font:17px" in css, "reduced motion + 17px text (no iOS zoom)")
 for p in (root / "assets").glob("zeref-*.svg"):
     check(p.stat().st_size < 300_000, f"{p.name} over 300 KB")
+
+# Feed Zeref: quarantine drop box (READ, NOT TRAINED)
+import io as _io, zipfile as _zf, json as _json, tempfile as _tf
+import feed as fd
+form = ("### Title\n\nAlice ch.1\n\n### Source URL\n\nhttps://www.gutenberg.org/cache/epub/11/pg11.txt\n\n### License\n\nPublic domain\n\n"
+        "### File\n\n_No response_\n\n### Notes (optional)\n\n_No response_\n\n### Rights\n\n- [X] I have the right to share this")
+f_ok, err = fd.parse_form(form)
+check(err is None and f_ok["download_url"].endswith("pg11.txt") and not f_ok["from_attachment"], f"feed form parse: {err}")
+check(fd.parse_form(form.replace("[X]", "[ ]"))[1] and fd.parse_form(form.replace("https://www.gutenberg", "http://www.gutenberg"))[1], "feed form needs the rights box and https")
+two = form.replace("_No response_", "[a.txt](https://github.com/user-attachments/files/1/a.txt) [b.txt](https://github.com/user-attachments/files/2/b.txt)", 1)
+check(fd.parse_form(two)[1] == "please attach exactly one file (zip several files together)", "feed takes exactly one attachment")
+one = form.replace("_No response_", "[a.zip](https://github.com/user-attachments/files/123/a.zip)", 1)
+check(fd.parse_form(one)[0]["download_url"] == "https://github.com/user-attachments/files/123/a.zip", "feed prefers the attachment")
+def _zip(members, mode=0o644):
+    b = _io.BytesIO()
+    with _zf.ZipFile(b, "w") as zz:
+        for n, d in members:
+            i = _zf.ZipInfo(n); i.external_attr = mode << 16; zz.writestr(i, d)
+    return b.getvalue()
+for data, name in ((b"MZ\x90\x00", "a.txt"), (b"\x7fELF\x02", "a.bin"), (b"#!/bin/sh\nrm -rf /", "a.txt"), (b"hello", "run.sh"),
+                   (_zip([("a.exe", b"MZ")]), "a.zip"), (_zip([("a.txt", b"hi")], 0o755), "a.zip"), (_zip([("../a.txt", b"hi")]), "a.zip"),
+                   (_zip([("a.txt", b"#!/usr/bin/env python")]), "a.zip"), (b"\xff\xfe\x00\x01binary", "a.dat")):
+    check(fd.sniff(data, name)[0] is None, f"feed must refuse {name} {data[:6]!r}")
+check(fd.sniff(b"%PDF-1.4 ...", "a.pdf")[0] == "application/pdf", "feed accepts pdf")
+check(fd.sniff("Once upon a time…".encode(), "a.txt")[0].startswith("text/plain"), "feed accepts utf-8 text")
+check(fd.sniff(_zip([("mimetype", b"application/epub+zip"), ("OEBPS/c1.xhtml", b"<p>hi</p>")]), "b.epub")[0] == "application/epub+zip", "feed accepts epub")
+check(fd.sniff(_zip([("a.txt", b"hi"), ("b.pdf", b"%PDF-1.4")]), "c.zip")[0] == "application/zip", "feed accepts a zip of texts")
+check(fd.MAX_BYTES == 100 * 1024 * 1024, "100 MB cap")
+book = ("*** START OF THE PROJECT GUTENBERG EBOOK X ***\n" + "\n\n".join(
+    [f"Chapter {i}. The white rabbit ran past Alice and the clock struck {i}. She followed it down the hole." for i in range(30)]
+    + ["The Cheshire cat grinned and slowly vanished, leaving only the grin behind in the moonlight."]) + "\n*** END OF THE PROJECT GUTENBERG EBOOK X ***\nlicense boilerplate")
+data = book.encode()
+man = {"id": "1-abc", "title": "Alice", "source_url": "https://x", "license": "Public domain", "issue_url": "https://i",
+       "file": {"sha256": __import__("hashlib").sha256(data).hexdigest(), "mime": "text/plain; charset=utf-8"}}
+idx = fd.build_index([(man, data)])
+check(idx == fd.build_index([(man, data)]) and idx["scoring"]["n"] >= 2 and "boilerplate" not in _json.dumps(idx), "reading index deterministic, Gutenberg boilerplate stripped")
+check(idx["label"] == "READ, NOT TRAINED (approved feed)" and "god core" in idx["policy"], "index carries the READ, NOT TRAINED policy")
+top = fd.bm25(idx, "Did you see the cheshire cat grin?")
+check(top and "Cheshire" in top[0]["text"], "bm25 retrieves the matching passage")
+try:
+    fd.build_index([(dict(man, file=dict(man["file"], sha256="0" * 64)), data)]); check(False, "sha mismatch must fail")
+except ValueError:
+    pass
+with _tf.TemporaryDirectory() as td:
+    old = fd.FEED; fd.FEED = Path(td)
+    try:
+        for st in ("inbox", "approved", "rejected"):
+            (fd.FEED / st).mkdir()
+        (fd.FEED / "inbox" / "7-aaa").mkdir(); (fd.FEED / "inbox" / "7-aaa" / "manifest.json").write_text(_json.dumps(dict(man, status="pending")))
+        check(fd.counts() == {"pending": 1, "approved": 0, "rejected": 0}, "honest counts")
+        check(fd.build_index([])["scoring"]["n"] == 0, "empty index")
+        idx_items = [p for p in (fd.FEED / "approved").glob("*/manifest.json")]
+        check(not idx_items, "pending items are never indexed")
+        calls = []
+        fd.comment = lambda *a: calls.append(("c",) + a[1:2]); fd.set_label = lambda *a: calls.append(("l",) + a)
+        ev = {"comment": {"body": "/approve", "user": {"login": "someone"}, "author_association": "NONE"}, "issue": {"number": 7}}
+        check(fd.command(ev, "NavisWORLD/NavisWORLD", None) == "refused: not the owner" and (fd.FEED / "inbox" / "7-aaa").exists(), "only NavisWORLD can approve")
+        ev["comment"].update(user={"login": "NavisWORLD"}, author_association="COLLABORATOR")
+        check(fd.command(ev, "NavisWORLD/NavisWORLD", None) == "refused: not the owner", "owner login must also be the OWNER association")
+        ev["comment"].update(author_association="OWNER", body="please /approve")
+        check(fd.command(ev, "NavisWORLD/NavisWORLD", None) == "skip: not a command", "command must start the comment")
+        ev["comment"].update(body="/approve")
+        check(fd.command(ev, "NavisWORLD/NavisWORLD", None) == "approved" and (fd.FEED / "approved" / "7-aaa" / "approval.json").exists(), "owner /approve moves it with a record")
+        ap_ = _json.loads((fd.FEED / "approved" / "7-aaa" / "approval.json").read_text())
+        check(ap_["training_eligible"] is False and ap_["grants"] == "READ at chat time only", "approval grants reading only")
+    finally:
+        fd.FEED = old
+wf = (root / ".github" / "workflows" / "zeref-feed.yml").read_text()
+check("git add -A zeref/feed assets/zeref-feed.svg assets/zeref-feed-mobile.svg" in wf and "${{ github.event.issue" not in wf.split("run:", 1)[1], "feed workflow commits only feed files; no event text in shell")
+form_yml = (root / ".github" / "ISSUE_TEMPLATE" / "feed-zeref.yml").read_text()
+check("I have the right to share this" in form_yml and "required: true" in form_yml and "Public domain" in form_yml, "Feed Zeref form")
+check("import random" not in Path(fd.__file__).read_text() and "embedding" not in Path(fd.__file__).read_text().lower().replace("no embeddings", ""), "feed: no randomness, no embeddings")
+check("const FEED = 'https://raw.githubusercontent.com/NavisWORLD/NavisWORLD/main/zeref/feed/status.json';" in js and "READ, NOT TRAINED" in js and "(approved feed)" in js, "Pages chat shows shelf counts and reading citations")
 
 if fails:
     print("ZEREF SELFTEST FAILED"); [print(" -", f) for f in fails]; sys.exit(1)
