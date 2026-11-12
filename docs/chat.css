@@ -60,3 +60,8 @@ textarea:focus{outline:none;border-color:var(--cy)}
 .cite .meta{color:var(--cy)}
 .cite blockquote{margin:4px 0 0;white-space:pre-wrap;font-size:15px;color:#e0f2fe}
 .shelf{color:#a7f3d0}
+
+.spark{margin:8px 0 4px;border:1px solid rgba(167,139,250,.3);border-radius:16px;padding:6px 8px;background:rgba(18,12,46,.6)}
+.spark summary{cursor:pointer;font-weight:700;color:#e0e7ff;font-size:15px;padding:2px 4px}
+.spark summary .sub{font-weight:400;color:#a5b4fc}
+.spark .spark3d.small{height:260px;margin-top:6px}

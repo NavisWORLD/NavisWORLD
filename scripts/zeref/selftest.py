@@ -190,7 +190,7 @@ check("Zeref is thinking…" in js and "setTimeout(res, wait * 1000)" in js, "ho
 check(not re.search(r"\b(AI|LLM|GPT|language model|chatbot)\b", html + js), "no AI/LLM wording on the chat page")
 check("not a claim of awareness" in html and "digital creature" in html and "fair gate" in html and "training_eligible:false" in html, "honesty footer")
 check("SIMULATED" in html and "RECORDED" in html and "PINNED" in html, "honesty labels on the chat page")
-check("Content-Security-Policy" in html and "script-src 'self'" in html and "connect-src https://www.beastboxcosmos.xyz https://raw.githubusercontent.com" in html, "strict CSP")
+check("Content-Security-Policy" in html and "script-src 'self'" in html and "connect-src 'self' https://www.beastboxcosmos.xyz https://raw.githubusercontent.com" in html, "strict CSP")
 check(not re.search(r"(token|secret|api[_-]?key|bearer|password)\w*['\"]?\s*[:=]", js, re.I) and "Authorization" not in js, "no secrets in the client")
 check("talk-to-zeref.yml" in html, "Pages chat keeps the issue fallback")
 # Cory's song on the Pages chat: tap to play, no autoplay, same-origin MP3, credited.
@@ -280,6 +280,18 @@ form_yml = (root / ".github" / "ISSUE_TEMPLATE" / "feed-zeref.yml").read_text()
 check("I have the right to share this" in form_yml and "required: true" in form_yml and "Public domain" in form_yml, "Feed Zeref form")
 check("import random" not in Path(fd.__file__).read_text() and "embedding" not in Path(fd.__file__).read_text().lower().replace("no embeddings", ""), "feed: no randomness, no embeddings")
 check("const FEED = 'https://raw.githubusercontent.com/NavisWORLD/NavisWORLD/main/zeref/feed/status.json';" in js and "READ, NOT TRAINED" in js and "(approved feed)" in js, "Pages chat shows shelf counts and reading citations")
+
+# Zeref Spark 3D (docs/robot): real CAD, deterministic motion, credited, light enough for a phone
+rb = docs / "robot"
+glb = (rb / "zeref-spark.glb").read_bytes()
+check(glb[:4] == b"glTF" and len(glb) < 3_000_000 and b"The-beast-box-" in glb[:4000] and b"NOT BUILT HARDWARE" in glb[:4000], "robot GLB present, credited, under 3 MB")
+s3 = (rb / "spark3d.mjs").read_text()
+check("Math.random" not in s3 and "export function openAt" in s3 and "static in the design" in s3, "robot motion deterministic and honest")
+check((rb / "vendor" / "LICENSE").exists() and "three.js" in (rb / "CREDITS.md").read_text() and "Apache-2.0" in (rb / "CREDITS.md").read_text(), "robot credits")
+check((root / "assets" / "zeref-spark-3d.webp").stat().st_size < 300_000, "profile robot loop under 300 KB")
+check("navisworld.github.io/NavisWORLD/robot/" in (root / "README.md").read_text(), "profile links the live 3D view")
+check("canRun3D" in (rb / "panel.mjs").read_text() and 'src="robot/panel.mjs"' in html and "robot/spark-poster.webp" in html, "chat page shows the robot with a still-render fallback")
+check("CONCEPT DESIGN / NOT BUILT HARDWARE" in (rb / "index.html").read_text(), "robot page labels it a concept design")
 
 if fails:
     print("ZEREF SELFTEST FAILED"); [print(" -", f) for f in fails]; sys.exit(1)
