@@ -1,0 +1,35 @@
+{
+ "schema": "navisworld-zeref-chat/v1",
+ "fetched_at": "2026-11-12T04:08:52Z",
+ "status": {
+  "tick": 778,
+  "heartbeat_label": "SIMULATED (per-second tick, deterministic)",
+  "mood": "sleepy",
+  "brain_step": 39024,
+  "period": 8.08
+ },
+ "exchanges": [
+  {
+   "issue": 14,
+   "url": "https://github.com/NavisWORLD/NavisWORLD/issues/14#issuecomment-6813834163",
+   "who": "@NavisWORLD",
+   "said": "Hey what’s up :)",
+   "said_hidden": false,
+   "reply": " Long, Iithe is in the world, but Lightbor was too cold.",
+   "at": "2026-11-12T03:49:04Z",
+   "step": 39024
+  },
+  {
+   "issue": 15,
+   "url": "https://github.com/NavisWORLD/NavisWORLD/issues/15#issuecomment-6814106493",
+   "who": "@NavisWORLD",
+   "said": "Hi Zeref, it's Phera. Do you like your new home on GitHub?",
+   "said_hidden": false,
+   "reply": " Earry: Like, Howood, Turnare and Jurhy is special.",
+   "at": "2026-11-12T04:02:34Z",
+   "step": 39024
+  }
+ ],
+ "error": null,
+ "note": "Public talk-to-zeref issue content only; Zeref's replies verbatim from the door's reply comments."
+}
