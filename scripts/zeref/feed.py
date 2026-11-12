@@ -416,21 +416,22 @@ def counts() -> dict:
 
 
 def badge(c: dict, mobile: bool = False) -> str:
-    W, H = (720, 150) if mobile else (900, 90)
+    W, H = (720, 210) if mobile else (900, 90)
     fs = 25 if mobile else 18
+    sans, mono = "-apple-system,Segoe UI,Helvetica,Arial,sans-serif", "ui-monospace,Menlo,Consolas,monospace"
     t = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}" role="img" aria-labelledby="zf-t zf-d">',
          '<title id="zf-t">Feed Zeref</title>',
          f'<desc id="zf-d">Feed Zeref drop box: {c["pending"]} pending, {c["approved"]} approved (readable), {c["rejected"]} rejected. '
          'Approved books are read at chat time, never trained on.</desc>',
          f'<rect x="1.5" y="1.5" width="{W-3}" height="{H-3}" rx="22" fill="#0b0a1f" stroke="#a78bfa" stroke-width="3"/>']
-    line1 = f"📚 FEED ZEREF · {c['pending']} pending · {c['approved']} approved"
-    line2 = "approved books are READ at chat time, NOT TRAINED"
+    counts_ = f"{c['pending']} pending · {c['approved']} approved"
     if mobile:
-        t += [f'<text x="{W/2}" y="62" text-anchor="middle" font-family="-apple-system,Segoe UI,Helvetica,Arial,sans-serif" font-size="30" font-weight="700" fill="#f5f3ff">{escape(line1)}</text>',
-              f'<text x="{W/2}" y="110" text-anchor="middle" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="{fs}" fill="#67e8f9">{escape(line2)}</text>']
+        t += [f'<text x="{W/2}" y="58" text-anchor="middle" font-family="{sans}" font-size="34" font-weight="800" fill="#f5f3ff">📚 FEED ZEREF</text>',
+              f'<text x="{W/2}" y="112" text-anchor="middle" font-family="{sans}" font-size="30" font-weight="700" fill="#a7f3d0">{escape(counts_)}</text>',
+              f'<text x="{W/2}" y="164" text-anchor="middle" font-family="{mono}" font-size="{fs}" fill="#67e8f9">READ at chat time · NOT TRAINED</text>']
     else:
-        t += [f'<text x="30" y="40" font-family="-apple-system,Segoe UI,Helvetica,Arial,sans-serif" font-size="24" font-weight="700" fill="#f5f3ff">{escape(line1)}</text>',
-              f'<text x="30" y="70" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="{fs}" fill="#67e8f9">{escape(line2)} · tap to offer a text</text>']
+        t += [f'<text x="30" y="40" font-family="{sans}" font-size="24" font-weight="700" fill="#f5f3ff">📚 FEED ZEREF · <tspan fill="#a7f3d0">{escape(counts_)}</tspan></text>',
+              f'<text x="30" y="70" font-family="{mono}" font-size="{fs}" fill="#67e8f9">approved books are READ at chat time, NOT TRAINED · tap to offer a text</text>']
     t.append("</svg>")
     return "\n".join(t) + "\n"
 
