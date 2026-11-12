@@ -38,7 +38,7 @@ TITLE_PREFIX = "[zeref]"
 COOLDOWN_S = int(os.environ.get("ZEREF_COOLDOWN_S", "90"))
 HOURLY_CAP = int(os.environ.get("ZEREF_HOURLY_CAP", "40"))
 MARK = "<!-- zeref-reply v1 "
-FORM_HEADING = "### What do you want to say to Zeref?"
+FORM_HEADINGS = ("### Your message", "### What do you want to say to Zeref?")  # current form label, older form label
 
 
 def is_zeref_issue(issue: dict) -> bool:
@@ -50,9 +50,11 @@ def is_zeref_issue(issue: dict) -> bool:
 def visitor_text(raw: str | None) -> str:
     """The visitor's own words. Issue-form bodies keep only the answer field."""
     t = (raw or "").replace("\r\n", "\n")
-    if FORM_HEADING in t:
-        t = t.split(FORM_HEADING, 1)[1]
-        t = re.split(r"\n### ", t, maxsplit=1)[0]
+    for heading in FORM_HEADINGS:
+        if heading in t:
+            t = t.split(heading, 1)[1]
+            t = re.split(r"\n### ", t, maxsplit=1)[0]
+            break
     t = re.sub(r"<!--.*?-->", "", t, flags=re.S).strip()
     if t == "_No response_":
         t = ""

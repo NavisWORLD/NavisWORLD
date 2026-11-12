@@ -24,6 +24,47 @@ for s in [" Bujengi", "```\n@someone [x](javascript:alert(1)) <b>hi</b>", "`````
 check(t.visitor_text("### What do you want to say to Zeref?\n\nHello Zeref\n") == "Hello Zeref", "form parse")
 check(t.visitor_text("### What do you want to say to Zeref?\n\n_No response_") == "", "no response")
 check(t.visitor_text("hi <!-- hidden --> there") == "hi  there", "html comments stripped")
+check(t.visitor_text("### Your message\n\nHi Zeref, it's Phera.\r\nSecond line\n") == "Hi Zeref, it's Phera.\nSecond line", "current form parse")
+check(t.visitor_text("### Your message\n\nhello\n\n### Other field\n\nignored") == "hello", "form parse stops at next field")
+
+# the issue form and the chat-box button match what the door expects
+root0 = Path(__file__).resolve().parents[2]
+form = (root0 / ".github/ISSUE_TEMPLATE/talk-to-zeref.yml").read_text(encoding="utf-8")
+check('title: "[Zeref] "' in form and 'label: "Your message"' in form and form.count("type: textarea") == 1, "issue form shape")
+check("required: true" in form and "talk-to-zeref" in form, "issue form requires the message and labels the issue")
+readme = (root0 / "README.md").read_text(encoding="utf-8")
+check("issues/new?template=talk-to-zeref.yml\"><picture>" in readme, "chat-box button opens the Talk to Zeref form")
+wf = (root0 / ".github/workflows/zeref-talk.yml").read_text(encoding="utf-8")
+check("issue_comment:" in wf and "types: [created]" in wf and "${{ github.event.comment.body" not in wf and "${{ github.event.issue.body" not in wf,
+      "talk workflow listens for follow-ups and never interpolates visitor text")
+
+# full flow with the network mocked: opened form issue, then an autonomous follow-up in the same thread
+posted, talked = [], []
+def fake_api(method, path, token, body=None):
+    if method == "GET":
+        return [], None
+    posted.append((path, body["body"])); return {"id": len(posted)}, None
+def fake_talk(text, thread):
+    talked.append((text, thread))
+    return {"ok": True, "status": 200, "reply": "  raw *reply* ```", "step": 7, "at": "2026-01-01T00:00:00Z",
+            "training_eligible": False, "error": None}
+real_api, real_talk = z.gh_api, z.talk
+z.gh_api, z.talk = fake_api, fake_talk
+try:
+    iss = dict({"title": "[Zeref] hi", "state": "open", "user": {"login": "a", "type": "User"}}, number=5, node_id="I_node5", labels=[{"name": "talk-to-zeref"}], body="### Your message\n\nHi Zeref")
+    r1 = t.handle_event({"issue": iss}, "issues", "o/r", "x", "k" * 32)
+    r2 = t.handle_event({"issue": iss, "comment": {"user": {"login": "a", "type": "User"}, "body": "and again?"}}, "issue_comment", "o/r", "x", "k" * 32)
+    r3 = t.handle_event({"issue": iss, "comment": {"user": {"login": "zeref[bot]", "type": "Bot"}, "body": "x"}}, "issue_comment", "o/r", "x", "k" * 32)
+    r4 = t.handle_event({"issue": iss, "comment": {"user": {"login": "b", "type": "User"}, "body": "me too"}}, "issue_comment", "o/r", "x", "k" * 32)
+    r5 = t.handle_event({"issue": iss, "comment": {"user": {"login": "a", "type": "User"}, "body": "x" * 1001}}, "issue_comment", "o/r", "x", "k" * 32)
+finally:
+    z.gh_api, z.talk = real_api, real_talk
+check(r1.startswith("posted") and r2.startswith("posted"), f"opened + follow-up both answered: {r1} / {r2}")
+check([x[0] for x in talked] == ["Hi Zeref", "and again?"], "door got the visitor's exact words")
+check(talked[0][1] == talked[1][1] and talked[0][1], "follow-up continues the same thread")
+check(all(z.fence("  raw *reply* ```") in b for _, b in posted[:2]), "reply posted verbatim in a fence")
+check(r3 == "skip: bot" and r4 == "note: not the issue author" and r5 == "note: too long", f"follow-up guards: {r3} / {r4} / {r5}")
+check(len(talked) == 2, "guarded follow-ups never reach the door")
 
 # meta comment cannot be closed early by a reply
 m = t.meta_comment("reply", "u", "2026-01-01T00:00:00Z", reply="evil --> <img src=x>")
