@@ -189,17 +189,21 @@ export async function mount(el, {
   function applyPose(pose) {
     const breath = pose.breath == null ? 0.5 : pose.breath;
     const br = 1 + 0.06 * (breath * 2 - 1);
-    const sq = Math.max(-0.85, Math.min(0.85, pose.squash || 0));
-    const sx = br * (1 + 0.22 * sq);
-    const sy = (2 - br) * (1 - 0.28 * sq);
+    // When physics is driving the body, drop the old pose-target squash
+    // (it was stacking and flattening him). Remaining scale stays in 0.9–1.1.
+    const rawSq = pose.joints ? 0 : (pose.squash || 0);
+    const sq = Math.max(-0.18, Math.min(0.18, rawSq));
+    const clampS = (v) => Math.max(0.9, Math.min(1.1, v));
+    const sx = clampS(br * (1 + 0.08 * sq));
+    const sy = clampS(br * (1 - 0.08 * sq));
     if (named.spine && bind.has(named.spine)) {
       const s = bind.get(named.spine).s;
       named.spine.scale.set(s.x * sx, s.y * sy, s.z * sx);
     }
     if (named.chest && bind.has(named.chest)) {
       const s = bind.get(named.chest).s;
-      const cx = 1 + 0.035 * (breath * 2 - 1) + 0.12 * sq;
-      named.chest.scale.set(s.x * cx, s.y * (1 - 0.1 * sq), s.z * cx);
+      const cx = clampS(1 + 0.035 * (breath * 2 - 1) + 0.06 * sq);
+      named.chest.scale.set(s.x * cx, s.y * clampS(1 - 0.06 * sq), s.z * cx);
     }
     if (named.root && bind.has(named.root)) {
       const b = bind.get(named.root);
@@ -210,9 +214,14 @@ export async function mount(el, {
       const spin = pose.spin || 0;
       eul.set(0, spin, (pose.lean || 0) * 0.8);
       named.root.quaternion.copy(b.q).multiply(quat.setFromEuler(eul));
-      const rs = 1 - 0.08 * sq;
-      named.root.scale.set(b.s.x * (1 + 0.1 * sq), b.s.y * rs, b.s.z * (1 + 0.1 * sq));
+      named.root.scale.set(b.s.x * clampS(1 + 0.05 * sq), b.s.y * clampS(1 - 0.05 * sq), b.s.z * clampS(1 + 0.05 * sq));
     }
+    if (pose.joints) {
+      // Physics-integrated joint angles (forces in, spring-damper out).
+      for (const [name, e] of Object.entries(pose.joints)) {
+        if (named[name]) addLocal(named[name], e[0] || 0, e[1] || 0, e[2] || 0);
+      }
+    } else {
     // Neck/head split so a turn doesn't crease (same idea as the Beast Box driver).
     const nod = pose.headPitch || 0;
     const yawH = pose.headYaw || 0;
@@ -250,6 +259,7 @@ export async function mount(el, {
     addLocal(named.legR, (pose.legR || 0) * 0.7, 0, 0);
     addLocal(named.pawL, (pose.pawL || 0) * 0.5, 0, 0);
     addLocal(named.pawR, (pose.pawR || 0) * 0.5, 0, 0);
+    }
 
     const weights = {
       blink: Math.min(1, Math.max(0, pose.blink || 0)),
