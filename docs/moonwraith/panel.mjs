@@ -5,6 +5,7 @@
 import { canRun3D } from './moonwraith3d.mjs';
 import { attachDance, tickDance, applyDanceCSS, DANCE_CAPTION } from './dance.mjs';
 import { ensureSignalReadout } from './particles.mjs';
+import { mapExpression, applyExpressionCSS, ensureExpressionLegend } from './expression.mjs';
 
 const el = document.getElementById('moonwraith');
 const st = document.getElementById('mw-status');
@@ -39,6 +40,13 @@ async function start() {
   const c = canRun3D();
   if (!c.ok) {
     st.textContent = '2D portrait (' + c.why + ') · his canonical Moonwraith art';
+    try {
+      const { loadLive } = await import('./motion.mjs');
+      const { live } = await loadLive();
+      const expr = mapExpression(live || {});
+      applyExpressionCSS(el, expr);
+      ensureExpressionLegend(el.parentElement || el, expr);
+    } catch { /* leave the portrait untinted if the live card cannot be read */ }
     return;
   }
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -49,6 +57,13 @@ async function start() {
     if (reduced) st.textContent = (view.plan && view.plan.caption ? view.plan.caption + ' · ' : '') + 'still pose (reduced motion is on)';
   } catch (err) {
     st.textContent = '2D portrait (3D could not start) · his canonical Moonwraith art';
+    try {
+      const { loadLive } = await import('./motion.mjs');
+      const { live } = await loadLive();
+      const expr = mapExpression(live || {});
+      applyExpressionCSS(el, expr);
+      ensureExpressionLegend(el.parentElement || el, expr);
+    } catch { /* leave the portrait untinted if the live card cannot be read */ }
   }
 }
 

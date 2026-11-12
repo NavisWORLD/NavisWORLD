@@ -66,6 +66,9 @@ function injectUniforms(shader, extras) {
   shader.uniforms.uCwSeed = { value: extras.seed };
   shader.uniforms.uCwPulse = { value: 0 };
   shader.uniforms.uCwGlow = { value: 1 };
+  // Default iris matches the previous fixed eye wash, until expression.mjs sets the recorded color.
+  shader.uniforms.uIris = { value: [0.90, 0.55, 1.0] };
+  shader.uniforms.uIrisGlow = { value: 1 };
 }
 
 function patchWorld(shader) {
@@ -77,7 +80,7 @@ function patchWorld(shader) {
       '#include <project_vertex>',
     ].join('\n'));
   shader.fragmentShader = shader.fragmentShader
-    .replace('#include <common>', '#include <common>\nvarying vec3 vCwPos;\nvarying vec3 vCwNrm;\nuniform float uCwTime;\nuniform float uCwSeed;\nuniform float uCwPulse;\nuniform float uCwGlow;\n' + STAR_GLSL);
+    .replace('#include <common>', '#include <common>\nvarying vec3 vCwPos;\nvarying vec3 vCwNrm;\nuniform float uCwTime;\nuniform float uCwSeed;\nuniform float uCwPulse;\nuniform float uCwGlow;\nuniform vec3 uIris;\nuniform float uIrisGlow;\n' + STAR_GLSL);
 }
 
 function patchFur(shader) {
@@ -129,8 +132,9 @@ function patchGlow(shader, kind) {
   injectUniforms(shader, { seed: 0 });
   patchWorld(shader);
   const extra = kind === 'eye'
-    ? `totalEmissiveRadiance *= (1.7 + 0.9 * uCwPulse) * uCwGlow;
-       totalEmissiveRadiance += vec3(0.90, 0.55, 1.0) * (0.65 + 0.85 * uCwPulse);`
+    ? `totalEmissiveRadiance *= uIris * (0.28 + 0.40 * uIrisGlow);
+       totalEmissiveRadiance += uIris * (0.18 + 0.42 * uIrisGlow) * (1.0 + 0.22 * uCwPulse);
+       totalEmissiveRadiance += vec3(1.0) * 0.05;`
     : `totalEmissiveRadiance += vec3(0.98, 0.86, 1.0) * (1.05 + 1.2 * uCwPulse) * uCwGlow;
        float stars = cwStars(vCwPos * 14.0, uCwTime);
        totalEmissiveRadiance += vec3(1.0, 0.92, 1.0) * stars * 1.35;`;
@@ -149,7 +153,7 @@ function hook(mat, kind, store) {
     else patchGlow(shader, kind);
     store.push(shader);
   };
-  mat.customProgramCacheKey = () => 'cw-' + kind + '-v2';
+  mat.customProgramCacheKey = () => 'cw-' + kind + '-v3';
   mat.needsUpdate = true;
 }
 
@@ -228,7 +232,7 @@ export function applyCosmic(THREE, model, { seedHex = 'zeref', quality = 'high',
       const kind = kindOf(m, o);
       if (!kind) continue;
       if (kind === 'eye' || kind === 'glow') {
-        if ('emissiveIntensity' in m) m.emissiveIntensity = Math.max(m.emissiveIntensity || 0, kind === 'eye' ? 2.05 : 1.75);
+        if ('emissiveIntensity' in m) m.emissiveIntensity = Math.max(m.emissiveIntensity || 0, kind === 'eye' ? 1.15 : 1.75);
         if (m.emissive && m.emissive.getHex && m.emissive.getHex() === 0) m.emissive.setHex(kind === 'eye' ? 0xd090ff : 0xffd6ff);
       }
       if (quality !== 'low') hook(m, kind, shaders);
@@ -239,10 +243,13 @@ export function applyCosmic(THREE, model, { seedHex = 'zeref', quality = 'high',
   // since the skinned face is not a child mesh of the bone).
   const anchor = head || model;
   if (quality !== 'low' && head) {
-    halos.push(addHalo(THREE, head, new THREE.Vector3(-0.038, 0.05, 0.072), 'rgba(210,150,255,0.7)', 0.11));
-    halos.push(addHalo(THREE, head, new THREE.Vector3(-0.038, 0.05, 0.072), 'rgba(120,200,255,0.35)', 0.20));
-    halos.push(addHalo(THREE, head, new THREE.Vector3( 0.038, 0.05, 0.072), 'rgba(210,150,255,0.7)', 0.11));
-    halos.push(addHalo(THREE, head, new THREE.Vector3( 0.038, 0.05, 0.072), 'rgba(120,200,255,0.35)', 0.20));
+    const eyeHalos = [];
+    for (const h of [
+      addHalo(THREE, head, new THREE.Vector3(-0.038, 0.05, 0.072), 'rgba(210,150,255,0.7)', 0.11),
+      addHalo(THREE, head, new THREE.Vector3(-0.038, 0.05, 0.072), 'rgba(120,200,255,0.35)', 0.20),
+      addHalo(THREE, head, new THREE.Vector3( 0.038, 0.05, 0.072), 'rgba(210,150,255,0.7)', 0.11),
+      addHalo(THREE, head, new THREE.Vector3( 0.038, 0.05, 0.072), 'rgba(120,200,255,0.35)', 0.20),
+    ]) { h.userData.cwHalo.eye = true; eyeHalos.push(h); halos.push(h); }
     halos.push(addHalo(THREE, head, new THREE.Vector3( 0.0, 0.10, 0.055), 'rgba(255,230,255,0.75)', 0.10));
     halos.push(addHalo(THREE, head, new THREE.Vector3( 0.0, 0.10, 0.055), 'rgba(200,160,255,0.4)', 0.18));
   }
@@ -314,7 +321,25 @@ export function applyCosmic(THREE, model, { seedHex = 'zeref', quality = 'high',
     }
   }
 
-  return { update, setQuality: pushQuality, get quality() { return q; } };
+  function setIris(rgb, glow) {
+    const r = rgb && rgb.r != null ? rgb.r : 0.90;
+    const g = rgb && rgb.g != null ? rgb.g : 0.55;
+    const b = rgb && rgb.b != null ? rgb.b : 1.0;
+    const gl = glow == null ? 1 : Math.max(0, Math.min(1.4, Number(glow)));
+    for (const sh of shaders) {
+      if (sh.uniforms.uIris) sh.uniforms.uIris.value = [r, g, b];
+      if (sh.uniforms.uIrisGlow) sh.uniforms.uIrisGlow.value = gl;
+    }
+    for (const h of halos) {
+      if (h.userData && h.userData.cwHalo && h.userData.cwHalo.eye && h.material && h.material.color) {
+        h.material.color.setRGB(r, g, b);
+        h.material.opacity = 0.55 + 0.4 * gl;
+      }
+    }
+  }
+
+  return { update, setQuality: pushQuality, setIris, get quality() { return q; } };
+
 }
 
 /** Watch frame times and step the cosmic look down if a phone is struggling. */

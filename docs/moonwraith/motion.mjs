@@ -15,6 +15,8 @@
 //
 // Label: "moves chosen from Zeref's recorded state · SIMULATED motion".
 
+import { mapExpression } from './expression.mjs';
+
 export const ZERO_POSE = Object.freeze({
   headYaw: 0,
   headPitch: 0,
@@ -229,8 +231,13 @@ export function planFromHex(hex, live = {}) {
     },
   };
 
-  const rest = { ...ZERO_POSE, ...baselineMorph(live) };
+  const expr = mapExpression(live);
+  const rest = { ...ZERO_POSE, ...baselineMorph(live), ...(expr.pose || {}) };
   if (connected && !sleepy) rest.smile = Math.max(rest.smile || 0, 0.25);
+  if (expr.proud) {
+    rest.smile = Math.max(rest.smile || 0, 0.3);
+    rest.grin = Math.max(rest.grin || 0, 0.2);
+  }
 
   const acts = [];
   let t = 0;
@@ -353,6 +360,7 @@ export function planFromHex(hex, live = {}) {
     rest,
     reactions,
     caption: captionFor(live, String(hex)),
+    expression: expr,
     source: {
       fetched_at: live.fetched_at ?? null,
       heartbeat_tick: hb.recorded_tick ?? null,

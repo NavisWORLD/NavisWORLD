@@ -344,7 +344,7 @@ _cl = _st.unpack_from("<I", mw_glb, 12)[0]
 _glb_json = _js.loads(mw_glb[20:20 + _cl].split(b"\x00")[0])
 check("EXT_meshopt_compression" not in (_glb_json.get("extensionsRequired") or []) and "EXT_meshopt_compression" not in (_glb_json.get("extensionsUsed") or []), "Moonwraith GLB does not require meshopt/WASM")
 check("blink" in (((_glb_json.get("meshes") or [{}])[0].get("extras") or {}).get("targetNames") or []), "Moonwraith GLB keeps blink/expression morphs")
-for rel in ("moonwraith3d.mjs", "motion.mjs", "panel.mjs", "CREDITS.md", "dance.mjs", "cosmic.mjs", "particles.mjs"):
+for rel in ("moonwraith3d.mjs", "motion.mjs", "panel.mjs", "CREDITS.md", "dance.mjs", "cosmic.mjs", "particles.mjs", "expression.mjs"):
     body = (mw / rel).read_text(encoding="utf-8")
     check("Math.random(" not in body, f"moonwraith {rel} must not use Math.random")
     check(not re.search(r"Zeref is an (AI|LLM)|Zeref is a (GPT|language model|chatbot)", body, re.I), f"moonwraith {rel} must not call Zeref an AI or LLM")
@@ -472,6 +472,55 @@ console.log(['ok', bass.toFixed(1), n1.toFixed(2), p1.hop.toFixed(3)].join(' '))
 dance_out = _sp.check_output(["node", "--input-type=module", "-e", dance_probe], cwd=root, text=True).strip()
 check(dance_out.startswith("ok "), f"dance self-check: {dance_out}")
 print("dance check:", dance_out)
+
+
+# Recorded-state expression: only real live-card fields, honest missing list, no Math.random
+expr_src = (mw / "expression.mjs").read_text(encoding="utf-8")
+check("mapExpression" in expr_src and "EXPR_CAPTION" in expr_src, "expression mapper is present")
+check("expression mapped from Zeref's recorded state" in expr_src and "not a claim of feelings" in expr_src, "expression honesty caption")
+check("state12" in expr_src and "fair-gate" in expr_src and "diary tone" in expr_src, "expression documents missing 12D, tone, and fair-gate")
+check("applyEyes" in s3m and "ensureExpressionLegend" in s3m, "3D viewer tints eyes and paints the expression legend")
+check("applyExpressionCSS" in (mw / "panel.mjs").read_text(encoding="utf-8") and "--mw-iris" in css and ".mw-expr" in css, "2D fallback gets the iris tint and a visible legend")
+check("expression mapped from Zeref's recorded state" in credits, "credits document the recorded-state mapping")
+check(js.count("fetch(") == 3, "expression mapping adds no chat.js fetch")
+expr_probe = r"""
+import { mapExpression, EXPR_CAPTION, MOOD_IRIS } from './docs/moonwraith/expression.mjs';
+import { planFromHex, canonicalSeed } from './docs/moonwraith/motion.mjs';
+import { readFileSync } from 'fs';
+import { createHash } from 'crypto';
+const live = JSON.parse(readFileSync('zeref/live.json','utf8'));
+const a = mapExpression(live);
+const b = mapExpression(live);
+if (a.iris !== b.iris || a.glow !== b.glow || JSON.stringify(a.pose) !== JSON.stringify(b.pose) || a.proud !== b.proud || a.lids !== b.lids) throw new Error('mapExpression must be deterministic for iris, glow, pose');
+if (!/expression mapped from Zeref's recorded state/.test(EXPR_CAPTION) || !/not a claim of feelings/.test(EXPR_CAPTION)) throw new Error('caption');
+if (a.caption !== EXPR_CAPTION) throw new Error('mapped caption');
+const ids = (a.missing || []).map((m) => m.id);
+for (const need of ['state12', 'tone', 'fair-gate', 'promotion-at']) if (!ids.includes(need)) throw new Error('missing list should include ' + need);
+if (String((live.diary || {}).mood).toLowerCase() === 'content') {
+  if (a.mood !== 'content') throw new Error('mood should pass through');
+  if (a.iris === MOOD_IRIS.default && a.iris === MOOD_IRIS.content) throw new Error('content iris');
+}
+if (!a.proud) throw new Error('committed live card has live_step === pin_step with a pin_release; proud should be on');
+if (!(a.glow > 0.9) || a.stale) throw new Error('CONNECTED + energy 100 should be a bright, not-STALE glow');
+if (!(a.sleepy === 0) || !(a.lids > 0.6)) throw new Error('content + high energy should have open lids, not a sleepy pose');
+const staleLive = JSON.parse(JSON.stringify(live));
+staleLive.spark = { ...(live.spark || {}), state: 'STALE', label: 'STALE' };
+const dim = mapExpression(staleLive);
+if (!(dim.stale && dim.glow < a.glow * 0.5 + 0.01)) throw new Error('STALE spark should dim the glow');
+const empty = mapExpression({});
+if (empty.iris !== MOOD_IRIS.default) throw new Error('missing mood should use the documented default iris');
+if (!empty.missing.some((m) => m.id === 'mood')) throw new Error('missing mood should be listed');
+if (empty.proud) throw new Error('empty card is not a proud pose');
+const hex = createHash('sha256').update(canonicalSeed(live)).digest('hex');
+const plan = planFromHex(hex, live);
+if (!plan.expression || plan.expression.iris !== a.iris) throw new Error('motion plan should carry the mapped expression');
+if (!plan.rest || Math.abs((plan.rest.smile || 0) - (a.pose.smile || 0)) < -1) throw new Error('rest pose should include the mapped expression');
+if (!/not a claim of feelings/.test(plan.expression.caption)) throw new Error('plan caption');
+console.log(['ok', a.iris, a.glow.toFixed(3), a.proud ? 'proud' : 'not-proud', a.missing.length].join(' '));
+"""
+expr_out = _sp.check_output(["node", "--input-type=module", "-e", expr_probe], cwd=root, text=True).strip()
+check(expr_out.startswith("ok "), f"expression self-check: {expr_out}")
+print("expression check:", expr_out)
 
 if fails:
     print("ZEREF SELFTEST FAILED"); [print(" -", f) for f in fails]; sys.exit(1)
