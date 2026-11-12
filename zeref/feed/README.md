@@ -10,7 +10,7 @@ Anyone can offer Zeref a book or text through the **[Feed Zeref issue form](http
 | The file is stored as a **release asset** on the `zeref-feed` pre-release (never in plain git). A `manifest.json` (handle, issue url, source, license, sha256, size, mime, timestamp) lands in `zeref/feed/inbox/<issue>-<sha12>/` and the issue gets **`feed:pending`** | quarantine | automatic |
 | `/approve` → moved to `zeref/feed/approved/<id>/` with `approval.json`, label `feed:approved` | issue comment | **@NavisWORLD only** (repo owner) |
 | `/reject <reason>` → moved to `zeref/feed/rejected/<id>/` with `rejection.json`, the stored file is deleted, label `feed:rejected` | issue comment | **@NavisWORLD only** |
-| The reading index `zeref/feed/index/index.json` is rebuilt from **approved items only** (sha256 re-verified, text extracted, ~700-character passages, BM25 keyword stats; deterministic, no embeddings, no paid compute) | `feed.py index` | automatic |
+| The reading index `zeref/feed/index/index.json` is rebuilt from **approved items only** (sha256 re-verified, text extracted, ~420-character passages (so a passage fits his 300-byte reading slot), BM25 keyword stats; deterministic, no embeddings, no paid compute) | `feed.py index` | automatic |
 | Honest counts: `zeref/feed/status.json`, `assets/zeref-feed{,-mobile}.svg` (profile) and the Pages chat "reading shelf" line | `feed.py status` | automatic |
 
 ## What "approved" means: READ, NOT TRAINED

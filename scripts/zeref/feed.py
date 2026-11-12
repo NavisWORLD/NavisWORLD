@@ -337,7 +337,7 @@ def tokens(text: str) -> list[str]:
     return [t.strip("'") for t in TOKEN_RE.findall(text.lower()) if len(t.strip("'")) > 1 and t.strip("'") not in STOP]
 
 
-def chunk(text: str, size: int = 700) -> list[str]:
+def chunk(text: str, size: int = 420) -> list[str]:
     text = re.sub(r"[ \t]+", " ", text.replace("\r\n", "\n"))
     paras = [p.strip() for p in re.split(r"\n\s*\n", text) if p.strip()]
     out, cur = [], ""
