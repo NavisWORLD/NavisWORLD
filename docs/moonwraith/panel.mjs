@@ -7,11 +7,13 @@ import { attachDance, tickDance, applyDanceCSS, DANCE_CAPTION } from './dance.mj
 import { ensureSignalReadout } from './particles.mjs';
 import { mapExpression, applyExpressionCSS, ensureExpressionLegend } from './expression.mjs';
 import { startLiveCard } from './live-card.mjs';
+import { ensureWorldBackdrop, applyWorldCSS, WORLD_CAPTION } from './world.mjs';
 
 const el = document.getElementById('moonwraith');
 const st = document.getElementById('mw-status');
 if (!el) throw new Error('moonwraith stage missing');
 ensureSignalReadout(el);
+ensureWorldBackdrop(el, 'zeref');
 
 let started = false;
 let view = null;
@@ -28,6 +30,7 @@ startLiveCard({
   onUpdate({ live }) {
     const expr = mapExpression(live || {});
     applyExpressionCSS(el, expr);
+    applyWorldCSS(el.querySelector('.mw-world'), live);
     ensureExpressionLegend(el.parentElement || el, expr);
     if (view && typeof view.setLive === 'function') view.setLive(live, expr);
   },
@@ -38,17 +41,22 @@ window.addEventListener('zeref-song-tap', (e) => {
   if (audio) attachDance(audio);
 });
 
+function withWorldCaption(s) {
+  const t = String(s || '');
+  return t.includes(WORLD_CAPTION) ? t : (t ? t + ' · ' + WORLD_CAPTION : WORLD_CAPTION);
+}
+
 function setStatus(s) {
   if (!st) return;
   if (/dancing to Cory's song/.test(String(s))) {
-    st.textContent = s;
-    st.title = s;
+    st.textContent = withWorldCaption(s);
+    st.title = withWorldCaption(s);
     return;
   }
   const parts = String(s).split(' · ');
   const last = parts[parts.length - 1];
   const phase = ['listen', 'think', 'reply', 'error'].includes(last) ? last : '';
-  st.textContent = "moves chosen from Zeref's recorded state · SIMULATED motion" + (phase ? ' · ' + phase : '');
+  st.textContent = withWorldCaption("moves chosen from Zeref's recorded state · SIMULATED motion" + (phase ? ' · ' + phase : ''));
   st.title = s;
 }
 
@@ -57,7 +65,7 @@ async function start() {
   started = true;
   const c = canRun3D();
   if (!c.ok) {
-    st.textContent = '2D portrait (' + c.why + ') · his canonical Moonwraith art';
+    st.textContent = withWorldCaption('2D portrait (' + c.why + ') · his canonical Moonwraith art');
     try {
       const { loadLive } = await import('./motion.mjs');
       const { live } = await loadLive();
@@ -72,9 +80,10 @@ async function start() {
     const { mount } = await import('./moonwraith3d.mjs');
     view = await mount(el, { onStatus: setStatus, reducedMotion: reduced });
     el.querySelector('.portrait')?.remove();
-    if (reduced) st.textContent = (view.plan && view.plan.caption ? view.plan.caption + ' · ' : '') + 'still pose (reduced motion is on)';
+    el.querySelector('.mw-world')?.setAttribute('hidden', '');
+    if (reduced) st.textContent = withWorldCaption((view.plan && view.plan.caption ? view.plan.caption + ' · ' : '') + 'still pose (reduced motion is on)');
   } catch (err) {
-    st.textContent = '2D portrait (3D could not start) · his canonical Moonwraith art';
+    st.textContent = withWorldCaption('2D portrait (3D could not start) · his canonical Moonwraith art');
     try {
       const { loadLive } = await import('./motion.mjs');
       const { live } = await loadLive();
@@ -99,7 +108,7 @@ new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) start()
   const sig = tickDance();
   applyDanceCSS(el, sig);
   if (sig && sig.active && st && !/thinking|reply|listen/.test(st.textContent || '')) {
-    st.textContent = DANCE_CAPTION;
-    st.title = DANCE_CAPTION;
+    st.textContent = withWorldCaption(DANCE_CAPTION);
+    st.title = withWorldCaption(DANCE_CAPTION);
   }
 })();

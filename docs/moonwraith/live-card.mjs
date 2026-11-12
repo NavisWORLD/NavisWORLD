@@ -44,11 +44,15 @@ export function freshnessBadge(iso, now = Date.now(), origin = null) {
 
 export function shortProvenance(label) {
   const t = String(label || '');
+  // "LOCAL SIMULATED" is a single origin token and must win over a bare SIMULATED.
   if (/LOCAL SIMULATED/i.test(t)) return 'LOCAL SIMULATED';
-  if (/SIMULATED/i.test(t)) return 'SIMULATED';
-  if (/RECORDED/i.test(t)) return 'RECORDED';
-  if (/PINNED/i.test(t)) return 'PINNED';
-  if (/STALE/i.test(t)) return 'STALE';
+  // The first provenance token wins. A later parenthetical (e.g. a RECORDED
+  // diary whose "growth circuit is Rigetti SIMULATED") must not override a
+  // leading RECORDED mood label.
+  const first = (t.match(/\b(RECORDED|PINNED|STALE|SIMULATED)\b/i) || [])[0];
+  if (!first) return '';
+  const u = first.toUpperCase();
+  if (u === 'RECORDED' || u === 'PINNED' || u === 'STALE' || u === 'SIMULATED') return u;
   return '';
 }
 
