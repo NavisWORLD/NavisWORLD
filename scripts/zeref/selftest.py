@@ -193,6 +193,17 @@ check("SIMULATED" in html and "RECORDED" in html and "PINNED" in html, "honesty 
 check("Content-Security-Policy" in html and "script-src 'self'" in html and "connect-src https://www.beastboxcosmos.xyz https://raw.githubusercontent.com" in html, "strict CSP")
 check(not re.search(r"(token|secret|api[_-]?key|bearer|password)\w*['\"]?\s*[:=]", js, re.I) and "Authorization" not in js, "no secrets in the client")
 check("talk-to-zeref.yml" in html, "Pages chat keeps the issue fallback")
+# Cory's song on the Pages chat: tap to play, no autoplay, same-origin MP3, credited.
+song = docs / "zeref-song.mp3"
+check(song.is_file() and song.stat().st_size > 1_000_000 and song.read_bytes()[:3] == b"ID3", "song MP3 is present")
+check((docs / "zeref-song-wave.png").is_file(), "song waveform image is present")
+check('id="music"' in html and "Tap to play Cory's song" in html, "music player and tap-to-play prompt")
+check('preload="none"' in html and "playsinline" in html and 'type="audio/mpeg"' in html and "zeref-song.mp3" in html, "Safari-friendly audio (preload=none, playsinline, mpeg)")
+check("loop" in html and not re.search(r"<audio[^>]*\bautoplay\b", html), "song loops; no autoplay")
+check("Music by Cory (NavisWORLD)" in html, "song is credited to Cory")
+check("media-src 'self'" in html, "CSP allows same-origin audio")
+check("audio.play(" in js and "play-song" in js and js.count("fetch(") == 3, "play starts from a tap; no extra fetch")
+check("https://navisworld.github.io/NavisWORLD/#music" in (root / "README.md").read_text(encoding="utf-8") and "Listen to Zeref's song" in (root / "README.md").read_text(encoding="utf-8"), "profile Listen link points at the player")
 check("prefers-reduced-motion" in css and "font:17px" in css, "reduced motion + 17px text (no iOS zoom)")
 for p in (root / "assets").glob("zeref-*.svg"):
     check(p.stat().st_size < 300_000, f"{p.name} over 300 KB")

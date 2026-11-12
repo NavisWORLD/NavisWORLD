@@ -129,5 +129,26 @@
   msg.addEventListener('input', () => { msg.style.height = 'auto'; msg.style.height = Math.min(140, msg.scrollHeight) + 'px'; });
   $('fresh').addEventListener('click', () => { try { localStorage.removeItem(KEY); } catch { /* nothing kept */ } note('Started fresh: the next message opens a new guestbook thread.'); });
   status();
+
+  // Cory's song: starts only after a tap (phones block autoplay with sound). Loops while playing. No fetch.
+  const audio = $('song'), playBtn = $('play-song'), prompt = $('music-prompt'), player = $('music');
+  const icon = playBtn.querySelector('.play-icon');
+  function setPlaying(on) {
+    player.classList.toggle('playing', on);
+    playBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    playBtn.setAttribute('aria-label', on ? 'Pause Cory\'s song' : 'Tap to play Cory\'s song');
+    prompt.textContent = on ? 'Now playing · tap to pause' : 'Tap to play Cory\'s song';
+    if (icon) icon.textContent = on ? '❚❚' : '▶';
+  }
+  playBtn.addEventListener('click', () => {
+    if (audio.paused) {
+      const p = audio.play();
+      if (p && typeof p.then === 'function') p.catch(() => { prompt.textContent = 'The song couldn\'t start in this browser. Tap play again.'; setPlaying(false); });
+    } else {
+      audio.pause();
+    }
+  });
+  audio.addEventListener('play', () => setPlaying(true));
+  audio.addEventListener('pause', () => setPlaying(false));
   shelf();
 })();
