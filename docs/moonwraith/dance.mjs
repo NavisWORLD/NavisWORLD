@@ -19,6 +19,20 @@
 //   melody (centroid / pitch) -> head tilt / gaze
 //   bass / mids / highs / RMS, perk, drop, settle, curious stay as they were
 //
+// While the song is playing, EVERY animated bone and morph is driven by
+// those live features (plus a music clock that advances only as loudness
+// and flux move — not a wall-clock idle, not a fake metronome). Recorded
+// mood from the live card only scales style and amplitude, never timing.
+// Quiet passages get a smaller amplitude; motion does not stop. When the
+// song pauses or ends, the seeded idle plan takes over again.
+//
+// Face and eyes (no eye or jaw bones on the sculpt): lid morphs blink
+// and squint on snares, phrase boundaries and downbeats; gaze is head
+// and neck aiming from centroid and pitch class; iris / crescent glow
+// pulses with bass and RMS on top of the recorded mood tint; mouth_o /
+// smile / grin follow mid / vocal energy; brows follow mids; the head
+// nods on the beat (or the music clock).
+//
 // Label: "dancing to Cory's song · driven by the live audio signal".
 // Signal readout: "live audio signal · beat · harmonics" plus BPM/confidence
 // and the current pitch class.
@@ -160,11 +174,19 @@ const ZERO_SIG = Object.freeze({
   bpm: 0, beatConf: 0, beatPhase: 0, barBeat: 0, downbeat: 0, anticip: 0, useGrid: false,
   chromaPc: -1, chromaName: '—', chromaHue: '#a78bfa', chromaConf: 0,
   harmonic: 0, percussive: 0, chordChange: 0, beatPulse: 0,
+  musicPhase: 0, blinkEnv: 0, squint: 0, flux: 0,
 });
 
 export function dancePose(rest, sig) {
   const r = rest || {};
-  const g = 0.5 + 0.6 * (sig.loud || 0); // overall energy scales the moves
+  const playing = !!(sig && sig.playing);
+  const loud = sig.loud || 0;
+  // Mood only scales how big the move is, never when it happens.
+  const moodAmp = 1 - 0.22 * (r.sleepy || 0);
+  // While music is playing he never freezes: a floor keeps the body
+  // moving in quiet passages, then amplitude follows RMS / bands.
+  const amp = ((playing ? 0.28 : 0) + 0.72 * Math.max(loud, sig.bass || 0, sig.mid || 0, 0.001)) * moodAmp;
+  const g = (0.45 + 0.65 * loud) * moodAmp;
   const bass = (sig.bass || 0) * g;
   const mid = (sig.mid || 0) * g;
   const high = (sig.high || 0) * g;
@@ -172,9 +194,9 @@ export function dancePose(rest, sig) {
   const side = sig.earSide < 0 ? -1 : 1;
   const flick = sig.earFlick || 0;
   const fl = sig.flourish || 0;
-  const spin = sig.spin || 0; // 0..1 progress of a full turn; 0 when not spinning
+  const spin = sig.spin || 0;
   const perk = sig.perk || 0;
-  const settle = sig.settle || 0;
+  const settle = playing ? 0 : (sig.settle || 0);
   const cur = sig.curious || 0;
   const startle = sig.startle || 0;
   const pounce = sig.pounce || 0;
@@ -196,56 +218,71 @@ export function dancePose(rest, sig) {
   const kickF = sig.kickFollow || 0;
   const snareF = sig.snareFollow || 0;
   const hatF = sig.hatFollow || 0;
-  // Step / sway only from a confident beat phase — otherwise no invented grid.
-  const step = useGrid ? Math.sin(phase * Math.PI * 2) : 0;
-  const swayBeat = useGrid ? Math.sin(phase * Math.PI * 2) * (0.10 + 0.10 * down) * conf : 0;
-  const wingBeat = useGrid ? Math.sin(phase * Math.PI) * harm * 0.55 * conf : harm * 0.22;
+  const flux = sig.flux || 0;
+  const blinkEnv = sig.blinkEnv || 0;
+  const squint = sig.squint || 0;
+  // Music clock (rate comes from live loudness/flux in tickDance). When a
+  // beat grid is confident we prefer that phase for steps and nods.
+  const clock = useGrid ? phase * Math.PI * 2 : (sig.musicPhase || 0);
+  const step = Math.sin(clock) * amp;
+  const swayBeat = Math.sin(clock) * (0.10 + 0.10 * down * (useGrid ? conf : 0)) * amp;
+  const wingBeat = (useGrid ? Math.sin(phase * Math.PI) * conf : Math.sin(clock * 0.5)) * (0.22 + harm * 0.55) * amp;
+  const nod = (useGrid ? Math.sin(phase * Math.PI * 2) : Math.sin(clock)) * (0.10 + 0.16 * (kick + loud)) * amp;
+  const wave = Math.sin(clock) * (0.12 + kick * 0.35 + kickF * 0.4) * amp + kickHit * 0.2;
   const pc = sig.chromaPc == null ? -1 : sig.chromaPc;
-  const gaze = pc >= 0 ? ((pc / 11) * 2 - 1) * 0.16 * (sig.chromaConf || 0) : 0;
-  // In the air (hop high) he stretches; as the hop lands he squashes; bass also compresses the chest.
-  // Kick and anticipated beats add to the same squash, so the landing still reads as a kick.
+  const gaze = pc >= 0 ? ((pc / 11) * 2 - 1) * 0.22 * Math.max(sig.chromaConf || 0, 0.25) : 0;
+  const melody = sig.centroid != null ? (sig.centroid - 0.5) : 0;
   const kickHop = hop + anticip * (0.7 + 0.3 * down) + kickHit * 0.25;
   const squash = bass * 0.22 + kick * 0.18 - hop * 0.7 - anticip * 0.45 + fl * 0.08 + startle * 0.7 - pounce * 0.55 + settle * 0.12 + kickHit * 0.15;
   const engage = 1 - settle * 0.85;
+  // Face: lid/mouth/brow morphs (no eye or jaw bones on the sculpt).
+  const mouth = (mid * 0.55 + (sig.mid || 0) * 0.25 + fl * 0.4 + cur * 0.15) * engage;
   return {
-    headYaw: (mid * 0.16 * side + fl * 0.22 * side) * (1 - perk) * engage + sway * 0.55 * engage + cur * 0.18 * side + gaze * engage + snareHit * 0.22 * side + chord * 0.35 * side,
-    headPitch: (-0.10 - mid * 0.48 - bass * 0.16 - hop * 0.08 + fl * 0.12) * engage
+    headYaw: (mid * 0.16 * side + fl * 0.22 * side) * (1 - perk) * engage + sway * 0.55 * engage + cur * 0.18 * side + gaze * engage + snareHit * 0.22 * side + chord * 0.4 * side + Math.sin(clock * 0.5) * 0.04 * amp,
+    headPitch: (-0.08 - mid * 0.36 - bass * 0.12 - hop * 0.08 + fl * 0.12) * engage
       + perk * -0.14 + startle * 0.18 + pounce * -0.22 + settle * 0.12 + cur * 0.06
-      + snareHit * -0.18 + (sig.centroid != null ? (sig.centroid - 0.5) * 0.22 : 0) * engage,
-    headRoll: (mid * 0.18 * side + fl * 0.28 * side) * engage + cur * 0.32 * side + startle * -0.12 * side + snare * 0.2 * side + gaze * 0.4,
-    earL: (0.12 + mid * 0.4 + (side > 0 ? flick * 1.05 : flick * 0.2) + fl * 0.25) * engage
-      + perk * 0.7 + startle * -0.45 + pounce * 0.25 + cur * 0.45 + snareHit * (side > 0 ? 0.7 : 0.2),
-    earR: (0.12 + mid * 0.4 + (side < 0 ? flick * 1.05 : flick * 0.2) + fl * 0.25) * engage
-      + perk * 0.7 + startle * -0.45 + pounce * 0.25 + cur * -0.15 + snareHit * (side < 0 ? 0.7 : 0.2),
+      + snareHit * -0.18 + melody * 0.28 * engage - nod,
+    headRoll: (mid * 0.18 * side + fl * 0.28 * side) * engage + cur * 0.32 * side + startle * -0.12 * side + snare * 0.2 * side + gaze * 0.4 + Math.sin(clock * 1.3) * 0.03 * amp,
+    earL: (0.12 + mid * 0.5 + (side > 0 ? flick * 1.05 : flick * 0.2) + fl * 0.25) * engage
+      + perk * 0.7 + startle * -0.45 + pounce * 0.25 + cur * 0.45 + snareHit * (side > 0 ? 0.7 : 0.2) + Math.sin(clock * 1.1) * 0.08 * amp,
+    earR: (0.12 + mid * 0.5 + (side < 0 ? flick * 1.05 : flick * 0.2) + fl * 0.25) * engage
+      + perk * 0.7 + startle * -0.45 + pounce * 0.25 + cur * -0.15 + snareHit * (side < 0 ? 0.7 : 0.2) + Math.sin(clock * 1.1 + 0.7) * 0.08 * amp,
     wing: (0.18 + high * 1.05 + bass * 0.28 + hop * 0.2 + fl * 0.7 + harm * 0.7 + wingBeat) * engage + pounce * 0.7 - startle * 0.15,
-    tail: ((high * 1.15 + mid * 0.5 + fl * 0.4 + hat * 0.35) * side) * engage + pounce * 0.3 * side,
-    hop: (kickHop * 0.145 + bass * 0.05 + kick * 0.04) * engage + pounce * 0.12 + startle * -0.012,
-    lean: (bass * 0.09 - mid * 0.03 + side * high * 0.05) * engage + perk * 0.05 + pounce * 0.1 + startle * -0.06 + swayBeat + step * 0.04 * conf,
+    tail: ((high * 1.15 + mid * 0.5 + fl * 0.4 + hat * 0.35) * side) * engage + pounce * 0.3 * side + wave * 0.35,
+    hop: (kickHop * 0.145 + bass * 0.05 + kick * 0.04 + Math.abs(Math.sin(clock)) * 0.012 * amp) * engage + pounce * 0.12 + startle * -0.012,
+    lean: (bass * 0.09 - mid * 0.03 + side * high * 0.05) * engage + perk * 0.05 + pounce * 0.1 + startle * -0.06 + swayBeat + step * 0.04,
     squash,
     spin: spin * Math.PI * 2 + chord * 0.55 * side,
-    blink: startle * 0.35,
-    happy: Math.max(r.happy || 0, (0.2 + (sig.loud || 0) * 0.45 + fl * 0.25) * engage + pounce * 0.35 + perk * 0.2),
-    curious: fl * 0.2 + perk * 0.45 + cur * 0.75,
-    sleepy: settle * 0.35,
+    blink: Math.max(0, Math.min(1, blinkEnv * 0.95 + startle * 0.35 + squint * 0.28)),
+    happy: Math.max(r.happy || 0, (0.15 + loud * 0.4 + fl * 0.25) * engage + pounce * 0.35 + perk * 0.2 + down * squint * 0.55 + squint * 0.35),
+    curious: fl * 0.2 + perk * 0.45 + cur * 0.75 + Math.max(0, melody) * 0.2,
+    sleepy: playing ? squint * 0.22 + blinkEnv * 0.08 : settle * 0.35 + (r.sleepy || 0) * 0.15,
     scared: startle * 0.55,
-    grin: ((sig.loud || 0) * 0.35 + fl * 0.3) * engage + pounce * 0.25,
-    smile: Math.max(r.smile || 0, (0.25 + (sig.loud || 0) * 0.35) * engage + perk * 0.2) * (1 - startle * 0.6),
-    mouthO: fl * 0.55 + startle * 0.35 + cur * 0.2,
-    browsUp: (mid * 0.3 + fl * 0.35) * engage + perk * 0.4 + cur * 0.55 + flare * 0.15,
-    breath: 0.5 + (bass * 0.55 + hop * 0.25) * engage,
+    grin: (loud * 0.3 + fl * 0.3) * engage + pounce * 0.25 + squint * 0.15,
+    smile: Math.max(r.smile || 0, (0.2 + loud * 0.3) * engage + perk * 0.2 + squint * 0.2) * (1 - startle * 0.6),
+    mouthO: fl * 0.45 + startle * 0.3 + cur * 0.15 + mouth,
+    browsUp: (mid * 0.55 + fl * 0.35) * engage + perk * 0.4 + cur * 0.4 + flare * 0.15 + Math.sin(clock) * 0.08 * mid,
+    breath: 0.5 + (useGrid ? Math.sin(phase * Math.PI * 2) : Math.sin(clock)) * (0.22 + 0.35 * loud + 0.2 * kick) * engage,
     flare,
-    // --- his own structure (real bones), layered on the same rest ---
-    earTipL: (snareF * (side > 0 ? 0.9 : 0.25) + hatF * 0.2) * engage,
-    earTipR: (snareF * (side < 0 ? 0.9 : 0.25) + hatF * 0.2) * engage,
-    wingTip: (hatHit * 0.7 + hatF * 0.55 + hat * 0.25) * engage,
-    tailTip: (hatHit * 1.1 + hatF * 0.8 + hat * 0.35) * side * engage,
-    legL: Math.max(0, step) * 0.45 * conf * engage + kickF * 0.12,
-    legR: Math.max(0, -step) * 0.45 * conf * engage + kickF * 0.12,
-    pawL: Math.max(0, step) * 0.25 * conf * engage + kickF * 0.08,
-    pawR: Math.max(0, -step) * 0.25 * conf * engage + kickF * 0.08,
+    earTipL: (snareF * (side > 0 ? 0.9 : 0.25) + hatF * 0.2 + mid * 0.12) * engage,
+    earTipR: (snareF * (side < 0 ? 0.9 : 0.25) + hatF * 0.2 + mid * 0.12) * engage,
+    wingTip: (hatHit * 0.7 + hatF * 0.55 + hat * 0.25 + high * 0.15) * engage,
+    tailTip: (hatHit * 1.1 + hatF * 0.8 + hat * 0.35) * side * engage + wave * 0.4,
+    // Follow-through down the tail: each segment lags the kick/spine wave.
+    tailWave: wave,
+    legL: Math.max(0, step) * 0.5 * engage + kickF * 0.12 + (playing ? amp * 0.04 : 0),
+    legR: Math.max(0, -step) * 0.5 * engage + kickF * 0.12 + (playing ? amp * 0.04 : 0),
+    pawL: Math.max(0, step) * 0.28 * engage + kickF * 0.08,
+    pawR: Math.max(0, -step) * 0.28 * engage + kickF * 0.08,
     chestYaw: (swayBeat + gaze * 0.3 + chord * 0.2 * side) * engage,
-    chestPitch: (kick * 0.08 - hop * 0.06 + harm * 0.05) * engage,
-    wingSpread: (harm * 0.85 + wingBeat) * engage,
+    chestPitch: (kick * 0.08 - hop * 0.06 + harm * 0.05 + wave * 0.15) * engage,
+    wingSpread: (harm * 0.85 + wingBeat + high * 0.15) * engage,
+    spinePitch: wave * 0.55 * engage,
+    spineYaw: swayBeat * 0.6 * engage + gaze * 0.08,
+    spineRoll: step * 0.08 * engage,
+    driftX: Math.sin(clock * 0.35) * (0.01 + bass * 0.045 + kick * 0.02) * engage,
+    camBob: ((useGrid && down ? (sig.beatPulse || anticip || kickHit) * 0.018 : 0) + kick * 0.01 + Math.sin(clock) * 0.004 * amp) * engage,
+    pulse: (bass * 0.55 + loud * 0.65 + kick * 0.3 + (sig.kickHit || 0) * 0.35),
   };
 }
 
@@ -290,6 +327,9 @@ const st = {
   quietDet: { prev: 0, last: -20, t: 0 },
   sig: { ...ZERO_SIG },
   rhythm: makeRhythmState(),
+  musicPhase: 0,
+  blinkT: 0,
+  squint: 0,
 };
 
 function acCtor() {
@@ -401,13 +441,21 @@ export function tickDance(nowMs) {
   // Absolute loudness (not peak-normalized) so a real quiet passage still reads as quiet.
   const loudAbs = smoothToward(st.loudAbs, running ? loudR : 0, dt, running ? 0.07 : 0.2);
 
+  if (running) {
+    // Music clock: the rate is the live signal, so quiet passages slow down
+    // but never freeze, and nothing here is a wall-clock idle or a metronome.
+    const rate = 0.45 + loudE * 1.6 + (rhy.flux || 0) * 5 + (rhy.kick || 0) * 0.45 + midE * 0.35;
+    st.musicPhase += dt * rate;
+    if (rhy.useGrid && rhy.downbeat && (rhy.anticip > 0.7 || rhy.beatPulse)) st.squint = 1;
+  }
+
   if (running && !st.wasRunning) st.perkHold = 1.15;
   st.wasRunning = running;
   st.playAge = running ? (st.playAge || 0) + dt : 0;
   if (running) st.didPlay = true;
   st.perkHold = Math.max(0, st.perkHold - dt);
   const perkE = smoothToward(st.perk, st.perkHold > 0 ? 1 : 0, dt, st.perkHold > 0 ? 0.12 : 0.45);
-  const wantSettle = !running || loudE < 0.12;
+  const wantSettle = !running; // quiet passages keep moving; only a pause/end sits him down
   const settleE = smoothToward(st.settle, wantSettle ? 1 : 0, dt, wantSettle ? 0.7 : 0.22);
 
   if (running) {
@@ -434,6 +482,16 @@ export function tickDance(nowMs) {
     detectDrop(st.dropDet, loudAbs, dt);
     detectSuddenQuiet(st.quietDet, loudAbs, dt, false);
   }
+  if (running) {
+    const phrase = ((st.curious && st.curious.env) > 0.85) || (st.dropT > 0 && st.dropT < 0.06);
+    if ((rhy.snareHit > 0.8 || phrase) && st.blinkT <= 0) st.blinkT = 0.001;
+  }
+  if (st.blinkT > 0) {
+    st.blinkT += dt / 0.11;
+    if (st.blinkT >= 1) st.blinkT = 0;
+  }
+  st.squint = Math.max(0, (st.squint || 0) - dt / 0.16);
+  const blinkEnv = st.blinkT > 0 ? Math.sin(st.blinkT * Math.PI) : 0;
   const curE = smoothToward(st.curious, 0, dt, 0.5); // decays from spikes written to env
   st.hop = Math.max(0, st.hop - dt / 0.18);
   st.earFlick = Math.max(0, st.earFlick - dt / 0.14);
@@ -497,6 +555,10 @@ export function tickDance(nowMs) {
     percussive: rhy.percussive,
     chordChange: rhy.chordChange,
     beatPulse: rhy.beatPulse,
+    musicPhase: st.musicPhase,
+    blinkEnv,
+    squint: st.squint,
+    flux: rhy.flux,
   };
   return st.sig;
 }
@@ -520,6 +582,15 @@ export function applyDanceCSS(el, sig) {
   el.style.setProperty('--dance-kick', (active ? (sig.kickHit || sig.kick || 0) : 0).toFixed(3));
   el.style.setProperty('--dance-beat', (active ? ((sig.downbeat ? 1 : 0) * (sig.beatPulse || sig.anticip || 0) + (sig.kickHit || 0) * 0.6) : 0).toFixed(3));
   el.style.setProperty('--dance-hue', (active && sig.chromaHue) ? sig.chromaHue : '#a78bfa');
+  const pose2d = (playing || active) ? dancePose({}, sig) : null;
+  el.style.setProperty('--dance-gaze', pose2d ? (pose2d.headYaw || 0).toFixed(3) : '0');
+  el.style.setProperty('--dance-nod', pose2d ? (pose2d.headPitch || 0).toFixed(3) : '0');
+  el.style.setProperty('--dance-blink', pose2d ? (pose2d.blink || 0).toFixed(3) : '0');
+  el.style.setProperty('--dance-squint', (active ? (sig.squint || 0) : 0).toFixed(3));
+  el.style.setProperty('--dance-breath', pose2d ? (pose2d.breath || 0.5).toFixed(3) : '0.5');
+  el.style.setProperty('--dance-pulse', pose2d ? (pose2d.pulse || 0).toFixed(3) : '0');
+  el.style.setProperty('--dance-drift', pose2d ? (pose2d.driftX || 0).toFixed(3) : '0');
+  el.style.setProperty('--dance-phase', (active ? (sig.musicPhase || 0) : 0).toFixed(3));
   const meter = el.querySelector('.mw-signal');
   if (meter) {
     meter.hidden = !playing && !(sig && sig.active && (sig.settle || 0) < 0.85);

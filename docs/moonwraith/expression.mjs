@@ -315,10 +315,11 @@ export function ensureExpressionLegend(host, expr) {
  * iris and glow. Both eyes share one material, and there is no pupil morph,
  * so pupil size is approximated with lids + glow, not a made-up UV pupil.
  */
-export function applyEyes(model, expr, { flare = 0, cosmic = null } = {}) {
+export function applyEyes(model, expr, { flare = 0, cosmic = null, pulse = 0 } = {}) {
   if (!model || !expr) return;
   const rgb = expr.irisRgb || hexToRgb(expr.iris);
-  const glow = (expr.glow || 0.5) * (1 + Math.max(0, flare) * 0.7);
+  // Mood tint stays the base color; bass / RMS only pulse the brightness.
+  const glow = (expr.glow || 0.5) * (1 + Math.max(0, flare) * 0.7 + Math.max(0, pulse) * 0.85);
   const sleepy = expr.sleepy || 0;
   const eyeI = 0.45 + glow * 0.40 - sleepy * 0.15;
   if (cosmic && typeof cosmic.setIris === 'function') cosmic.setIris(rgb, glow);

@@ -285,10 +285,13 @@ export function applyCosmic(THREE, model, { seedHex = 'zeref', quality = 'high',
   }
 
   function update(t, dance) {
+    const playing = !!(dance && dance.playing);
     const idleGlow = 0.22 + 0.20 * (0.5 + 0.5 * Math.sin(t * 1.35));
-    const pulse = dance && dance.active
-      ? (0.40 * dance.loud + 0.40 * dance.high + 0.25 * dance.bass + 0.3 * (dance.hop || 0))
-      : idleGlow;
+    const pulse = playing
+      ? (0.35 * dance.loud + 0.35 * (dance.high || 0) + 0.25 * (dance.bass || 0) + 0.25 * (dance.hop || 0) + 0.2 * (dance.pulse || 0) + 0.15)
+      : (dance && dance.active
+        ? (0.40 * dance.loud + 0.40 * dance.high + 0.25 * dance.bass + 0.3 * (dance.hop || 0))
+        : idleGlow);
     for (const sh of shaders) {
       if (sh.uniforms.uCwTime) sh.uniforms.uCwTime.value = t;
       if (sh.uniforms.uCwSeed) sh.uniforms.uCwSeed.value = seed;

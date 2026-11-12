@@ -148,8 +148,8 @@ export async function mount(el, {
 
   let userOrbit = false;
   controls.addEventListener('start', () => { userOrbit = true; });
-  function placeCamera(yaw) {
-    camera.position.set(face.x + Math.sin(yaw) * radius, camHeight, face.z + Math.cos(yaw) * radius);
+  function placeCamera(yaw, bob = 0) {
+    camera.position.set(face.x + Math.sin(yaw) * radius, camHeight + bob, face.z + Math.cos(yaw) * radius);
     camera.lookAt(face);
     controls.target.copy(face);
     controls.update();
@@ -206,6 +206,7 @@ export async function mount(el, {
       named.root.position.copy(b.p);
       named.root.position.y += pose.hop || 0;
       named.root.position.z += (pose.lean || 0);
+      named.root.position.x += pose.driftX || 0;
       const spin = pose.spin || 0;
       eul.set(0, spin, (pose.lean || 0) * 0.8);
       named.root.quaternion.copy(b.q).multiply(quat.setFromEuler(eul));
@@ -237,12 +238,14 @@ export async function mount(el, {
     addLocal(named.wing2R, tip * 0.15, 0, tip * 0.7);
     const tw = Math.max(-1.8, Math.min(1.8, pose.tail || 0));
     const tipT = Math.max(-1.6, Math.min(1.6, pose.tailTip || 0));
-    addLocal(named.tail0, 0.05 * tw, tw * 0.45, 0);
-    addLocal(named.tail1, 0, tw * 0.55, 0);
-    addLocal(named.tail2, 0, tw * 0.7, 0);
-    addLocal(named.tail3, 0, tw * 0.5 + tipT * 0.55, tipT * 0.15);
-    addLocal(named.tail4, 0, tw * 0.35 + tipT * 0.85, tipT * 0.25);
+    const wave = pose.tailWave || 0;
+    addLocal(named.tail0, 0.05 * tw + wave * 0.15, tw * 0.45 + wave * 0.35, 0);
+    addLocal(named.tail1, wave * 0.1, tw * 0.55 + wave * 0.5, 0);
+    addLocal(named.tail2, 0, tw * 0.7 + wave * 0.7, wave * 0.08);
+    addLocal(named.tail3, 0, tw * 0.5 + tipT * 0.55 + wave * 0.85, tipT * 0.15);
+    addLocal(named.tail4, 0, tw * 0.35 + tipT * 0.85 + wave * 1.05, tipT * 0.25);
     addLocal(named.chest, pose.chestPitch || 0, pose.chestYaw || 0, 0);
+    addLocal(named.spine, pose.spinePitch || 0, pose.spineYaw || 0, pose.spineRoll || 0);
     addLocal(named.legL, (pose.legL || 0) * 0.7, 0, 0);
     addLocal(named.legR, (pose.legR || 0) * 0.7, 0, 0);
     addLocal(named.pawL, (pose.pawL || 0) * 0.5, 0, 0);
@@ -279,6 +282,9 @@ export async function mount(el, {
     applyDanceCSS(el, sig);
     const chatWins = phase !== 'idle' && phaseAmt > 0.25;
     if (reducedMotion) return { ...ZERO_POSE, ...(plan.rest || {}), breath: 0.5 };
+    // While the song is playing, the live audio drives the entire body —
+    // chat reactions wait until the music stops.
+    if (sig && sig.playing) return dancePose(plan.rest, sig);
     if (sig && sig.active && !chatWins) return dancePose(plan.rest, sig);
     let pose = livePose(plan, t);
     const reaction = plan.reactions && plan.reactions[phase];
@@ -306,14 +312,21 @@ export async function mount(el, {
     applyPose(pose);
     const sig = tickDance(); // same-frame no-op if compose just ticked
     const chatWins = phase !== 'idle' && phaseAmt > 0.25;
-    const dancing = !!(sig && sig.active) && !chatWins && !reducedMotion;
-    cosmic.update(t, dancing ? sig : null);
-    particles.update(t, sig, { reducedMotion });
+    const songOn = !!(sig && sig.playing) && !reducedMotion;
+    const dancing = (songOn || (!!(sig && sig.active) && !chatWins)) && !reducedMotion;
+    const musicClock = songOn ? (sig.musicPhase || t) : t;
+    cosmic.update(musicClock, songOn ? sig : (dancing ? sig : null));
+    particles.update(musicClock, sig, { reducedMotion, wallTime: t });
     ring.update(t, sig);
-    if (expr) applyEyes(model, expr, { flare: dancing && sig ? (sig.flare || sig.high || 0) : 0, cosmic });
+    if (expr) applyEyes(model, expr, {
+      flare: dancing && sig ? (sig.flare || sig.high || 0) : 0,
+      pulse: songOn && sig ? ((sig.bass || 0) * 0.55 + (sig.loud || 0) * 0.65 + (sig.kick || 0) * 0.3 + (sig.kickHit || 0) * 0.35) : 0,
+      cosmic,
+    });
     watchQuality(dt);
     const yawSway = reducedMotion || dancing ? 0 : 0.14 * Math.sin(t * 0.42);
-    if (!userOrbit) placeCamera(homeYaw + yawSway + (pose.headYaw || 0) * 0.15);
+    const bob = (!userOrbit && songOn) ? (pose.camBob || 0) : 0;
+    if (!userOrbit) placeCamera(homeYaw + yawSway + (pose.headYaw || 0) * 0.15, bob);
     else controls.update();
     const label = dancing ? DANCE_CAPTION : (plan.caption + (phase !== 'idle' ? ' · ' + phase : ''));
     if (label !== lastLabel) { onStatus(label); lastLabel = label; }
