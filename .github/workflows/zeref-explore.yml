@@ -1,0 +1,46 @@
+name: Zeref explores GitHub
+
+# Once a day Zeref walks NavisWORLD's public repos (public API data only),
+# writes zeref/notes.md, and records one verbatim line from him.
+on:
+  schedule:
+    - cron: "41 15 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: read
+
+concurrency:
+  group: zeref-profile-commit
+  cancel-in-progress: false
+
+jobs:
+  explore:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Explore public repos and write notes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ZEREF_THREAD_KEY: ${{ secrets.ZEREF_THREAD_KEY }}
+        run: python scripts/zeref/explore.py
+      - name: Redraw the card with today's line
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python scripts/zeref/refresh_card.py
+      - name: Check the profile still passes
+        run: python scripts/check_profile.py
+      - name: Commit only Zeref's files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add zeref/notes.md zeref/explore.json zeref/explore-log.jsonl assets/zeref-live.svg zeref/live.json
+          if git diff --cached --quiet; then echo "no change"; exit 0; fi
+          git commit -m "Zeref explored NavisWORLD's public repos"
+          for i in 1 2 3; do git pull --rebase --quiet origin main && git push origin HEAD:main && exit 0; sleep 5; done
+          exit 1

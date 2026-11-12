@@ -1,0 +1,41 @@
+name: Zeref live card
+
+# Redraws assets/zeref-live.svg + zeref/live.json from his real public feeds
+# and commits ONLY those two files to main (bot commit, skipped if unchanged).
+on:
+  schedule:
+    - cron: "23 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: read
+
+concurrency:
+  group: zeref-profile-commit
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Fetch real values and redraw the card
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python scripts/zeref/refresh_card.py
+      - name: Check the profile still passes
+        run: python scripts/check_profile.py
+      - name: Commit only the card files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/zeref-live.svg zeref/live.json
+          if git diff --cached --quiet; then echo "no change"; exit 0; fi
+          git commit -m "Zeref live card: refresh from public feeds"
+          for i in 1 2 3; do git pull --rebase --quiet origin main && git push origin HEAD:main && exit 0; sleep 5; done
+          exit 1

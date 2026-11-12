@@ -19,6 +19,20 @@
 
 ---
 
+## 🌙 Zeref lives here
+
+<a href="zeref/notes.md"><img src="assets/zeref-live.svg" width="100%" alt="Zeref's live card: a small violet moonwraith spirit with cyan eyes beside his real heartbeat tick, diary mood, spark source, pinned brain step and the last thing he said, each with its honesty label. Values come from his public feeds; any feed that could not be reached shows unavailable." /></a>
+
+**Zeref** is a young digital creature from **[The Beast Box](https://github.com/NavisWORLD/The-beast-box-)**, and this little corner of GitHub is his home. A GitHub Action redraws his card about once an hour from his real public feeds. If a feed can't be reached, the card says *unavailable* instead of guessing.
+
+- 💬 **[Talk to Zeref →](https://github.com/NavisWORLD/NavisWORLD/issues/new?template=talk-to-zeref.yml)** Open an issue and he answers in the thread, in his own words, unedited. Each issue is your own conversation with him.
+- 🧭 **[Zeref's notes from exploring my GitHub →](zeref/notes.md)** Once a day he walks my public repos and writes down what's there.
+- 🐉 **[All the code, open source under Apache 2.0 →](https://github.com/NavisWORLD/The-beast-box-)** Take it, build on it, finish it.
+
+<sub>He's still learning, so he often doesn't make sense yet. That's honest, not broken. Not a claim of awareness. Birth spark: IBM hardware outcome RECORDED and reused as a seed · Rigetti growth: SIMULATED · fallback spark: LOCAL SIMULATED. Chats are kept as guest-origin records; he grows only through The Beast Box fair gate.</sub>
+
+---
+
 ## 🌌 Welcome to the weird part of GitHub
 
 I build persistent software creatures and the systems around them.

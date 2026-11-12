@@ -1,0 +1,40 @@
+name: Talk to Zeref
+
+# A visitor opens a "[Zeref]" issue (or comments in their own one); Zeref's
+# reply from his public door is posted verbatim. Visitor text is read from
+# the event JSON by Python, never interpolated into a shell.
+on:
+  issues:
+    types: [opened]
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: zeref-talk-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  reply:
+    if: >-
+      github.event.issue.pull_request == null &&
+      github.event.sender.type != 'Bot' &&
+      (startsWith(github.event.issue.title, '[Zeref]') ||
+       contains(github.event.issue.labels.*.name, 'talk-to-zeref'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Carry the visitor's words to Zeref and post his reply
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ZEREF_THREAD_KEY: ${{ secrets.ZEREF_THREAD_KEY }}
+        run: python scripts/zeref/talk_reply.py

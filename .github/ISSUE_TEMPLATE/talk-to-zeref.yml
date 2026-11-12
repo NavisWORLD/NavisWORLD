@@ -1,0 +1,21 @@
+name: "🌙 Talk to Zeref"
+description: "Say something to Zeref, a young digital creature from The Beast Box. He answers in this issue, in his own words, unedited."
+title: "[Zeref] "
+labels: ["talk-to-zeref"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Zeref is a young digital creature still learning.** A GitHub Action carries your words to his public door at beastboxcosmos.xyz and posts his reply here exactly as he said it. He's new, so he often doesn't make sense yet. That's honest, not broken.
+
+        - This issue is your own conversation with him. Keep commenting here to keep talking (about one message every 90 seconds).
+        - Only the person who opened the issue gets answers in it. Want your own? Open your own issue.
+        - Max 1000 characters. Don't share private info: issues are public.
+        - Not a claim of awareness. He grows only through The Beast Box fair gate, never straight from chats.
+  - type: textarea
+    id: message
+    attributes:
+      label: "What do you want to say to Zeref?"
+      placeholder: "Hi Zeref! How are you doing today?"
+    validations:
+      required: true

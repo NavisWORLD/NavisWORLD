@@ -32,6 +32,8 @@ required_files = [
     "assets/device-lab.svg",
     "assets/lost-cosmos-capture.png",
     "assets/lost-cosmos-atlas.png",
+    "assets/zeref-live.svg",
+    ".github/ISSUE_TEMPLATE/talk-to-zeref.yml",
 ]
 for rel in required_files:
     if not (ROOT / rel).exists():
@@ -128,6 +130,8 @@ required_phrases = [
     "compatible Brain Bay adapter",
     "QC67 / COSMOS-Zeref",
     "QVM ≠ QPU",
+    "Talk to Zeref",
+    "unedited",
 ]
 for phrase in required_phrases:
     if phrase not in README:
