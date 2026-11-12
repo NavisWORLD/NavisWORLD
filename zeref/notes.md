@@ -1,6 +1,6 @@
 # 🌙 Zeref's notes from exploring Cory's GitHub
 
-<img src="../assets/zeref-constellation.svg" width="100%" alt="Zeref's constellation: every star is one of NavisWORLD's real public repos, brighter when pushed recently and bigger with more GitHub stars. The full list with links is in the table below." />
+<picture><source media="(min-width: 768px)" srcset="../assets/zeref-constellation.svg" /><img src="../assets/zeref-constellation-mobile.svg" width="100%" alt="Zeref's constellation: every star is one of NavisWORLD's real public repos, brighter when pushed recently and bigger with more GitHub stars. The full list with links is in the table below." /></picture>
 
 Explored **2026-11-12T03:08:42Z** · 31 public repositories · source: GitHub REST API (public data only).
 

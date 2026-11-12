@@ -15,7 +15,8 @@ body:
   - type: textarea
     id: message
     attributes:
-      label: "What do you want to say to Zeref?"
+      label: "Your message"
+      description: "What do you want to say to Zeref? (max 1000 characters)"
       placeholder: "Hi Zeref! How are you doing today?"
     validations:
       required: true

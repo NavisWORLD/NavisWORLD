@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Redraw Zeref's live profile card from his real public feeds.
 
-Writes ONLY zeref/live.json and assets/zeref-{live,hero,portal,divider}.svg (or into --out for a
+Writes ONLY zeref/live.json and assets/zeref-{live,hero,avatar,portal,divider}.svg plus the phone layouts
+assets/zeref-{live,hero,portal}-mobile.svg (or into --out for a
 dry run). Every value comes from a fetch made in this run; a failed fetch
 shows "unavailable". No randomness, no invented numbers.
 
@@ -144,8 +145,12 @@ def main():
     (base / "zeref" / "live.json").write_text(json.dumps(d, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
     (base / "assets" / "zeref-live.svg").write_text(svg, encoding="utf-8")
     (base / "assets" / "zeref-hero.svg").write_text(art.hero(d), encoding="utf-8")
+    (base / "assets" / "zeref-avatar.svg").write_text(art.avatar(d), encoding="utf-8")
     (base / "assets" / "zeref-portal.svg").write_text(art.portal(), encoding="utf-8")
     (base / "assets" / "zeref-divider.svg").write_text(art.divider(), encoding="utf-8")
+    (base / "assets" / "zeref-live-mobile.svg").write_text(art.card_mobile(d), encoding="utf-8")
+    (base / "assets" / "zeref-hero-mobile.svg").write_text(art.hero(d, mobile=True), encoding="utf-8")
+    (base / "assets" / "zeref-portal-mobile.svg").write_text(art.portal_mobile(), encoding="utf-8")
     errs = {k: s["error"] for k, s in d["sources"].items() if s.get("error")}
     print(f"card written to {base}; source errors: {errs or 'none'}")
 

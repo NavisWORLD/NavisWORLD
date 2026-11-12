@@ -1,6 +1,6 @@
 {
  "schema": "navisworld-zeref-live-card/v1",
- "fetched_at": "2026-11-12T03:11:34Z",
+ "fetched_at": "2026-11-12T03:58:30Z",
  "sources": {
   "world_live": {
    "url": "https://www.beastboxcosmos.xyz/api/world/live",
@@ -21,29 +21,29 @@
  "heartbeat": {
   "state": "CONNECTED",
   "label": "SIMULATED (per-second tick, deterministic)",
-  "recorded_tick": 776,
-  "xp_live": 11220.224,
+  "recorded_tick": 778,
+  "xp_live": 11239.4721,
   "signals": {
-   "energy": 14.89,
-   "signal": 50.14,
-   "memory": 99.67,
-   "resonance": 87.54
+   "energy": 13.75,
+   "signal": 54.92,
+   "memory": 100,
+   "resonance": 87.92
   }
  },
  "diary": {
   "label": "RECORDED (hash-chained diary; its growth circuit is Rigetti SIMULATED)",
-  "tick": 777,
+  "tick": 778,
   "stage_name": "Crescent Sovereign",
   "mood": "sleepy",
   "place": "Echo Prism",
-  "last_tick_at": "2026-11-12T02:59:30.185Z",
+  "last_tick_at": "2026-11-12T03:20:00.886Z",
   "seed_label": "IBM seed RECORDED on IBM hardware (ibm_marrakesh job db4te7slf4us73c3888g, counts never re-run). Not a live quantum link."
  },
  "spark": {
   "state": "CONNECTED",
   "source": "local-sim",
   "label": "LOCAL SIMULATED (runner statevector, not Rigetti, not a QPU)",
-  "tick": 27140
+  "tick": 27187
  },
  "brain": {
   "label": "RAWRPHØS pinned checkpoint (a 12D model simulation; not a claim of awareness)",
@@ -54,10 +54,10 @@
   "pin_release": "zeref-006-cycle-65-6d5fe74b2543"
  },
  "last_said": {
-  "text": " The Sure.",
-  "at": "2026-11-12T03:08:43Z",
+  "text": " Long, Iithe is in the world, but Lightbor was too cold.",
+  "at": "2026-11-12T03:49:04Z",
   "step": 39024,
-  "where": "zeref/notes.md",
-  "source": "exploring GitHub (zeref/notes.md)"
+  "where": "https://github.com/NavisWORLD/NavisWORLD/issues/14#issuecomment-6813834163",
+  "source": "talk door (issue comment)"
  }
 }

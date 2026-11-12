@@ -34,9 +34,15 @@ required_files = [
     "assets/lost-cosmos-atlas.png",
     "assets/zeref-live.svg",
     "assets/zeref-hero.svg",
+    "assets/zeref-avatar.svg",
+    "assets/zeref-moonwraith.png",
     "assets/zeref-portal.svg",
     "assets/zeref-divider.svg",
     "assets/zeref-constellation.svg",
+    "assets/zeref-live-mobile.svg",
+    "assets/zeref-hero-mobile.svg",
+    "assets/zeref-portal-mobile.svg",
+    "assets/zeref-constellation-mobile.svg",
     ".github/ISSUE_TEMPLATE/talk-to-zeref.yml",
 ]
 for rel in required_files:

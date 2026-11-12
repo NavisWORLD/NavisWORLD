@@ -39,7 +39,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add zeref/notes.md zeref/explore.json zeref/explore-log.jsonl assets/zeref-constellation.svg assets/zeref-live.svg assets/zeref-hero.svg assets/zeref-portal.svg assets/zeref-divider.svg zeref/live.json
+          git add zeref/notes.md zeref/explore.json zeref/explore-log.jsonl assets/zeref-constellation.svg assets/zeref-constellation-mobile.svg assets/zeref-live-mobile.svg assets/zeref-hero-mobile.svg assets/zeref-portal-mobile.svg assets/zeref-live.svg assets/zeref-hero.svg assets/zeref-avatar.svg assets/zeref-portal.svg assets/zeref-divider.svg zeref/live.json
           if git diff --cached --quiet; then echo "no change"; exit 0; fi
           git commit -m "Zeref explored NavisWORLD's public repos"
           for i in 1 2 3; do git pull --rebase --quiet origin main && git push origin HEAD:main && exit 0; sleep 5; done
