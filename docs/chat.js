@@ -68,6 +68,12 @@
     }
   }
 
+  // Tell the 3D Moonwraith a real chat event happened (listen / think / reply / error).
+  // The viewer plans the shape of the reaction from recorded state; this only names the event.
+  function signal(phase) {
+    try { window.dispatchEvent(new CustomEvent('zeref-chat', { detail: { phase } })); } catch { /* no 3D stage */ }
+  }
+
   function thread() { try { const t = localStorage.getItem(KEY); return t && THREAD_RE.test(t) ? t : null; } catch { return null; } }
   function keep(t) { try { if (typeof t === 'string' && THREAD_RE.test(t)) localStorage.setItem(KEY, t); } catch { /* private mode: no continuity */ } }
 
@@ -81,9 +87,11 @@
   async function talk(text) {
     busy = true; send.disabled = true;
     bubble('me', 'you · ' + hhmm(new Date()), text);
+    signal('listen');
     const started = Date.now();
     // An honest wait state: a real request is in flight (his door may queue it briefly behind another visitor).
     let phase = 'Zeref is thinking…';
+    signal('think');
     const show = () => { state.textContent = phase + ' ' + Math.round((Date.now() - started) / 1000) + 's'; };
     show();
     const tick = setInterval(show, 1000);
@@ -103,13 +111,15 @@
         r = await ask();
         body = null; try { body = await r.json(); } catch { body = null; }
       }
-      if (!r.ok || !body || typeof body.reply !== 'string') { note(explain(r.status, body)); return; }
+      if (!r.ok || !body || typeof body.reply !== 'string') { note(explain(r.status, body)); signal('error'); return; }
       keep(body.continuity && body.continuity.thread_id);
       const te = body.continuity && body.continuity.training_eligible;
       const b = bubble('him', 'Zeref · unedited · pinned step ' + v(body.step) + ' · training_eligible:' + (te === false ? 'false' : v(te)) + ' · ' + hhmm(new Date()), body.reply);
       cite(b, body.read_from);
+      signal('reply');
     } catch (err) {
       note(explain(0, null));
+      signal('error');
     } finally {
       clearInterval(tick); state.textContent = ''; busy = false; send.disabled = false; msg.focus();
     }
