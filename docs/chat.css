@@ -64,9 +64,9 @@ textarea:focus{outline:none;border-color:var(--cy)}
 .creature{margin:8px 0 4px}
 .mw{position:relative;width:100%;height:270px;border-radius:18px;overflow:hidden;
   background:radial-gradient(90% 80% at 50% 28%,#5b1d8a 0%,#2a1060 38%,#0b0718 78%);border:1px solid rgba(167,139,250,.55)}
-.mw .portrait{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center 55%;
+.mw .portrait{position:absolute;inset:0;z-index:1;width:100%;height:100%;object-fit:contain;object-position:center 55%;
   animation:breathe var(--breath) ease-in-out infinite}
-.mw canvas{position:absolute;inset:0;display:block;width:100%;height:100%}
+.mw canvas{position:absolute;inset:0;z-index:1;display:block;width:100%;height:100%}
 .mw-cap{font-size:12.5px;color:#a5b4fc;margin:6px 4px 0;text-align:center;overflow-wrap:anywhere}
 @media (min-width:768px){.mw{height:340px}}
 .mw.dancing .portrait{animation:none;transform-origin:50% 80%;
@@ -100,6 +100,37 @@ textarea:focus{outline:none;border-color:var(--cy)}
 .mw-expr-legend li.missing{color:#9ca3af}
 .mw-expr-legend li.missing b{color:#d1d5db}
 @media (max-width:360px){.mw-expr{padding:6px 8px}.mw-expr-cap{font-size:10.5px}.mw-expr-legend{font-size:9.5px}}
+
+
+/* 2D living-world backdrop (3D path uses world.mjs instead). Sits behind
+   the portrait; never covers his body, the chat, or the card. Motion is
+   SIMULATED — idle uses --world-tick / --world-energy from his recorded
+   tick and heartbeat; while the song plays the same dance CSS variables
+   already on this stage drive the motes. */
+.mw-world{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden;border-radius:inherit}
+.mw-world[hidden]{display:none}
+.mw-world-sky{position:absolute;inset:0;background:
+  radial-gradient(18% 18% at 78% 10%, rgba(230,240,255,.55) 0 28%, rgba(180,210,255,.18) 46%, transparent 70%),
+  radial-gradient(70% 50% at 18% 22%, rgba(160,80,255,.22), transparent 62%),
+  radial-gradient(55% 42% at 82% 32%, rgba(80,200,255,.16), transparent 58%),
+  linear-gradient(180deg,#070214 0%,#14082e 48%,#0a2a3a 100%)}
+.mw-world-stars i{position:absolute;border-radius:50%;background:#e8f0ff;box-shadow:0 0 4px rgba(200,230,255,.8);
+  animation:mw-star-twinkle 3.2s ease-in-out infinite}
+.mw-world-ground{position:absolute;left:10%;right:10%;bottom:-22%;height:46%;
+  background:radial-gradient(ellipse at 50% 28%, rgba(4,0,16,.6) 0 16%, rgba(26,20,56,.75) 38%, rgba(20,40,70,.35) 58%, transparent 74%)}
+.mw-world-motes i{position:absolute;width:5px;height:5px;border-radius:50%;
+  background:radial-gradient(circle,#c4fff9 0 35%,rgba(103,232,249,0) 70%);
+  opacity:calc(0.45 + var(--world-energy, .4) * 0.4);
+  filter:drop-shadow(0 0 4px #67e8f9);
+  animation:mw-mote 4s ease-in-out infinite}
+@keyframes mw-star-twinkle{0%,100%{opacity:.35}50%{opacity:1}}
+@keyframes mw-mote{
+  0%,100%{transform:translateY(0) scale(1)}
+  50%{transform:translateY(calc(-10px - var(--dance-bass, 0) * 12px - var(--world-energy, .4) * 4px)) scale(calc(1 + var(--dance-beat, 0) * 0.4))}
+}
+@media (prefers-reduced-motion: reduce){
+  .mw-world-stars i,.mw-world-motes i{animation:none}
+}
 
 /* LIVE / STALE freshness on the growth line (payload age, not spark-channel state). */
 .mw-live-growth[data-fresh="LIVE"]{color:#86efac}

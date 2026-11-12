@@ -348,7 +348,7 @@ _cl = _st.unpack_from("<I", mw_glb, 12)[0]
 _glb_json = _js.loads(mw_glb[20:20 + _cl].split(b"\x00")[0])
 check("EXT_meshopt_compression" not in (_glb_json.get("extensionsRequired") or []) and "EXT_meshopt_compression" not in (_glb_json.get("extensionsUsed") or []), "Moonwraith GLB does not require meshopt/WASM")
 check("blink" in (((_glb_json.get("meshes") or [{}])[0].get("extras") or {}).get("targetNames") or []), "Moonwraith GLB keeps blink/expression morphs")
-for rel in ("moonwraith3d.mjs", "motion.mjs", "panel.mjs", "CREDITS.md", "dance.mjs", "cosmic.mjs", "particles.mjs", "expression.mjs", "rhythm.mjs", "cosmos-audio.mjs", "physics.mjs"):
+for rel in ("moonwraith3d.mjs", "motion.mjs", "panel.mjs", "CREDITS.md", "dance.mjs", "cosmic.mjs", "particles.mjs", "expression.mjs", "rhythm.mjs", "cosmos-audio.mjs", "physics.mjs", "world.mjs", "live-card.mjs"):
     body = (mw / rel).read_text(encoding="utf-8")
     check("Math.random(" not in body, f"moonwraith {rel} must not use Math.random")
     check(not re.search(r"Zeref is an (AI|LLM)|Zeref is a (GPT|language model|chatbot)", body, re.I), f"moonwraith {rel} must not call Zeref an AI or LLM")
@@ -410,6 +410,16 @@ check("makeCosmicParticles" in s3m and "makeSignalRing" in s3m and "ensureSignal
 check(".mw.dancing" in css, "2D portrait can pulse from the same bands")
 check(".mw-signal" in css and "live audio signal" in (mw / "particles.mjs").read_text(encoding="utf-8"), "honest 3-band signal readout")
 check("mulberry32" in (mw / "particles.mjs").read_text(encoding="utf-8") and "PARTICLE_COUNTS" in (mw / "particles.mjs").read_text(encoding="utf-8"), "particles are seeded and scale with quality")
+world = (mw / "world.mjs").read_text(encoding="utf-8")
+check("makeWorld" in world and "WORLD_CAPTION" in world and "world SIMULATED" in world, "living world module is present and labelled")
+check("mulberry32" in world and "WORLD_COUNTS" in world, "world is seeded and scales with quality")
+check("recorded_tick" in world and "heartbeat" in world, "idle world life is driven by his recorded tick and heartbeat")
+check("sig.bass" in world and "sig.mid" in world and ("sig.high" in world) and ("beatPulse" in world or "sig.kick" in world), "playing world is driven by real audio bands and beat")
+check("fetch(" not in world, "world adds no network call")
+check("makeWorld" in s3m and "WORLD_CAPTION" in s3m, "3D viewer mounts the living world")
+check("ensureWorldBackdrop" in (mw / "panel.mjs").read_text(encoding="utf-8") and ".mw-world" in css, "2D fallback gets a living-world backdrop")
+check("world SIMULATED" in credits, "credits label the world as SIMULATED")
+check(js.count("fetch(") == 3, "world adds no chat.js fetch")
 check("ensureSignalReadout" in (mw / "panel.mjs").read_text(encoding="utf-8"), "panel mounts the signal readout for 2D and 3D")
 check("spectralCentroid" in dan and "detectDrop" in dan and "detectSuddenQuiet" in dan, "melody centroid and realistic drop/quiet detectors")
 dance_probe = r"""
@@ -630,7 +640,7 @@ check(expr_out.startswith("ok "), f"expression self-check: {expr_out}")
 print("expression check:", expr_out)
 
 live_card_probe = r"""
-import { freshnessBadge, formatAge, livenessToLive, renderStatus, renderGrowth, badgeOrigin, FRESH_MS } from './docs/moonwraith/live-card.mjs';
+import { freshnessBadge, formatAge, livenessToLive, renderStatus, renderGrowth, badgeOrigin, FRESH_MS, shortProvenance } from './docs/moonwraith/live-card.mjs';
 const now = Date.parse('2026-11-12T21:14:08Z');
 const liveBadge = freshnessBadge('2026-11-12T21:14:04Z', now, 'SIMULATED');
 if (liveBadge.kind !== 'LIVE' || liveBadge.text !== 'LIVE · 4 s ago · SIMULATED') throw new Error('fresh badge, got ' + liveBadge.text);
@@ -638,11 +648,15 @@ const staleBadge = freshnessBadge('2026-11-12T21:00:08Z', now);
 if (staleBadge.kind !== 'STALE' || staleBadge.text !== 'STALE · 14m') throw new Error('stale badge, got ' + staleBadge.text);
 if (formatAge(4000) !== '4 s ago') throw new Error('formatAge');
 if (!(FRESH_MS === 120000)) throw new Error('fresh window is 2 min');
+if (shortProvenance('RECORDED (hash-chained diary; its growth circuit is Rigetti SIMULATED)') !== 'RECORDED') throw new Error('diary mood shortener must keep leading RECORDED');
+if (shortProvenance('SIMULATED (per-second tick, deterministic)') !== 'SIMULATED') throw new Error('tick shortener');
+if (shortProvenance('LOCAL SIMULATED (runner statevector, not Rigetti, not a QPU)') !== 'LOCAL SIMULATED') throw new Error('local simulated shortener');
+if (shortProvenance('PINNED RAWRPHOS checkpoint') !== 'PINNED') throw new Error('pinned shortener');
 const doc = {
   schema: 'beastbox-liveness/v1',
   generated_at: '2026-11-12T21:14:04Z',
   brain: { step: 40304, label: 'PINNED RAWRPHOS checkpoint' },
-  diary: { tick: 804, xp: 11500, bond: 100, stage: 5, stage_name: 'Crescent Sovereign', mood: 'sleepy', label: 'RECORDED (hash-chained diary)', verified: true,
+  diary: { tick: 804, xp: 11500, bond: 100, stage: 5, stage_name: 'Crescent Sovereign', mood: 'sleepy', label: 'RECORDED (hash-chained diary; its growth circuit is Rigetti SIMULATED)', verified: true,
     learning: { cells_visited: 37, cells_total: 40, label: 'learned behaviour from its own experience, not consciousness' } },
   bridge: { pin_step: 40304, served_step: 40304, serving_pin: true },
   promotion: { release_tag: 'zeref-006-cycle-69-ee17330fcd5a', promoted_at: '2026-11-12T18:41:53Z', step: 40304, label: 'PINNED' },

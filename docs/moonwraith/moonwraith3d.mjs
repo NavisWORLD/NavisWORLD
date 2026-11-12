@@ -11,6 +11,7 @@ import { tickDance, applyDanceCSS, dancePose, DANCE_CAPTION } from './dance.mjs'
 import { applyCosmic, makeQualityGuard } from './cosmic.mjs';
 import { makeCosmicParticles, makeSignalRing, ensureSignalReadout } from './particles.mjs';
 import { applyEyes, ensureExpressionLegend } from './expression.mjs';
+import { makeWorld, WORLD_CAPTION } from './world.mjs';
 
 const san = (n) => String(n).replace(/\s/g, '_').replace(/[\[\]\.:\/]/g, '');
 
@@ -45,7 +46,7 @@ export async function mount(el, {
   const scene = new THREE.Scene();
   const pmrem = new THREE.PMREMGenerator(renderer);
   scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
-  const camera = new THREE.PerspectiveCamera(28, 1, 0.02, 8);
+  const camera = new THREE.PerspectiveCamera(28, 1, 0.02, 20);
 
   scene.add(new THREE.HemisphereLight(0xd0c6ff, 0x1a1030, 0.8));
   const key = new THREE.DirectionalLight(0xfff4ff, 2.0);
@@ -60,6 +61,8 @@ export async function mount(el, {
   const fill = new THREE.DirectionalLight(0x8fe8ff, 0.62); fill.position.set(-0.6, 0.3, 0.4); scene.add(fill);
   const rim = new THREE.DirectionalLight(0xc084fc, 1.65); rim.position.set(-0.5, 0.5, -0.8); scene.add(rim);
   const magRim = new THREE.DirectionalLight(0xff4da6, 0.35); magRim.position.set(0.6, 0.2, -0.4); scene.add(magRim);
+  // Soft moonlight from the visible moon (upper-right, slightly behind).
+  const moonLight = new THREE.DirectionalLight(0xb8d8ff, 0.4); moonLight.position.set(1.5, 1.6, -2.0); scene.add(moonLight);
 
   const ground = new THREE.Mesh(new THREE.CircleGeometry(0.55, 48), new THREE.ShadowMaterial({ opacity: 0.32 }));
   ground.rotation.x = -Math.PI / 2;
@@ -162,11 +165,20 @@ export async function mount(el, {
   const cosmic = applyCosmic(THREE, model, { seedHex, quality: startQ, head: named.head });
   const particles = makeCosmicParticles(THREE, model, { seedHex, quality: startQ });
   const ring = makeSignalRing(THREE, model, { quality: startQ });
+  const world = makeWorld(THREE, {
+    seedHex,
+    quality: startQ,
+    origin: { x: center.x, y: box.min.y, z: center.z },
+    reducedMotion,
+  });
+  scene.add(world.group);
+  if (live) world.setLive(live);
   const watchQuality = makeQualityGuard({
     setQuality(q) {
       cosmic.setQuality(q);
       particles.setQuality(q);
       ring.setQuality(q);
+      world.setQuality(q);
     },
   }, { start: startQ, narrow });
   ensureSignalReadout(el);
@@ -338,7 +350,13 @@ export async function mount(el, {
     const bob = (!userOrbit && songOn) ? (pose.camBob || 0) : 0;
     if (!userOrbit) placeCamera(homeYaw + yawSway + (pose.headYaw || 0) * 0.15, bob);
     else controls.update();
-    const label = dancing ? DANCE_CAPTION : (plan.caption + (phase !== 'idle' ? ' · ' + phase : ''));
+    world.update(t, sig, {
+      reducedMotion,
+      camYaw: homeYaw + yawSway + (pose.headYaw || 0) * 0.15,
+      camBob: bob,
+      dt,
+    });
+    const label = (dancing ? DANCE_CAPTION : (plan.caption + (phase !== 'idle' ? ' · ' + phase : ''))) + ' · ' + WORLD_CAPTION;
     if (label !== lastLabel) { onStatus(label); lastLabel = label; }
     renderer.render(scene, camera);
   }
@@ -363,6 +381,7 @@ export async function mount(el, {
   return {
     plan,
     setLive(nextLive, nextExpr) {
+      if (nextLive) world.setLive(nextLive);
       if (nextExpr) {
         expr = nextExpr;
         const legendHost = el.parentElement || el;

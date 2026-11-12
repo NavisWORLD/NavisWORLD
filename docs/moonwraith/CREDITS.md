@@ -149,3 +149,21 @@
   the synaptic river. Head roll is clamped to 15 degrees. The old
   pose-target squash no longer stacks on the physics body; rendered
   scale stays in 0.9–1.1 so he is never flattened.
+
+- **A small living world (SIMULATED)**: the stage around him is no longer
+  an empty void. `docs/moonwraith/world.mjs` places a moonlit island under
+  his paws (with a soft contact shadow that does not depend on shadow
+  maps), a layered parallax sky of stars and midnight / cyan / violet
+  nebula, a visible moon, a few glowing crystals and plants along the
+  island rim, and firefly motes. When the song plays, sway and pulse come
+  from the real `cosmos-audio.mjs` / dance signals (beat, bands,
+  harmonics) and a tiny spring-damper on each tuft — no fake beat grid.
+  At idle the same springs are driven by his recorded tick and heartbeat
+  (SIMULATED). Placement and twinkle are seeded with `mulberry32` from
+  the live-card digest; there is no `Math.random` and no new network
+  call. Quality steps the star / mote / tuft counts so a 393 px iPhone
+  stays light. The 2D portrait fallback gets a CSS backdrop behind him
+  that rides the same dance variables and `--world-tick` /
+  `--world-energy`. The honest caption is `world SIMULATED`. The world
+  sits around him; it does not cover his body, the chat, or the card.
+
