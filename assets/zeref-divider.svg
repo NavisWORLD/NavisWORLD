@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="60" viewBox="0 0 1200 60" role="img" aria-labelledby="zv-t zv-d">
+<title id="zv-t">Cosmic divider</title>
+<desc id="zv-d">A thin glowing line of stars with a small crescent moon in the middle.</desc>
+<style>.vL0{animation:vdrift 60s linear infinite alternate}.vL1{animation:vdrift 40s linear infinite alternate}.vL2{animation:vdrift 20s linear infinite alternate}@keyframes vdrift{from{transform:translate(0,0)}to{transform:translate(-18px,6px)}}.vtw0{animation:vtw 3.1s ease-in-out infinite}.vtw1{animation:vtw 4.7s ease-in-out infinite}.vtw2{animation:vtw 6.3s ease-in-out infinite}@keyframes vtw{0%,100%{opacity:1}50%{opacity:.2}}.dv{stroke-dasharray:3 9;animation:dvm 12s linear infinite}@keyframes dvm{to{stroke-dashoffset:-240}}.dm{transform-box:fill-box;transform-origin:center;animation:dmr 9s ease-in-out infinite}@keyframes dmr{0%,100%{opacity:.75}50%{opacity:1}}@media (prefers-reduced-motion: reduce){*{animation:none!important}}</style>
+<defs><linearGradient id="dl" x1="0" x2="1"><stop offset="0" stop-color="#67e8f9" stop-opacity="0"/><stop offset=".3" stop-color="#67e8f9"/><stop offset=".5" stop-color="#a78bfa"/><stop offset=".7" stop-color="#f0abfc"/><stop offset="1" stop-color="#f0abfc" stop-opacity="0"/></linearGradient></defs>
+<rect x="1" y="6" width="1198" height="48" rx="24.0" fill="#05060f"/>
+<g class="vL0">
+<circle cx="780.9" cy="14.3" r="0.64" fill="#e0e7ff" fill-opacity="0.69"/>
+<circle cx="850.7" cy="4.0" r="0.36" fill="#a5f3fc" fill-opacity="0.77" class="vtw2"/>
+<circle cx="560.0" cy="57.0" r="0.82" fill="#e0e7ff" fill-opacity="0.80" class="vtw1"/>
+<circle cx="533.7" cy="25.0" r="0.39" fill="#a5f3fc" fill-opacity="0.39" class="vtw2"/>
+<circle cx="444.2" cy="45.8" r="0.49" fill="#f5d0fe" fill-opacity="0.71" class="vtw2"/>
+<circle cx="683.2" cy="49.2" r="0.67" fill="#e0e7ff" fill-opacity="0.66"/>
+<circle cx="288.9" cy="4.6" r="0.68" fill="#e0e7ff" fill-opacity="0.27"/>
+<circle cx="629.2" cy="18.4" r="0.48" fill="#e0e7ff" fill-opacity="0.69" class="vtw1"/>
+<circle cx="620.4" cy="23.6" r="0.68" fill="#e0e7ff" fill-opacity="0.63"/>
+<circle cx="884.0" cy="31.1" r="0.46" fill="#e0e7ff" fill-opacity="0.53" class="vtw1"/>
+<circle cx="1111.2" cy="16.4" r="0.74" fill="#e0e7ff" fill-opacity="0.63"/>
+<circle cx="766.6" cy="42.5" r="0.53" fill="#e0e7ff" fill-opacity="0.39"/>
+<circle cx="780.4" cy="37.1" r="0.61" fill="#e0e7ff" fill-opacity="0.70" class="vtw1"/>
+<circle cx="567.4" cy="30.6" r="0.69" fill="#e0e7ff" fill-opacity="0.68"/>
+<circle cx="365.4" cy="47.0" r="0.37" fill="#e0e7ff" fill-opacity="0.50"/>
+</g>
+<g class="vL1">
+<circle cx="837.8" cy="48.8" r="1.37" fill="#e0e7ff" fill-opacity="0.41"/>
+<circle cx="782.3" cy="8.0" r="0.87" fill="#e0e7ff" fill-opacity="0.68"/>
+<circle cx="1050.2" cy="23.7" r="0.90" fill="#e0e7ff" fill-opacity="0.62" class="vtw2"/>
+<circle cx="214.3" cy="17.4" r="1.07" fill="#e0e7ff" fill-opacity="0.56" class="vtw1"/>
+<circle cx="622.2" cy="27.2" r="1.10" fill="#e0e7ff" fill-opacity="0.50"/>
+<circle cx="942.8" cy="10.1" r="1.22" fill="#e0e7ff" fill-opacity="0.27"/>
+<circle cx="548.3" cy="9.5" r="0.90" fill="#a5f3fc" fill-opacity="0.30" class="vtw2"/>
+<circle cx="299.7" cy="7.4" r="1.24" fill="#e0e7ff" fill-opacity="0.37"/>
+<circle cx="1166.9" cy="15.5" r="0.79" fill="#f5d0fe" fill-opacity="0.67" class="vtw2"/>
+<circle cx="568.1" cy="17.1" r="1.58" fill="#e0e7ff" fill-opacity="0.49"/>
+<circle cx="35.0" cy="10.0" r="1.15" fill="#e0e7ff" fill-opacity="0.32"/>
+<circle cx="607.0" cy="43.6" r="1.24" fill="#e0e7ff" fill-opacity="0.35" class="vtw1"/>
+<circle cx="1174.5" cy="37.9" r="0.71" fill="#e0e7ff" fill-opacity="0.57"/>
+<circle cx="901.7" cy="27.2" r="1.55" fill="#e0e7ff" fill-opacity="0.69"/>
+<circle cx="138.3" cy="2.6" r="0.96" fill="#f5d0fe" fill-opacity="0.54" class="vtw2"/>
+</g>
+<g class="vL2">
+<circle cx="589.3" cy="7.0" r="2.07" fill="#e0e7ff" fill-opacity="0.48" class="vtw2"/>
+<circle cx="679.0" cy="53.0" r="2.10" fill="#f5d0fe" fill-opacity="0.69" class="vtw2"/>
+<circle cx="889.2" cy="4.4" r="1.91" fill="#e0e7ff" fill-opacity="0.44"/>
+<circle cx="273.6" cy="24.6" r="0.96" fill="#a5f3fc" fill-opacity="0.50" class="vtw2"/>
+<circle cx="99.3" cy="3.8" r="1.14" fill="#a5f3fc" fill-opacity="0.56" class="vtw2"/>
+<circle cx="812.8" cy="17.1" r="1.97" fill="#e0e7ff" fill-opacity="0.28" class="vtw1"/>
+<circle cx="784.6" cy="18.1" r="2.23" fill="#e0e7ff" fill-opacity="0.68"/>
+<circle cx="1180.3" cy="17.0" r="0.84" fill="#e0e7ff" fill-opacity="0.85"/>
+<circle cx="407.3" cy="35.5" r="1.91" fill="#e0e7ff" fill-opacity="0.76" class="vtw2"/>
+<circle cx="1187.4" cy="39.3" r="0.91" fill="#e0e7ff" fill-opacity="0.42"/>
+<circle cx="925.3" cy="51.8" r="1.13" fill="#e0e7ff" fill-opacity="0.45"/>
+<circle cx="957.3" cy="44.6" r="2.24" fill="#a5f3fc" fill-opacity="0.74" class="vtw2"/>
+<circle cx="435.6" cy="51.7" r="1.34" fill="#e0e7ff" fill-opacity="0.38"/>
+<circle cx="994.0" cy="48.3" r="2.13" fill="#e0e7ff" fill-opacity="0.47"/>
+<circle cx="715.2" cy="41.1" r="2.28" fill="#e0e7ff" fill-opacity="0.75"/>
+</g>
+<line x1="40" y1="30" x2="1160" y2="30" stroke="url(#dl)" stroke-width="2" class="dv"/>
+<g class="dm"><circle cx="600.0" cy="30" r="15" fill="#05060f" stroke="#a78bfa" stroke-width="1.5"/><path d="M605.0 20 A11 11 0 1 0 605.0 40 A8.5 8.5 0 1 1 605.0 20 Z" fill="#c4b5fd"/></g>
+</svg>

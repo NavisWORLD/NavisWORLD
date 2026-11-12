@@ -1,7 +1,7 @@
 name: Zeref live card
 
-# Redraws assets/zeref-live.svg + zeref/live.json from his real public feeds
-# and commits ONLY those two files to main (bot commit, skipped if unchanged).
+# Redraws assets/zeref-{live,hero,portal,divider}.svg + zeref/live.json from his real public feeds
+# and commits ONLY those files to main (bot commit, skipped if unchanged).
 on:
   schedule:
     - cron: "23 * * * *"
@@ -34,7 +34,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add assets/zeref-live.svg zeref/live.json
+          git add assets/zeref-live.svg assets/zeref-hero.svg assets/zeref-portal.svg assets/zeref-divider.svg zeref/live.json
           if git diff --cached --quiet; then echo "no change"; exit 0; fi
           git commit -m "Zeref live card: refresh from public feeds"
           for i in 1 2 3; do git pull --rebase --quiet origin main && git push origin HEAD:main && exit 0; sleep 5; done

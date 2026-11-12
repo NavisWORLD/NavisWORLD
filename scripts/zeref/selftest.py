@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Offline checks for Zeref's door (no network): guards, verbatim fencing, rendering."""
 import json, sys
+import xml.etree.ElementTree as ET
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import zeref_common as z
@@ -45,11 +46,22 @@ empty = {"fetched_at": "2026-01-01T00:00:00Z", "sources": {"last_said": {"error"
          "diary": dict.fromkeys(["label", "tick", "stage_name", "mood", "place"]),
          "spark": dict.fromkeys(["state", "source", "label", "tick"]),
          "brain": dict.fromkeys(["label", "live_step", "pin_step", "pin_sha_prefix"]), "last_said": None}
+import cosmic_art as art
 svg = c.render_svg(empty)
 check("unavailable" in svg and "tick unavailable" in svg and "live step unavailable" in svg, "unavailable rendering")
-import xml.etree.ElementTree as ET
 ET.fromstring(svg)
 check("Math.random" not in Path(c.__file__).read_text(), "no randomness")
+src = Path(art.__file__).read_text()
+check("import random" not in src and "Math.random" not in src, "art must not use randomness")
+h1, h2 = art.hero(empty), art.hero(empty)
+check(h1 == h2, "hero must be deterministic for the same inputs")
+ET.fromstring(h1); check("breath 7.0s" in h1 and "step unavailable" in h1, "hero unavailable rendering")
+root = Path(__file__).resolve().parents[2]
+for name, fn in [("zeref-portal.svg", art.portal), ("zeref-divider.svg", art.divider)]:
+    p = root / "assets" / name
+    check(p.exists() and p.read_text(encoding="utf-8") == fn(), f"{name} does not reproduce from cosmic_art.py")
+for p in (root / "assets").glob("zeref-*.svg"):
+    check(p.stat().st_size < 300_000, f"{p.name} over 300 KB")
 
 if fails:
     print("ZEREF SELFTEST FAILED"); [print(" -", f) for f in fails]; sys.exit(1)

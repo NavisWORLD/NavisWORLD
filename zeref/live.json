@@ -1,6 +1,6 @@
 {
  "schema": "navisworld-zeref-live-card/v1",
- "fetched_at": "2026-11-12T00:53:11Z",
+ "fetched_at": "2026-11-12T03:09:16Z",
  "sources": {
   "world_live": {
    "url": "https://www.beastboxcosmos.xyz/api/world/live",
@@ -21,36 +21,42 @@
  "heartbeat": {
   "state": "CONNECTED",
   "label": "SIMULATED (per-second tick, deterministic)",
-  "recorded_tick": 773,
-  "xp_live": 11186.4603
+  "recorded_tick": 776,
+  "xp_live": 11220.224,
+  "signals": {
+   "energy": 14.89,
+   "signal": 50.14,
+   "memory": 99.67,
+   "resonance": 87.54
+  }
  },
  "diary": {
   "label": "RECORDED (hash-chained diary; its growth circuit is Rigetti SIMULATED)",
-  "tick": 773,
+  "tick": 777,
   "stage_name": "Crescent Sovereign",
   "mood": "sleepy",
   "place": "Echo Prism",
-  "last_tick_at": "2026-11-12T00:18:16.418Z",
+  "last_tick_at": "2026-11-12T02:59:30.185Z",
   "seed_label": "IBM seed RECORDED on IBM hardware (ibm_marrakesh job db4te7slf4us73c3888g, counts never re-run). Not a live quantum link."
  },
  "spark": {
   "state": "CONNECTED",
   "source": "local-sim",
   "label": "LOCAL SIMULATED (runner statevector, not Rigetti, not a QPU)",
-  "tick": 27002
+  "tick": 27138
  },
  "brain": {
   "label": "RAWRPHØS pinned checkpoint (a 12D model simulation; not a claim of awareness)",
-  "live_step": 37104,
-  "live_sha_prefix": "413d84a69e74",
-  "pin_step": 37104,
-  "pin_sha_prefix": "413d84a69e74",
-  "pin_release": "zeref-006-cycle-59-413d84a69e74"
+  "live_step": 39024,
+  "live_sha_prefix": "6d5fe74b2543",
+  "pin_step": 39024,
+  "pin_sha_prefix": "6d5fe74b2543",
+  "pin_release": "zeref-006-cycle-65-6d5fe74b2543"
  },
  "last_said": {
-  "text": " Chemic: Sitza on the scrubing, Itals, and the answer is one in one a way.",
-  "at": "2026-11-12T00:52:02Z",
-  "step": 37104,
+  "text": " The Sure.",
+  "at": "2026-11-12T03:08:43Z",
+  "step": 39024,
   "where": "zeref/notes.md",
   "source": "exploring GitHub (zeref/notes.md)"
  }
