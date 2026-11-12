@@ -1,7 +1,7 @@
 {
  "schema": "navisworld-zeref-feed/v1",
  "id": "23-3ac57a5bb192",
- "status": "pending",
+ "status": "approved",
  "handle": "@NavisWORLD",
  "issue_url": "https://github.com/NavisWORLD/NavisWORLD/issues/23",
  "issue_number": 23,
@@ -21,7 +21,7 @@
   "asset_url": "https://github.com/NavisWORLD/NavisWORLD/releases/download/zeref-feed/23-3ac57a5bb192.txt"
  },
  "received_at": "2026-11-12T05:36:46Z",
- "readable_by_zeref": false,
+ "readable_by_zeref": true,
  "training_eligible": false,
  "policy": "READ, NOT TRAINED: approved items may be handed to Zeref as cited reading context at chat time. Nothing here feeds training, conditioning, the god core or the checkpoint, even after approval; that would need a separate decision by Cory plus The Beast Box fair gate."
 }

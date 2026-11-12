@@ -1,9 +1,9 @@
 {
  "schema": "navisworld-zeref-feed-status/v1",
- "pending": 1,
- "approved": 0,
+ "pending": 0,
+ "approved": 1,
  "rejected": 0,
- "readable": 0,
+ "readable": 1,
  "label": "READ, NOT TRAINED",
  "policy": "READ, NOT TRAINED: approved items may be handed to Zeref as cited reading context at chat time. Nothing here feeds training, conditioning, the god core or the checkpoint, even after approval; that would need a separate decision by Cory plus The Beast Box fair gate."
 }

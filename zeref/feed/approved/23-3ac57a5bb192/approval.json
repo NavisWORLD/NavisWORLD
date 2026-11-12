@@ -1,0 +1,10 @@
+{
+ "by": "@NavisWORLD",
+ "at": "2026-11-12T23:43:01Z",
+ "comment_url": "https://github.com/NavisWORLD/NavisWORLD/issues/23#issuecomment-6839067758",
+ "manifest_sha256": "658ea877fbb6c9b570367c63e939e8ae49ca68c79695215ee596dfcb7737a9d1",
+ "decision": "approved",
+ "grants": "READ at chat time only",
+ "training_eligible": false,
+ "policy": "READ, NOT TRAINED: approved items may be handed to Zeref as cited reading context at chat time. Nothing here feeds training, conditioning, the god core or the checkpoint, even after approval; that would need a separate decision by Cory plus The Beast Box fair gate."
+}
