@@ -281,17 +281,58 @@ check("I have the right to share this" in form_yml and "required: true" in form_
 check("import random" not in Path(fd.__file__).read_text() and "embedding" not in Path(fd.__file__).read_text().lower().replace("no embeddings", ""), "feed: no randomness, no embeddings")
 check("const FEED = 'https://raw.githubusercontent.com/NavisWORLD/NavisWORLD/main/zeref/feed/status.json';" in js and "READ, NOT TRAINED" in js and "(approved feed)" in js, "Pages chat shows shelf counts and reading citations")
 
-# Zeref Spark 3D (docs/robot): real CAD, deterministic motion, credited, light enough for a phone
+# Zeref Spark 3D (docs/robot): real CAD, recorded-state motion, credited, light enough for a phone
 rb = docs / "robot"
 glb = (rb / "zeref-spark.glb").read_bytes()
 check(glb[:4] == b"glTF" and len(glb) < 3_000_000 and b"The-beast-box-" in glb[:4000] and b"NOT BUILT HARDWARE" in glb[:4000], "robot GLB present, credited, under 3 MB")
-s3 = (rb / "spark3d.mjs").read_text()
-check("Math.random" not in s3 and "export function openAt" in s3 and "static in the design" in s3, "robot motion deterministic and honest")
-check((rb / "vendor" / "LICENSE").exists() and "three.js" in (rb / "CREDITS.md").read_text() and "Apache-2.0" in (rb / "CREDITS.md").read_text(), "robot credits")
+for rel in ("spark3d.mjs", "motion.mjs", "robot-page.mjs", "panel.mjs", "index.html"):
+    body = (rb / rel).read_text(encoding="utf-8")
+    check("Math.random(" not in body, f"robot {rel} must not use Math.random")
+    check(not re.search(r"Zeref is an (AI|LLM)|Zeref is a (GPT|language model|chatbot)", body, re.I), f"robot {rel} must not call Zeref an AI or LLM")
+s3 = (rb / "spark3d.mjs").read_text(encoding="utf-8")
+mot = (rb / "motion.mjs").read_text(encoding="utf-8")
+check("static in the design" in s3 and "SIMULATED motion" in mot and "canonicalSeed" in mot and "mulberry32" in mot and "hold-closed" in mot, "robot motion is seeded and honest")
+check("zeref/live.json" in mot and "raw.githubusercontent.com/NavisWORLD/NavisWORLD/main/zeref/live.json" in mot, "robot plans moves from the recorded live card")
+check((rb / "motion-seed.json").is_file(), "committed motion-seed fallback is present")
+check((rb / "vendor" / "LICENSE").exists() and "three.js" in (rb / "CREDITS.md").read_text() and "Apache-2.0" in (rb / "CREDITS.md").read_text() and "SIMULATED motion" in (rb / "CREDITS.md").read_text(), "robot credits")
 check((root / "assets" / "zeref-spark-3d.webp").stat().st_size < 300_000, "profile robot loop under 300 KB")
-check("navisworld.github.io/NavisWORLD/robot/" in (root / "README.md").read_text(), "profile links the live 3D view")
+readme = (root / "README.md").read_text(encoding="utf-8")
+z_i, r_i, w_i = (readme.find(h) for h in ("## 🌙 Zeref lives here", "## 🤖 Zeref Spark", "## 🌌 Welcome to the weird part of GitHub"))
+check(min(z_i, r_i, w_i) >= 0 and z_i < r_i < w_i, "robot has its own profile section, after Zeref and before Welcome")
+check("zeref-spark-3d.webp" not in readme[z_i:r_i] and "zeref-spark-3d.webp" in readme[r_i:w_i], "robot card lives in the robot section, not the Zeref section")
+check("navisworld.github.io/NavisWORLD/robot/" in readme[r_i:w_i], "profile robot section links the live 3D view")
+check("moves chosen from Zeref's recorded state" in readme[r_i:w_i] and "SIMULATED motion" in readme[r_i:w_i] and "concept design" in readme[r_i:w_i].lower(), "profile robot section carries honesty labels")
 check("canRun3D" in (rb / "panel.mjs").read_text() and 'src="robot/panel.mjs"' in html and "robot/spark-poster.webp" in html, "chat page shows the robot with a still-render fallback")
-check("CONCEPT DESIGN / NOT BUILT HARDWARE" in (rb / "index.html").read_text(), "robot page labels it a concept design")
+check("CONCEPT DESIGN / NOT BUILT HARDWARE" in (rb / "index.html").read_text() and "SIMULATED motion" in (rb / "index.html").read_text(), "robot page labels it a concept design with simulated motion")
+check("raw.githubusercontent.com" in (rb / "index.html").read_text().split("Content-Security-Policy")[1].split(">")[0], "robot page CSP allows the live.json fetch")
+# Same seed => same plan, always starts and ends closed, no Math.random in the planner.
+import hashlib as _hl, json as _js, shutil as _sh, subprocess as _sp
+live_js = _js.loads((root / "zeref" / "live.json").read_text(encoding="utf-8"))
+seed_js = _js.loads((rb / "motion-seed.json").read_text(encoding="utf-8"))
+check(seed_js.get("fetched_at") == live_js.get("fetched_at") and seed_js.get("heartbeat", {}).get("recorded_tick") == live_js.get("heartbeat", {}).get("recorded_tick"), "motion-seed matches live.json recorded fields")
+check(_sh.which("node"), "node is available to run the motion planner")
+probe = r"""
+import { canonicalSeed, planFromHex, poseAt } from './docs/robot/motion.mjs';
+import { readFileSync } from 'fs';
+import { createHash } from 'crypto';
+const live = JSON.parse(readFileSync('zeref/live.json','utf8'));
+const key = canonicalSeed(live);
+const hex = createHash('sha256').update(key).digest('hex');
+const p = planFromHex(hex, live);
+const p2 = planFromHex(hex, live);
+const p3 = planFromHex(createHash('sha256').update(key + 'x').digest('hex'), live);
+const z = poseAt(p, 0);
+const end = poseAt(p, p.duration - 1e-6);
+if (p.acts[0].type !== 'hold-closed' || z.open !== 0) throw new Error('must start closed');
+if (end.open > 0.02) throw new Error('must return to closed');
+if (JSON.stringify(p.acts) !== JSON.stringify(p2.acts)) throw new Error('not deterministic');
+if (JSON.stringify(p.acts) === JSON.stringify(p3.acts)) throw new Error('different seed must change the plan');
+if (!(p.duration > 10) || p.acts.length < 6) throw new Error('plan too short');
+console.log(['ok', p.duration.toFixed(2), p.acts.length, p.digest_hex.slice(0,12)].join(' '));
+"""
+out = _sp.check_output(["node", "--input-type=module", "-e", probe], cwd=root, text=True).strip()
+check(out.startswith("ok "), f"motion planner self-check: {out}")
+print("motion plan:", out)
 
 if fails:
     print("ZEREF SELFTEST FAILED"); [print(" -", f) for f in fails]; sys.exit(1)

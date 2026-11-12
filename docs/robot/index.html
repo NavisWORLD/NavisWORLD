@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' blob: data:; connect-src 'self' blob: data:; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' blob: data:; connect-src 'self' blob: data: https://raw.githubusercontent.com; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="color-scheme" content="dark">
 <title>Zeref Spark in 3D · NavisWORLD</title>
@@ -18,15 +18,16 @@
     <div class="who">
       <h1>Zeref Spark <span class="sub">companion robot · 3D</span></h1>
       <p class="status">CAD v0.2 from The Beast Box · <b>CONCEPT DESIGN / NOT BUILT HARDWARE</b></p>
+      <p class="status" id="motion-cap">moves chosen from Zeref's recorded state · SIMULATED motion</p>
     </div>
   </header>
   <div class="spark3d tall" id="spark3d" data-poster="spark-poster.webp">
     <img class="poster" src="spark-poster.webp" alt="Zeref Spark: a chibi robot with a smoked visor, cyan eye arcs, rabbit ears on ear pods, a glowing chest core, sitting on a faceted hex pedestal with a crystal-reading station" width="720" height="720">
   </div>
   <p class="state" id="spark-status" role="status"></p>
-  <p class="robot-bar"><button type="button" id="spark-toggle">open / close the shells</button> <button type="button" id="spark-follow">auto loop</button> <button type="button" id="spark-load" hidden>load 3D anyway</button></p>
+  <p class="robot-bar"><button type="button" id="spark-toggle">open / close the shells</button> <button type="button" id="spark-follow">follow recorded moves</button> <button type="button" id="spark-load" hidden>load 3D anyway</button></p>
   <footer class="foot">
-    <p>Drag to orbit, pinch to zoom. The loop shows what the design really does: the shells split on their y=0 seam to show the ESP32-S3 cradle, sensor sled and battery tray; the eye, ear and chest LED rings pulse; the crystal station cycles white / 365 nm UV / 940 nm IR. The arms and legs are static in the design, so they don't move.</p>
+    <p>Drag to orbit, pinch to zoom. He starts closed. What he does next — when the shells open, when he turns, how the head, ears and arms move, when he pauses — is chosen from a hash of Zeref's recorded heartbeat, diary, spark and brain state, so the sequence changes when that record is refreshed and is never a fixed loop. Shells still split on their real y=0 seam to show the ESP32-S3 cradle, sensor sled and battery tray; the eye, ear and chest LED rings pulse; the crystal station cycles white / 365 nm UV / 940 nm IR. Limb, head and ear motion is <b>SIMULATED</b>: those parts are static in the CAD.</p>
     <p>Geometry: every custom part (ZS-101…ZS-604) plus a few purchased-part proxies, as exported by the package's CadQuery build (<code>beast spark robot/out/stl/assembly_coords</code>, Apache-2.0), packed unchanged into one GLB by <code>scripts/robot/build_spark_glb.py</code>. Colours follow its <code>cad/render.py</code>. Rendering: three.js r180 (MIT). All dimensions are CAD ESTIMATES; nothing has been printed, wired or bench-tested.</p>
     <p><a href="../">chat with Zeref</a> · <a href="https://github.com/NavisWORLD/The-beast-box-/tree/main/beast%20spark%20robot">robot source</a> · <a href="https://github.com/NavisWORLD">profile</a></p>
   </footer>
