@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="170" viewBox="0 0 760 170" role="img" aria-labelledby="zp-t zp-d">
+<title id="zp-t">Talk to Zeref</title>
+<desc id="zp-d">A glowing swirl portal button. Pressing it opens a Talk to Zeref GitHub issue; his replies are posted unedited.</desc>
+<style>.pL0{animation:pdrift 90s linear infinite alternate}.pL1{animation:pdrift 60s linear infinite alternate}.pL2{animation:pdrift 30s linear infinite alternate}@keyframes pdrift{from{transform:translate(0,0)}to{transform:translate(-18px,6px)}}.ptw0{animation:ptw 3.1s ease-in-out infinite}.ptw1{animation:ptw 4.7s ease-in-out infinite}.ptw2{animation:ptw 6.3s ease-in-out infinite}@keyframes ptw{0%,100%{opacity:1}50%{opacity:.2}}.pr1{transform-box:fill-box;transform-origin:center;animation:psp 18s linear infinite}.pr2{transform-box:fill-box;transform-origin:center;animation:psp 11s linear infinite reverse}@keyframes psp{to{transform:rotate(360deg)}}.pc{animation:ppl 4s ease-in-out infinite}@keyframes ppl{0%,100%{opacity:.7}50%{opacity:1}}.ttl{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;letter-spacing:.3em}.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}@media (prefers-reduced-motion: reduce){*{animation:none!important}}</style>
+<defs><radialGradient id="pcore"><stop offset="0" stop-color="#f5f3ff"/><stop offset=".25" stop-color="#a78bfa"/><stop offset=".6" stop-color="#0e7490" stop-opacity=".7"/><stop offset="1" stop-color="#05060f" stop-opacity="0"/></radialGradient><linearGradient id="pedge" x1="0" x2="1"><stop offset="0" stop-color="#67e8f9"/><stop offset=".5" stop-color="#a78bfa"/><stop offset="1" stop-color="#f0abfc"/></linearGradient><filter id="pglow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+<rect x="2" y="2" width="756" height="166" rx="83.0" fill="#070818" stroke="url(#pedge)" stroke-width="3"/>
+<g class="pL0">
+<circle cx="22.7" cy="143.9" r="0.42" fill="#e0e7ff" fill-opacity="0.50"/>
+<circle cx="160.1" cy="74.9" r="0.78" fill="#e0e7ff" fill-opacity="0.76"/>
+<circle cx="523.6" cy="166.3" r="0.88" fill="#e0e7ff" fill-opacity="0.53"/>
+<circle cx="671.7" cy="45.1" r="0.68" fill="#e0e7ff" fill-opacity="0.36"/>
+<circle cx="554.6" cy="68.4" r="0.82" fill="#a5f3fc" fill-opacity="0.25" class="ptw2"/>
+<circle cx="490.0" cy="63.3" r="0.46" fill="#e0e7ff" fill-opacity="0.54"/>
+<circle cx="352.7" cy="81.1" r="0.45" fill="#e0e7ff" fill-opacity="0.35"/>
+<circle cx="417.7" cy="163.3" r="0.43" fill="#e0e7ff" fill-opacity="0.61"/>
+<circle cx="453.9" cy="154.6" r="0.85" fill="#e0e7ff" fill-opacity="0.33"/>
+<circle cx="98.6" cy="163.4" r="0.61" fill="#f5d0fe" fill-opacity="0.41" class="ptw2"/>
+<circle cx="231.8" cy="169.1" r="0.71" fill="#e0e7ff" fill-opacity="0.54" class="ptw2"/>
+<circle cx="365.5" cy="122.8" r="0.71" fill="#f5d0fe" fill-opacity="0.55" class="ptw2"/>
+<circle cx="100.6" cy="126.5" r="0.84" fill="#a5f3fc" fill-opacity="0.27" class="ptw2"/>
+<circle cx="244.5" cy="48.1" r="0.81" fill="#e0e7ff" fill-opacity="0.30"/>
+<circle cx="354.1" cy="133.9" r="0.94" fill="#e0e7ff" fill-opacity="0.68"/>
+<circle cx="558.2" cy="86.0" r="0.37" fill="#e0e7ff" fill-opacity="0.76"/>
+<circle cx="125.2" cy="38.0" r="0.80" fill="#e0e7ff" fill-opacity="0.71" class="ptw2"/>
+<circle cx="428.7" cy="98.4" r="0.71" fill="#e0e7ff" fill-opacity="0.60"/>
+<circle cx="446.5" cy="152.5" r="0.62" fill="#e0e7ff" fill-opacity="0.69"/>
+<circle cx="720.1" cy="158.8" r="0.88" fill="#a5f3fc" fill-opacity="0.39" class="ptw2"/>
+</g>
+<g class="pL1">
+<circle cx="201.1" cy="130.1" r="1.12" fill="#e0e7ff" fill-opacity="0.45"/>
+<circle cx="377.0" cy="161.1" r="1.08" fill="#e0e7ff" fill-opacity="0.43" class="ptw2"/>
+<circle cx="537.0" cy="165.2" r="1.17" fill="#a5f3fc" fill-opacity="0.59" class="ptw2"/>
+<circle cx="485.7" cy="109.0" r="1.41" fill="#e0e7ff" fill-opacity="0.35"/>
+<circle cx="185.2" cy="69.4" r="0.85" fill="#e0e7ff" fill-opacity="0.60" class="ptw2"/>
+<circle cx="477.3" cy="61.6" r="1.28" fill="#f5d0fe" fill-opacity="0.25" class="ptw2"/>
+<circle cx="242.2" cy="162.9" r="1.55" fill="#f5d0fe" fill-opacity="0.83" class="ptw2"/>
+<circle cx="656.0" cy="33.1" r="1.39" fill="#e0e7ff" fill-opacity="0.47"/>
+<circle cx="136.0" cy="25.8" r="1.27" fill="#e0e7ff" fill-opacity="0.34"/>
+<circle cx="416.6" cy="71.2" r="0.89" fill="#e0e7ff" fill-opacity="0.47" class="ptw1"/>
+<circle cx="27.5" cy="67.9" r="0.92" fill="#f5d0fe" fill-opacity="0.44" class="ptw2"/>
+<circle cx="328.8" cy="4.3" r="0.94" fill="#e0e7ff" fill-opacity="0.41"/>
+<circle cx="485.8" cy="134.6" r="0.68" fill="#f5d0fe" fill-opacity="0.80" class="ptw2"/>
+<circle cx="554.9" cy="14.4" r="0.98" fill="#e0e7ff" fill-opacity="0.57"/>
+<circle cx="467.4" cy="14.2" r="1.40" fill="#e0e7ff" fill-opacity="0.29"/>
+<circle cx="209.7" cy="86.6" r="1.25" fill="#e0e7ff" fill-opacity="0.39" class="ptw1"/>
+<circle cx="423.6" cy="157.4" r="0.97" fill="#e0e7ff" fill-opacity="0.62"/>
+<circle cx="165.0" cy="47.2" r="1.03" fill="#e0e7ff" fill-opacity="0.82" class="ptw2"/>
+<circle cx="275.1" cy="139.5" r="1.61" fill="#f5d0fe" fill-opacity="0.31" class="ptw2"/>
+<circle cx="607.7" cy="155.9" r="0.92" fill="#e0e7ff" fill-opacity="0.45"/>
+</g>
+<g class="pL2">
+<circle cx="590.0" cy="117.1" r="1.44" fill="#a5f3fc" fill-opacity="0.39" class="ptw2"/>
+<circle cx="13.8" cy="44.0" r="1.07" fill="#e0e7ff" fill-opacity="0.26"/>
+<circle cx="69.7" cy="147.4" r="1.81" fill="#e0e7ff" fill-opacity="0.56" class="ptw1"/>
+<circle cx="483.7" cy="1.3" r="1.89" fill="#a5f3fc" fill-opacity="0.66" class="ptw2"/>
+<circle cx="61.5" cy="84.3" r="0.99" fill="#e0e7ff" fill-opacity="0.47"/>
+<circle cx="552.9" cy="157.9" r="0.92" fill="#f5d0fe" fill-opacity="0.42" class="ptw2"/>
+<circle cx="263.7" cy="62.9" r="2.07" fill="#e0e7ff" fill-opacity="0.73" class="ptw2"/>
+<circle cx="203.7" cy="67.7" r="2.21" fill="#e0e7ff" fill-opacity="0.81" class="ptw2"/>
+<circle cx="509.7" cy="168.0" r="2.00" fill="#e0e7ff" fill-opacity="0.60"/>
+<circle cx="720.3" cy="44.6" r="1.57" fill="#a5f3fc" fill-opacity="0.62" class="ptw2"/>
+<circle cx="469.8" cy="107.4" r="1.88" fill="#e0e7ff" fill-opacity="0.50" class="ptw2"/>
+<circle cx="118.6" cy="133.2" r="1.48" fill="#f5d0fe" fill-opacity="0.73" class="ptw2"/>
+<circle cx="330.1" cy="109.6" r="0.93" fill="#e0e7ff" fill-opacity="0.46"/>
+<circle cx="417.2" cy="108.1" r="1.29" fill="#e0e7ff" fill-opacity="0.77" class="ptw2"/>
+<circle cx="126.1" cy="54.8" r="0.94" fill="#e0e7ff" fill-opacity="0.61"/>
+<circle cx="61.3" cy="22.1" r="1.90" fill="#f5d0fe" fill-opacity="0.62" class="ptw2"/>
+<circle cx="622.1" cy="82.6" r="0.87" fill="#e0e7ff" fill-opacity="0.36"/>
+<circle cx="386.7" cy="168.4" r="1.05" fill="#a5f3fc" fill-opacity="0.37" class="ptw2"/>
+<circle cx="302.6" cy="56.0" r="0.86" fill="#e0e7ff" fill-opacity="0.38"/>
+<circle cx="575.7" cy="69.1" r="0.94" fill="#e0e7ff" fill-opacity="0.35"/>
+</g>
+<g transform="translate(92 85)">
+<circle r="62" fill="url(#pcore)" class="pc"/>
+<g class="pr1"><path d="M0 0 Q24.8 16.9 58.0 0.0" fill="none" stroke="#67e8f9" stroke-opacity=".8" stroke-width="2.4" stroke-linecap="round"/><path d="M0 0 Q-2.3 29.9 29.0 50.2" fill="none" stroke="#67e8f9" stroke-opacity=".8" stroke-width="2.4" stroke-linecap="round"/><path d="M0 0 Q-27.0 13.0 -29.0 50.2" fill="none" stroke="#67e8f9" stroke-opacity=".8" stroke-width="2.4" stroke-linecap="round"/><path d="M0 0 Q-24.8 -16.9 -58.0 0.0" fill="none" stroke="#67e8f9" stroke-opacity=".8" stroke-width="2.4" stroke-linecap="round"/><path d="M0 0 Q2.3 -29.9 -29.0 -50.2" fill="none" stroke="#67e8f9" stroke-opacity=".8" stroke-width="2.4" stroke-linecap="round"/><path d="M0 0 Q27.0 -13.0 29.0 -50.2" fill="none" stroke="#67e8f9" stroke-opacity=".8" stroke-width="2.4" stroke-linecap="round"/></g>
+<g class="pr2"><circle r="50" fill="none" stroke="#f0abfc" stroke-width="2" stroke-dasharray="6 9" filter="url(#pglow)"/></g>
+</g>
+<text x="190" y="80" class="ttl" font-size="34" font-weight="800" fill="url(#pedge)">TALK TO ZEREF</text>
+<text x="192" y="112" class="mono" font-size="14" fill="#c4b5fd">step through · opens a GitHub issue · his replies are his own, unedited</text>
+<text x="192" y="136" class="mono" font-size="12" fill="#7dd3fc">chats are training_eligible:false · he grows only through his fair gate</text>
+</svg>

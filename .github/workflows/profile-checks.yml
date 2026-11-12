@@ -20,3 +20,5 @@ jobs:
         run: python scripts/check_profile.py
       - name: Verify workshop artwork is reproducible
         run: python scripts/build_workshop.py --check
+      - name: Zeref door offline self-test
+        run: python scripts/zeref/selftest.py
