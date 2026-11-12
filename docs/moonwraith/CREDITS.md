@@ -52,3 +52,18 @@
   spectral centroid, flare on highs, settle when the audio fades, curiosity
   on a sudden quiet) are smoothed with attack/release envelopes in `dance.mjs`.
   Particle count steps down with the same quality guard as the cosmic look.
+
+- **Recorded-state expression**: `expression.mjs` tints his iris and sets a
+  rest expression from fields that actually exist on the public live card
+  (`zeref/live.json`): diary mood (RECORDED) for iris hue, heartbeat energy
+  and spark/heartbeat state (SIMULATED / LOCAL SIMULATED / STALE) for glow,
+  energy + mood for eyelid openness, mood + resonance for ear/tail/wing rest,
+  and a slight proud posture only when the served brain step matches the
+  pinned release. 12D lived state (state12 / dyn12), diary tone, fair-gate
+  result, and last promotion time are not in the public files this page can
+  read — those use a neutral default and are listed as unavailable on the
+  legend. This is a display mapping, not a claim of feelings. Label:
+  "expression mapped from Zeref's recorded state · not a claim of feelings".
+  The song still overrides body motion; the recorded iris and base mood stay.
+  The 2D portrait fallback gets the same iris tint and glow. No Math.random.
+  Read-only; nothing here is written into training, pins, or gates.

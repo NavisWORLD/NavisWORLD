@@ -10,6 +10,7 @@ import { loadLive, planFromLive, livePose, applyReaction, ZERO_POSE } from './mo
 import { tickDance, applyDanceCSS, dancePose, DANCE_CAPTION } from './dance.mjs';
 import { applyCosmic, makeQualityGuard } from './cosmic.mjs';
 import { makeCosmicParticles, makeSignalRing, ensureSignalReadout } from './particles.mjs';
+import { applyEyes, ensureExpressionLegend } from './expression.mjs';
 
 const san = (n) => String(n).replace(/\s/g, '_').replace(/[\[\]\.:\/]/g, '');
 
@@ -161,6 +162,13 @@ export async function mount(el, {
     },
   }, { start: startQ, narrow });
   ensureSignalReadout(el);
+  const expr = (plan && plan.expression) || null;
+  if (expr) {
+    applyEyes(model, expr, { cosmic });
+    const legendHost = el.parentElement || el;
+    ensureExpressionLegend(legendHost, expr);
+  }
+
 
   const eul = new THREE.Euler();
   const quat = new THREE.Quaternion();
@@ -282,6 +290,7 @@ export async function mount(el, {
     cosmic.update(t, dancing ? sig : null);
     particles.update(t, sig, { reducedMotion });
     ring.update(t, sig);
+    if (expr) applyEyes(model, expr, { flare: dancing && sig ? (sig.flare || sig.high || 0) : 0, cosmic });
     watchQuality(dt);
     const yawSway = reducedMotion || dancing ? 0 : 0.14 * Math.sin(t * 0.42);
     if (!userOrbit) placeCamera(homeYaw + yawSway + (pose.headYaw || 0) * 0.15);
