@@ -347,7 +347,7 @@ _cl = _st.unpack_from("<I", mw_glb, 12)[0]
 _glb_json = _js.loads(mw_glb[20:20 + _cl].split(b"\x00")[0])
 check("EXT_meshopt_compression" not in (_glb_json.get("extensionsRequired") or []) and "EXT_meshopt_compression" not in (_glb_json.get("extensionsUsed") or []), "Moonwraith GLB does not require meshopt/WASM")
 check("blink" in (((_glb_json.get("meshes") or [{}])[0].get("extras") or {}).get("targetNames") or []), "Moonwraith GLB keeps blink/expression morphs")
-for rel in ("moonwraith3d.mjs", "motion.mjs", "panel.mjs", "CREDITS.md", "dance.mjs", "cosmic.mjs", "particles.mjs", "expression.mjs", "rhythm.mjs"):
+for rel in ("moonwraith3d.mjs", "motion.mjs", "panel.mjs", "CREDITS.md", "dance.mjs", "cosmic.mjs", "particles.mjs", "expression.mjs", "rhythm.mjs", "cosmos-audio.mjs", "physics.mjs"):
     body = (mw / rel).read_text(encoding="utf-8")
     check("Math.random(" not in body, f"moonwraith {rel} must not use Math.random")
     check(not re.search(r"Zeref is an (AI|LLM)|Zeref is a (GPT|language model|chatbot)", body, re.I), f"moonwraith {rel} must not call Zeref an AI or LLM")
@@ -489,6 +489,10 @@ check("--dance-hue" in css and "--dance-beat" in css and "--dance-kick" in css, 
 check("wing.2.L" in s3m and "ear.1.L" in s3m and "leg.L" in s3m and "tailTip" in s3m, "3D viewer drives wing tips, ear tips, legs, tail tip")
 check("beat · harmonics" in credits, "credits document the rhythm mapping")
 check("Entire motion follows the live song" in credits or "every animated bone" in credits, "credits document full-body song-driven motion")
+check("COSMOS" in credits and "infinite-adaptive-audio-12d-universe-engine" in credits, "credits cite Cory's adaptive audio engine")
+check("spring-damper" in credits and "physics.mjs" in credits, "credits document the physics model")
+check("SIMULATED motion" in dan and "driven by the live audio signal · SIMULATED motion" in dan, "dance caption stays honest SIMULATED motion")
+
 rhy_probe = r"""
 import { chromaVector, dominantPitchClass, chromaDistance, chromaHue, estimateTempo, tempoFromOnsets, spectralFlatness, spectralFlux, PITCH_CLASSES, RHYTHM_BANDS, hslToHex, makeRhythmState, tickRhythm } from './docs/moonwraith/rhythm.mjs';
 import { bandMean, normalizePeak, smoothToward, detectOnset, dancePose } from './docs/moonwraith/dance.mjs';
@@ -598,6 +602,74 @@ console.log(['ok', a.iris, a.glow.toFixed(3), a.proud ? 'proud' : 'not-proud', a
 expr_out = _sp.check_output(["node", "--input-type=module", "-e", expr_probe], cwd=root, text=True).strip()
 check(expr_out.startswith("ok "), f"expression self-check: {expr_out}")
 print("expression check:", expr_out)
+
+
+phys_probe = r"""
+import { estimatePitch, inferKey, synapticStep, hzToNote, voiceFeatures, COSMOS_LEAK } from './docs/moonwraith/cosmos-audio.mjs';
+import { makeRig, audioForces, stepPhysics, readPose, PHYSICS, HEAD_ROLL_MAX, dampingFor } from './docs/moonwraith/physics.mjs';
+const sr = 44100, n = 2048, freq = 440;
+const buf = new Float32Array(n);
+for (let i = 0; i < n; i++) buf[i] = Math.sin(2 * Math.PI * freq * i / sr);
+const p = estimatePitch(buf, sr, 1);
+if (!(p.hz > 430 && p.hz < 450 && p.q > 0.8)) throw new Error('440 Hz sine should lock, got ' + p.hz + ' q=' + p.q);
+const note = hzToNote(p.hz);
+if (note.name[0] !== 'A') throw new Error('440 should be A, got ' + note.name);
+const key = inferKey([{pc:0,w:1},{pc:4,w:1},{pc:7,w:1},{pc:0,w:1},{pc:2,w:1}]);
+if (key.root !== 0 || key.mode !== 'major') throw new Error('C major triad should infer C major, got ' + key.root + ' ' + key.mode);
+const stepped = synapticStep(new Array(12).fill(0), { voiceEnergy: 1, dt: 0.05, bpm: 0 }, COSMOS_LEAK);
+if (Math.abs(stepped[0] - (1 - COSMOS_LEAK)) > 1e-9) throw new Error('first leak step should be (1-leak)*target');
+if (stepped[8] !== 0) throw new Error('pulse phase must stay 0 without a BPM (no fake grid)');
+const feat = voiceFeatures(buf, sr, 0, 1);
+if (!(feat.energy > 0.2 && feat.freq > 430)) throw new Error('voice features should see the sine');
+if (PHYSICS.hz !== 120) throw new Error('fixed timestep is 120 Hz');
+if (PHYSICS.root.gravityScale > 0.03) throw new Error('root gravityScale must be nearly zero');
+if (PHYSICS.chains.spine.gravityScale.some((g) => g > 0.03)) throw new Error('spine gravityScale must be nearly zero');
+if (PHYSICS.chains.tail.gravityScale.some((g) => g > 0.03)) throw new Error('tail droop must stay tiny (<= 0.03)');
+if (PHYSICS.headRollMax > 15 * Math.PI / 180 + 1e-9) throw new Error('head roll cap is 15 degrees');
+const zetas = [PHYSICS.root.zeta, ...Object.values(PHYSICS.chains).map((c) => c.zeta)];
+if (zetas.some((z) => z < 0.35 || z > 0.5)) throw new Error('chain zeta should be underdamped 0.35–0.5');
+const rig = makeRig();
+for (let i = 0; i < 40; i++) stepPhysics(rig, {}, 1 / 120);
+const restHop = readPose(rig).hop;
+const restY = PHYSICS.root.restY || 0;
+if (Math.abs(restHop - restY) > 0.015) throw new Error('zero-force hover should sit near restY, got ' + restHop);
+const restPose = readPose(rig);
+if (Math.abs(restPose.spinePitch) > 0.02 || Math.abs(restPose.headRoll) > 0.02) throw new Error('zero-force pose should be upright');
+// Isolated pitch torque on the spine only: the head should lag, then follow through.
+const pulse = { spine: [[80, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]], rootY: 0, rootX: 0 };
+stepPhysics(rig, pulse, 1 / 120);
+const p0 = readPose(rig);
+const spine0 = p0.joints.spine[0];
+const head0 = p0.joints.head[0];
+if (!(Math.abs(spine0) > 0.001)) throw new Error('spine should move on a direct torque, got ' + spine0);
+if (!(head0 !== 0 && Math.sign(head0) !== Math.sign(spine0))) throw new Error('head should inertially lag (opposite local sign) on the first substep');
+if (!(Math.sign(p0.joints.chest[0]) !== Math.sign(spine0))) throw new Error('chest should lag the spine');
+let follow = false, headMax = Math.abs(head0);
+for (let i = 0; i < 30; i++) {
+  stepPhysics(rig, { spine: [[0,0,0],[0,0,0],[0,0,0],[0,0,0]], rootY: 0, rootX: 0 }, 1 / 120);
+  const h = readPose(rig).joints.head[0];
+  headMax = Math.max(headMax, Math.abs(h));
+  if (Math.sign(h) === Math.sign(spine0) && Math.abs(h) > 0.005) follow = true;
+}
+if (!follow) throw new Error('head should reverse and follow the spine wave, max=' + headMax);
+const roller = makeRig();
+for (let i = 0; i < 16; i++) stepPhysics(roller, { spine: [[0,0,0],[0,0,0],[0,0,40],[0,0,80]] }, 1 / 120);
+const rolled = readPose(roller).headRoll;
+if (Math.abs(rolled) > HEAD_ROLL_MAX + 1e-6) throw new Error('head roll must stay within 15 degrees, got ' + rolled);
+
+const kick = { playing: true, cosmos: [0.6,0,0,0.8,0,0,0,0,0,0.8,0,0.2], kickHit: 1, bass: 0.7, mid: 0, high: 0, earSide: 1, useGrid: true, beatPhase: 0, beatConf: 0.7, bpm: 90 };
+const kicked = makeRig();
+for (let i = 0; i < 8; i++) stepPhysics(kicked, audioForces(kick), 1 / 120);
+if (!(readPose(kicked).hop > 0.01) || !(Math.abs(readPose(kicked).joints.spine[0]) > 0.01)) throw new Error('audio kick should lift the root and torque the spine');
+// Energy decays with no further forces.
+const e1 = rig.energy;
+for (let i = 0; i < 80; i++) stepPhysics(rig, {}, 1 / 120);
+if (!(rig.energy < e1 * 0.5)) throw new Error('energy should decay under damping, ' + rig.energy + ' vs ' + e1);
+console.log(['ok', p.hz.toFixed(1), key.mode, PHYSICS.hz, headMax.toFixed(3)].join(' '));
+"""
+phys_out = _sp.check_output(["node", "--input-type=module", "-e", phys_probe], cwd=root, text=True).strip()
+check(phys_out.startswith("ok "), f"physics/cosmos self-check: {phys_out}")
+print("physics check:", phys_out)
 
 if fails:
     print("ZEREF SELFTEST FAILED"); [print(" -", f) for f in fails]; sys.exit(1)
