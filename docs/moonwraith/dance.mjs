@@ -33,15 +33,25 @@
 // smile / grin follow mid / vocal energy; brows follow mids; the head
 // nods on the beat (or the music clock).
 //
-// Label: "dancing to Cory's song · driven by the live audio signal".
+// The continuous river of features is Cory's COSMOS Music 12-channel
+// performance state (ported from infinite-adaptive-audio-12d-universe-engine,
+// leak 0.82). Those signals — plus the live rhythm onsets — are applied as
+// forces and torques on a spring-damper bone chain (physics.mjs). The body
+// is not posed to a target; motion has mass, stiffness, damping and gravity,
+// so a kick on the spine travels into the neck, head, wings and tail.
+// Face and eyes stay morph/emissive driven as before (no eye or jaw bones).
+//
+// Label: "dancing to Cory's song · driven by the live audio signal · SIMULATED motion".
 // Signal readout: "live audio signal · beat · harmonics" plus BPM/confidence
 // and the current pitch class.
 // AudioContext is created and resumed inside the visitor's play tap
 // (iPhone Safari will not start a context any other way).
 
 import { makeRhythmState, tickRhythm } from './rhythm.mjs';
+import { makeCosmosState, tickCosmos } from './cosmos-audio.mjs';
+import { makeRig, audioForces, stepPhysics, readPose, resetRig } from './physics.mjs';
 
-export const DANCE_CAPTION = "dancing to Cory's song · driven by the live audio signal";
+export const DANCE_CAPTION = "dancing to Cory's song · driven by the live audio signal · SIMULATED motion";
 export { PITCH_CLASSES, RHYTHM_BANDS, chromaHue, chromaRgb } from './rhythm.mjs';
 
 export const BANDS = Object.freeze({
@@ -237,7 +247,7 @@ export function dancePose(rest, sig) {
   const engage = 1 - settle * 0.85;
   // Face: lid/mouth/brow morphs (no eye or jaw bones on the sculpt).
   const mouth = (mid * 0.55 + (sig.mid || 0) * 0.25 + fl * 0.4 + cur * 0.15) * engage;
-  return {
+  const pose = {
     headYaw: (mid * 0.16 * side + fl * 0.22 * side) * (1 - perk) * engage + sway * 0.55 * engage + cur * 0.18 * side + gaze * engage + snareHit * 0.22 * side + chord * 0.4 * side + Math.sin(clock * 0.5) * 0.04 * amp,
     headPitch: (-0.08 - mid * 0.36 - bass * 0.12 - hop * 0.08 + fl * 0.12) * engage
       + perk * -0.14 + startle * 0.18 + pounce * -0.22 + settle * 0.12 + cur * 0.06
@@ -284,6 +294,24 @@ export function dancePose(rest, sig) {
     camBob: ((useGrid && down ? (sig.beatPulse || anticip || kickHit) * 0.018 : 0) + kick * 0.01 + Math.sin(clock) * 0.004 * amp) * engage,
     pulse: (bass * 0.55 + loud * 0.65 + kick * 0.3 + (sig.kickHit || 0) * 0.35),
   };
+  // When the physics rig has been stepped, body angles come from the
+  // simulation (forces in, pose out). Face morphs stay as computed above.
+  if (sig && sig.joints) {
+    const p = sig.phys || {};
+    pose.hop = p.hop || 0;
+    pose.driftX = p.driftX || 0;
+    pose.lean = p.lean || 0;
+    if (p.headPitch != null) pose.headPitch = p.headPitch;
+    if (p.headYaw != null) pose.headYaw = p.headYaw;
+    if (p.headRoll != null) pose.headRoll = p.headRoll;
+    pose.spinePitch = p.spinePitch || 0;
+    pose.spineYaw = p.spineYaw || 0;
+    pose.spineRoll = p.spineRoll || 0;
+    pose.chestPitch = p.chestPitch || 0;
+    pose.chestYaw = p.chestYaw || 0;
+    pose.joints = sig.joints;
+  }
+  return pose;
 }
 
 function makeTrack() {
@@ -330,6 +358,9 @@ const st = {
   musicPhase: 0,
   blinkT: 0,
   squint: 0,
+  timeRaw: null,
+  cosmos: makeCosmosState(),
+  rig: makeRig(),
 };
 
 function acCtor() {
@@ -367,6 +398,7 @@ export function attachDance(audio) {
       st.freq = new Uint8Array(st.analyser.frequencyBinCount);
       st.freqRaw = new Uint8Array(st.analyserRaw.frequencyBinCount);
       st.time = new Float32Array(st.analyser.fftSize);
+      st.timeRaw = new Float32Array(st.analyserRaw.fftSize);
     }
     st.audio = audio;
     if (!audio._zerefDanceBound) {
@@ -404,6 +436,7 @@ export function tickDance(nowMs) {
     st.analyser.getByteFrequencyData(st.freq);
     st.analyser.getFloatTimeDomainData(st.time);
     if (st.analyserRaw && st.freqRaw) st.analyserRaw.getByteFrequencyData(st.freqRaw);
+    if (st.analyserRaw && st.timeRaw) st.analyserRaw.getFloatTimeDomainData(st.timeRaw);
     const sr = st.ctx.sampleRate || 44100;
     const fft = st.analyser.fftSize || FFT;
     // byte bins are 0..255
@@ -506,7 +539,32 @@ export function tickDance(nowMs) {
   }
   const ph = dropPhase(st.dropT);
 
-  const energy = bassE + midE + highE + loudE + st.hop + perkE + ph.pounce + ph.startle;
+  tickCosmos(st.cosmos, {
+    time: running ? (st.timeRaw || st.time) : null,
+    sampleRate: (st.ctx && st.ctx.sampleRate) || 44100,
+    dt,
+    running,
+    bpm: rhy.useGrid ? rhy.bpm : 0,
+    beatConf: rhy.beatConf || 0,
+    stride: 2,
+  });
+  const forceSig = {
+    playing: running,
+    bass: bassE, mid: midE, high: highE, loud: loudE,
+    hop: st.hop, earFlick: st.earFlick, earSide: st.earSide,
+    sway: swayE,
+    kick: rhy.kick, snare: rhy.snare, hat: rhy.hat,
+    kickHit: rhy.kickHit, snareHit: rhy.snareHit, hatHit: rhy.hatHit,
+    bpm: rhy.bpm, beatConf: rhy.beatConf, beatPhase: rhy.beatPhase,
+    useGrid: rhy.useGrid, chromaPc: rhy.chromaPc, musicPhase: st.musicPhase,
+    cosmos: st.cosmos.v,
+    pitchPc: st.cosmos.note ? st.cosmos.note.pc : rhy.chromaPc,
+  };
+  stepPhysics(st.rig, audioForces(forceSig), dt);
+  const phys = readPose(st.rig);
+  if (!running && settleE > 0.95 && (st.rig.energy || 0) < 0.002) st.rig = resetRig(st.rig);
+
+  const energy = bassE + midE + highE + loudE + st.hop + perkE + ph.pounce + ph.startle + (st.rig.energy || 0) * 0.15;
   if (!running && settleE > 0.95 && energy < 0.03) st.didPlay = false;
   const winding = st.didPlay && !running;
   const active = running || energy > 0.02 || winding;
@@ -559,6 +617,12 @@ export function tickDance(nowMs) {
     blinkEnv,
     squint: st.squint,
     flux: rhy.flux,
+    cosmos: st.cosmos.v,
+    cosmosKey: st.cosmos.key,
+    pitchHz: st.cosmos.freq,
+    pitchLock: st.cosmos.q,
+    joints: phys.joints,
+    phys,
   };
   return st.sig;
 }

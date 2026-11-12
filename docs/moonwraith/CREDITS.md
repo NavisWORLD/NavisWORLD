@@ -106,3 +106,28 @@
   lids use blink / sleepy / happy morphs, the mouth uses mouth_o / smile
   / grin, gaze is head + neck, iris pulse is emissive intensity, sparkle
   is the fur shader and particles.
+
+- **Physics-connected body, COSMOS audio river**: while the song plays, the
+  continuous signal is Cory's 12-channel COSMOS Music performance state
+  (ported from
+  [`NavisWORLD/infinite-adaptive-audio-12d-universe-engine`](https://github.com/NavisWORLD/infinite-adaptive-audio-12d-universe-engine)
+  — `COSMOS_MUSIC_SUITE/app/src/sensors.js`, `state.js`, `app.js`, and
+  `bindings/javascript/src/index.mjs`, and `python/src/cosmos_music/pitch.py`). The algorithm and constants are
+  followed here (`docs/moonwraith/cosmos-audio.mjs`); the GPL-3.0-only
+  sources are cited, not vendored, so this Apache-2.0 Pages repo does not
+  ship that source. Voice energy, pitch lock (normalized autocorrelation,
+  70–1000 Hz), phrase flux, harmonic tension and inferred key come from
+  the already-playing song through the existing AnalyserNode. Motion, tilt
+  and camera-PPG channels stay at 0 (those sensors are not on this page).
+  Tempo coherence and pulse phase use the live beat grid when it is
+  confident, otherwise the engine's no-BPM fallback — not a fake
+  metronome. The leaky integrator (`leak = 0.82`) is the smoothed river of
+  features. Those signals, plus the existing kick / snare / hat onsets,
+  are applied as **forces and torques** on a per-bone spring-damper
+  (`docs/moonwraith/physics.mjs`): mass, stiffness, damping, gravity, and
+  inertial lag down each chain (spine→chest→neck→head, tail.0–4, both
+  wings, both ears, both legs). Fixed 120 Hz semi-implicit Euler, no
+  `Math.random`. Constants live in the exported `PHYSICS` config. Face and
+  eyes stay morph / emissive driven (the sculpt has no eye or jaw bones).
+  The honest caption is `SIMULATED motion`. When the song pauses or ends,
+  residual momentum damps out and the seeded idle plan returns.

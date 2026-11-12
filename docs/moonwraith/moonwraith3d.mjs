@@ -213,6 +213,12 @@ export async function mount(el, {
       const rs = 1 - 0.08 * sq;
       named.root.scale.set(b.s.x * (1 + 0.1 * sq), b.s.y * rs, b.s.z * (1 + 0.1 * sq));
     }
+    if (pose.joints) {
+      // Physics-integrated joint angles (forces in, spring-damper out).
+      for (const [name, e] of Object.entries(pose.joints)) {
+        if (named[name]) addLocal(named[name], e[0] || 0, e[1] || 0, e[2] || 0);
+      }
+    } else {
     // Neck/head split so a turn doesn't crease (same idea as the Beast Box driver).
     const nod = pose.headPitch || 0;
     const yawH = pose.headYaw || 0;
@@ -250,6 +256,7 @@ export async function mount(el, {
     addLocal(named.legR, (pose.legR || 0) * 0.7, 0, 0);
     addLocal(named.pawL, (pose.pawL || 0) * 0.5, 0, 0);
     addLocal(named.pawR, (pose.pawR || 0) * 0.5, 0, 0);
+    }
 
     const weights = {
       blink: Math.min(1, Math.max(0, pose.blink || 0)),
