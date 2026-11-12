@@ -76,7 +76,11 @@ function hookShell(mat, offset, store) {
     store.push(shader);
   };
   const prevKey = mat.customProgramCacheKey;
-  mat.customProgramCacheKey = () => ((prevKey && prevKey()) || 'fur') + '-shell-' + offset.toFixed(4);
+  // The default Three cache key reads `this`; call it with the material, never loose.
+  mat.customProgramCacheKey = function furShellKey() {
+    const base = (typeof prevKey === 'function') ? (prevKey.call(this) || 'fur') : 'fur';
+    return String(base) + '-shell-' + offset.toFixed(4);
+  };
   mat.needsUpdate = true;
 }
 

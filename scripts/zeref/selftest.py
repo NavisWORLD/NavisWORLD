@@ -421,6 +421,7 @@ check("ensureWorldBackdrop" in (mw / "panel.mjs").read_text(encoding="utf-8") an
 check("world SIMULATED" in credits, "credits label the world as SIMULATED")
 fur = (mw / "fur.mjs").read_text(encoding="utf-8")
 check("enrichFur" in fur and "FUR_SHELLS" in fur and "mulberry32" in fur, "fur enrichment is present and seeded")
+check("furShellKey" in fur and "prevKey.call" in fur, "shell cache key is bound to the material")
 check("fetch(" not in fur, "fur adds no network call")
 check("enrichFur" in s3m, "3D viewer mounts the fur enrichment")
 check("uMoonDir" in cos and "uFurFollow" in cos and "setFurFollow" in cos, "fur shader has moon rim and follow-through uniforms")
