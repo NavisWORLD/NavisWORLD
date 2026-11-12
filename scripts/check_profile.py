@@ -35,6 +35,7 @@ required_files = [
     "assets/zeref-live.svg",
     "assets/zeref-hero.svg",
     "assets/zeref-avatar.svg",
+    "assets/zeref-moonwraith.png",
     "assets/zeref-portal.svg",
     "assets/zeref-divider.svg",
     "assets/zeref-constellation.svg",

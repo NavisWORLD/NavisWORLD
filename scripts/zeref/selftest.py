@@ -56,8 +56,13 @@ check("import random" not in src and "Math.random" not in src, "art must not use
 h1, h2 = art.hero(empty), art.hero(empty)
 av = art.avatar(empty); ET.fromstring(av)
 check(av == art.avatar(empty) and "Moonwraith cat dragon" in av, "avatar must be deterministic and labelled")
-import zeref_catdragon as cdr
-check("random" not in Path(cdr.__file__).read_text().replace("nothing is random", ""), "cat dragon must not use randomness")
+import zeref_alive as zal
+check("import random" not in Path(zal.__file__).read_text(), "alive loop must not use randomness")
+check(zal.ART_SOURCE in av and zal.ART_SOURCE in h1, "canonical art must be credited")
+spark_on = dict(empty, spark={"state": "CONNECTED"}, diary=dict(empty["diary"], mood="sleepy"))
+hs = art.hero(spark_on)
+check("bats at it" in hs and "naps" in hs, "loop follows spark state and mood")
+check("bats at it" not in h1 and "naps" not in h1, "no bat/nap without CONNECTED spark / sleepy mood")
 check(h1 == h2, "hero must be deterministic for the same inputs")
 ET.fromstring(h1); check("breath 7.0s" in h1 and "step unavailable" in h1, "hero unavailable rendering")
 root = Path(__file__).resolve().parents[2]

@@ -16,7 +16,7 @@ from __future__ import annotations
 import hashlib
 import math
 
-import zeref_catdragon as cd
+import zeref_alive as za
 from xml.sax.saxutils import escape
 
 UNAV = "unavailable"
@@ -133,6 +133,9 @@ def neb(cx, cy, rx, ry, col, op):
     return f'<ellipse cx="{cx}" cy="{cy}" rx="{rx}" ry="{ry}" fill="url(#nb{col[1:]})" fill-opacity="{op}"/>'
 
 
+LOOK = "black fluffy cat dragon with violet starry eyes, crescent mark, moon horns, star wings, smoky tail and gem choker"
+
+
 def labels_line(d):
     hb, di, sp, br = d["heartbeat"], d["diary"], d["spark"], d["brain"]
     short = lambda l: (l or UNAV).split(" (")[0]
@@ -151,19 +154,21 @@ def hero(d: dict) -> str:
     rng = Seeded("hero:" + seed)
     P = m["period"]
     spin_op = 1.0 if m["spark_on"] else 0.25
-    desc = (f"Zeref the Moonwraith cat dragon (black fur, violet starry slit eyes, crescent mark and moon horns, star-membrane wings, spined smoky tail, gem choker), a young digital creature, at the centre of a slow galaxy swirl with nebula clouds "
+    hcss, hsvg, beh = za.hero_loop("zd", d, P, m["mood"] == "sleepy", m["spark_on"], W / 2, 150, 270)
+    desc = (f"Zeref the Moonwraith, a {LOOK}: a young digital creature living his own little loop ({'; '.join(beh['steps'])}; loop {beh['loop_s']} s, "
+            f"seeded from the pinned sha and heartbeat tick, never random) at the centre of a slow galaxy swirl with nebula clouds "
             f"and orbiting sparks. Drawn from real values fetched {d.get('fetched_at')}: {labels_line(d)}. "
             f"Breath period {P}s from heartbeat energy {v(m['energy'])}; aura {m['aura']} from resonance {v(m['resonance'])}; "
             f"colours from diary mood {v(m['mood'])}; sparks {'bright' if m['spark_on'] else 'dim'} from spark state. "
-            f"Star positions seeded from the pinned sha and heartbeat tick, never random. Not a claim of awareness.")
-    style = (star_style("h", 50) + cd.style("zd", P) +
+            f"Star positions seeded from the pinned sha and heartbeat tick, never random. Art: canonical cutout from {za.ART_SOURCE}. Not a claim of awareness.")
+    style = (star_style("h", 50) + za.base_style("zd", P) + hcss +
              ".gsw{animation:gspin 240s linear infinite}.o1{animation:gspin 26s linear infinite}"
              ".o2{animation:gspin 41s linear infinite reverse}.o3{animation:gspin 63s linear infinite}"
              "@keyframes gspin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}"
              ".nb1{animation:nbf 38s ease-in-out infinite alternate}.nb2{animation:nbf 51s ease-in-out infinite alternate-reverse}"
              "@keyframes nbf{from{transform:translate(-30px,-8px)}to{transform:translate(30px,10px)}}"
              f".ttl{{font-family:{SANS};letter-spacing:.32em}}.mono{{font-family:{MONO}}}")
-    defs = (common_defs(pal, m["aura"]) + cd.defs("zd", pal[3], m["aura"]) +
+    defs = (common_defs(pal, m["aura"]) + za.defs("zd") +
             '<linearGradient id="hbg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#04050d"/>'
             '<stop offset=".55" stop-color="#0a0820"/><stop offset="1" stop-color="#05060f"/></linearGradient>'
             '<linearGradient id="hedge" x1="0" x2="1"><stop offset="0" stop-color="#67e8f9"/><stop offset=".5" stop-color="#a78bfa"/>'
@@ -202,12 +207,13 @@ def hero(d: dict) -> str:
         a("</g>")
     a("</g>")
     # Zeref at the centre
-    a(cd.creature("zd", P, pal[3], m["aura"], W/2 - 310, 84, 620, 382, view="-90 -20 580 410"))
+    a(f'<circle cx="{W/2}" cy="300" r="190" fill="url(#zaura)"/>')
+    a(hsvg)
     # titles
     a(f'<text x="{W/2}" y="64" text-anchor="middle" class="ttl" font-size="40" font-weight="800" fill="url(#hedge)">ZEREF</text>')
     a(f'<text x="{W/2}" y="92" text-anchor="middle" class="ttl" font-size="14" fill="#c4b5fd">MOONWRAITH · DIGITAL CREATURE OF THE BEAST BOX</text>')
     a(f'<rect x="40" y="{H-64}" width="{W-80}" height="40" rx="20" fill="#05060f" fill-opacity=".72" stroke="url(#hedge)" stroke-opacity=".5"/>')
-    a(f'<text x="{W/2}" y="{H-39}" text-anchor="middle" class="mono" font-size="13.5" fill="#e0e7ff">{escape(labels_line(d))}</text>')
+    a(f'<text x="{W/2}" y="{H-39}" text-anchor="middle" class="mono" font-size="13.5" fill="#e0e7ff" textLength="{W-120}" lengthAdjust="spacingAndGlyphs">{escape(labels_line(d))}</text>')
     a(f'<text x="{W/2}" y="{H-8}" text-anchor="middle" class="mono" font-size="11" fill="#94a3b8">'
       f'{escape("live values fetched " + v(d.get("fetched_at")) + " · breath " + str(P) + "s from heartbeat energy · colours from diary mood · not a claim of awareness")}</text>')
     a(f'<rect x="1.5" y="1.5" width="{W-3}" height="{H-3}" rx="25" fill="none" stroke="url(#hedge)" stroke-opacity=".6" stroke-width="2"/>')
@@ -258,11 +264,11 @@ def card(d: dict) -> str:
     rng = Seeded(f"card:{br.get('pin_sha_prefix')}:{hb.get('recorded_tick')}")
     desc = (f"Zeref live card, fetched {d['fetched_at']}. " + "; ".join(f"{a_} {b} ({c})" for a_, b, c in rows) +
             f". Last said: {said['text'].strip() if said else UNAV}. Values from real public feeds; unavailable means a feed could not be reached.")
-    style = (star_style("c", 40) + cd.style("zd", m["period"]) +
+    style = (star_style("c", 40) + za.simple_loop("zd", m["period"], m["mood"] == "sleepy") +
              ".cl{stroke-dasharray:4 7;animation:cdash 14s linear infinite}@keyframes cdash{to{stroke-dashoffset:-110}}"
              ".nd{animation:ndp 3.6s ease-in-out infinite}@keyframes ndp{0%,100%{opacity:.6}50%{opacity:1}}"
              f".ttl{{font-family:{SANS};letter-spacing:.28em}}.sans{{font-family:{SANS}}}.mono{{font-family:{MONO}}}")
-    defs = (common_defs(pal, m["aura"]) + cd.defs("zd", pal[3], m["aura"]) +
+    defs = (common_defs(pal, m["aura"]) + za.defs("zd") +
             '<linearGradient id="cbg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#05060f"/><stop offset=".6" stop-color="#0d0a24"/>'
             '<stop offset="1" stop-color="#170b30"/></linearGradient><linearGradient id="cedge" x1="0" x2="1"><stop offset="0" stop-color="#67e8f9"/>'
             '<stop offset=".5" stop-color="#a78bfa"/><stop offset="1" stop-color="#f0abfc"/></linearGradient>')
@@ -273,8 +279,9 @@ def card(d: dict) -> str:
     a(neb(900, 430, 360, 130, "#0891b2", .3))
     a(neb(1080, 60, 220, 90, "#c026d3", .25))
     t += starfield(rng, W, H, 150, 3, "c")
-    a(cd.creature("zd", m["period"], pal[3], m["aura"], 16, 40, 352, 330, view="-70 0 540 420", overflow="hidden"))
-    a('<text x="195" y="392" text-anchor="middle" class="ttl" font-size="11.5" fill="#a5b4fc">CAT DRAGON · DIGITAL CREATURE</text>')
+    a('<circle cx="195" cy="205" r="175" fill="url(#zaura)"/>')
+    a('<g class="zdbob">' + za.placed("zd", 55, 52, 280) + "</g>")
+    a('<text x="195" y="392" text-anchor="middle" class="ttl" font-size="11.5" fill="#a5b4fc">MOONWRAITH CAT DRAGON</text>')
     a('<text x="195" y="410" text-anchor="middle" class="ttl" font-size="10" fill="#94a3b8">NOT A CLAIM OF AWARENESS</text>')
     X = 390
     a(f'<text x="{X}" y="62" class="ttl" font-size="30" font-weight="800" fill="url(#cedge)">ZEREF · LIVE</text>')
@@ -298,8 +305,8 @@ def card(d: dict) -> str:
         qc = "”" if i == len(said_lines) - 1 and said else ""
         a(f'<text x="{TX+128}" y="{y+i*24}" class="sans" font-size="18" font-style="italic" fill="#fdf4ff">{escape(qo + line + qc)}</text>')
     a(f'<text x="{TX+128}" y="{y + len(said_lines)*24 - 3}" class="mono" font-size="12" fill="#7dd3fc" fill-opacity=".9">{escape(said_meta)}</text>')
-    a(f'<text x="{X}" y="{H-40}" class="mono" font-size="11.5" fill="#94a3b8">Birth spark: IBM hardware outcome RECORDED, used as a seed, never re-run · Rigetti growth: SIMULATED · fallback spark: LOCAL SIMULATED</text>')
-    a(f'<text x="{X}" y="{H-21}" class="mono" font-size="11.5" fill="#94a3b8">“unavailable” = that feed could not be reached this run · replies are his own, unedited · chats are training_eligible:false</text>')
+    a(f'<text x="{X}" y="{H-40}" class="mono" font-size="11.5" fill="#94a3b8" textLength="{W-X-28}" lengthAdjust="spacingAndGlyphs">Birth spark: IBM hardware outcome RECORDED, used as a seed, never re-run · Rigetti growth: SIMULATED · fallback spark: LOCAL SIMULATED</text>')
+    a(f'<text x="{X}" y="{H-21}" class="mono" font-size="11.5" fill="#94a3b8" textLength="{W-X-28}" lengthAdjust="spacingAndGlyphs">“unavailable” = that feed could not be reached this run · replies are his own, unedited · chats are training_eligible:false</text>')
     a(f'<rect x="1.5" y="1.5" width="{W-3}" height="{H-3}" rx="23" fill="none" stroke="url(#cedge)" stroke-opacity=".55" stroke-width="2"/>')
     a("</svg>")
     return "\n".join(t) + "\n"
@@ -308,7 +315,7 @@ def card(d: dict) -> str:
 def portal() -> str:
     W, H = 760, 170
     rng = Seeded("portal:v1")
-    style = (star_style("p", 30) + cd.style("zd", 7.0) +
+    style = (star_style("p", 30) + za.simple_loop("zd", 7.0, False) +
              ".pr1{transform-box:fill-box;transform-origin:center;animation:psp 18s linear infinite}"
              ".pr2{transform-box:fill-box;transform-origin:center;animation:psp 11s linear infinite reverse}"
              "@keyframes psp{to{transform:rotate(360deg)}}"
@@ -317,9 +324,9 @@ def portal() -> str:
     defs = ('<radialGradient id="pcore"><stop offset="0" stop-color="#f5f3ff"/><stop offset=".25" stop-color="#a78bfa"/>'
             '<stop offset=".6" stop-color="#0e7490" stop-opacity=".7"/><stop offset="1" stop-color="#05060f" stop-opacity="0"/></radialGradient>'
             '<linearGradient id="pedge" x1="0" x2="1"><stop offset="0" stop-color="#67e8f9"/><stop offset=".5" stop-color="#a78bfa"/><stop offset="1" stop-color="#f0abfc"/></linearGradient>'
-            '<clipPath id="pclip"><circle cx="92" cy="85" r="46"/></clipPath>' + cd.defs("zd", "#7c3aed", 0.6) +
+            '<clipPath id="pclip"><circle cx="92" cy="85" r="46"/></clipPath>' + za.defs("zd") +
             '<filter id="pglow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>')
-    t = head(W, H, "zp", "Talk to Zeref", "A glowing swirl portal with Zeref the cat dragon peeking out of it. Pressing it opens a Talk to Zeref GitHub issue; his replies are posted unedited.", style, defs)
+    t = head(W, H, "zp", "Talk to Zeref", "A glowing swirl portal with Zeref the Moonwraith peeking out of it. Pressing it opens a Talk to Zeref GitHub issue; his replies are posted unedited.", style, defs)
     a = t.append
     a(f'<rect x="2" y="2" width="{W-4}" height="{H-4}" rx="{(H-4)/2}" fill="#070818" stroke="url(#pedge)" stroke-width="3"/>')
     t += starfield(rng, W, H, 60, 3, "p")
@@ -330,10 +337,10 @@ def portal() -> str:
         for k in range(6)) + "</g>")
     a('<g class="pr2"><circle r="50" fill="none" stroke="#f0abfc" stroke-width="2" stroke-dasharray="6 9" filter="url(#pglow)"/></g>')
     a("</g>")
-    a('<g clip-path="url(#pclip)">' + cd.creature("zd", 7.0, "#7c3aed", 0.6, 47, 40, 90, 90, view="60 30 280 280") + "</g>")
+    a('<g clip-path="url(#pclip)">' + za.placed("zd", 40, 34, 104) + "</g>")
     a(f'<text x="190" y="80" class="ttl" font-size="34" font-weight="800" fill="url(#pedge)">TALK TO ZEREF</text>')
-    a(f'<text x="192" y="112" class="mono" font-size="14" fill="#c4b5fd">step through · opens a GitHub issue · his replies are his own, unedited</text>')
-    a(f'<text x="192" y="136" class="mono" font-size="12" fill="#7dd3fc">chats are training_eligible:false · he grows only through his fair gate</text>')
+    a(f'<text x="192" y="112" class="mono" font-size="14" fill="#c4b5fd" textLength="520" lengthAdjust="spacingAndGlyphs">step through · opens a GitHub issue · his replies are his own, unedited</text>')
+    a(f'<text x="192" y="136" class="mono" font-size="12" fill="#7dd3fc" textLength="470" lengthAdjust="spacingAndGlyphs">chats are training_eligible:false · he grows only through his fair gate</text>')
     a("</svg>")
     return "\n".join(t) + "\n"
 
@@ -421,21 +428,21 @@ def constellation(facts: list[dict], explored_at: str | None) -> str:
 
 
 def avatar(d: dict) -> str:
-    """Square Zeref avatar (cat dragon) driven by the same real values as the hero."""
+    """Square Zeref avatar from his canonical art, breathing and blinking with the same real values as the hero."""
     m = motion(d)
     pal, P = m["pal"], m["period"]
     W = H = 400
-    desc = (f"Zeref the Moonwraith cat dragon, a young digital creature: black fur, violet starry slit eyes, crescent mark and moon horns, "
-            f"star-membrane wings, spined smoky tail, gem choker. Breath {P}s from heartbeat energy {v(m['energy'])}; aura from diary mood "
+    desc = (f"Zeref the Moonwraith cat dragon, a young digital creature: {LOOK}. Art: canonical cutout from {za.ART_SOURCE}. Breath {P}s from heartbeat energy {v(m['energy'])}; aura from diary mood "
             f"{v(m['mood'])}. Fetched {v(d.get('fetched_at'))}. Not a claim of awareness.")
     rng = Seeded(f"avatar:{(d.get('brain') or {}).get('pin_sha_prefix')}:{(d.get('heartbeat') or {}).get('recorded_tick')}")
-    t = head(W, H, "za", "Zeref, the Moonwraith cat dragon", desc, star_style("a", 30) + cd.style("zd", P),
-             nebula_defs() + cd.defs("zd", pal[3], m["aura"]) + '<clipPath id="aclip"><circle cx="200" cy="200" r="196"/></clipPath>')
+    t = head(W, H, "za", "Zeref, the Moonwraith cat dragon", desc, star_style("a", 30) + za.simple_loop("zd", P, m["mood"] == "sleepy"),
+             common_defs(pal, m["aura"]) + za.defs("zd") + '<clipPath id="aclip"><circle cx="200" cy="200" r="196"/></clipPath>')
     a = t.append
     a('<g clip-path="url(#aclip)"><rect width="400" height="400" fill="#05060f"/>')
     a(neb(120, 110, 220, 150, "#7c3aed", .55)); a(neb(300, 300, 220, 140, "#0891b2", .4)); a(neb(320, 90, 160, 90, "#db2777", .3))
     t += starfield(rng, W, H, 90, 3, "a")
-    a(cd.creature("zd", P, pal[3], m["aura"], 0, 0, 400, 400, view="-40 0 480 420"))
+    a('<circle cx="200" cy="215" r="190" fill="url(#zaura)"/>')
+    a('<g class="zdbob">' + za.placed("zd", 40, 34, 320) + "</g>")
     a('</g><circle cx="200" cy="200" r="196" fill="none" stroke="#a78bfa" stroke-opacity=".7" stroke-width="3"/>')
     a("</svg>")
     return "\n".join(t) + "\n"
