@@ -4,10 +4,12 @@
 // resume the AudioContext that drives his dance.
 import { canRun3D } from './moonwraith3d.mjs';
 import { attachDance, tickDance, applyDanceCSS, DANCE_CAPTION } from './dance.mjs';
+import { ensureSignalReadout } from './particles.mjs';
 
 const el = document.getElementById('moonwraith');
 const st = document.getElementById('mw-status');
 if (!el) throw new Error('moonwraith stage missing');
+ensureSignalReadout(el);
 
 let started = false;
 let view = null;
@@ -62,7 +64,7 @@ new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) start()
   requestAnimationFrame(loop2d);
   if (view) return;
   const sig = tickDance();
-  applyDanceCSS(el, sig && sig.active ? sig : null);
+  applyDanceCSS(el, sig);
   if (sig && sig.active && st && !/thinking|reply|listen/.test(st.textContent || '')) {
     st.textContent = DANCE_CAPTION;
     st.title = DANCE_CAPTION;

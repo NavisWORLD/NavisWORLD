@@ -344,7 +344,7 @@ _cl = _st.unpack_from("<I", mw_glb, 12)[0]
 _glb_json = _js.loads(mw_glb[20:20 + _cl].split(b"\x00")[0])
 check("EXT_meshopt_compression" not in (_glb_json.get("extensionsRequired") or []) and "EXT_meshopt_compression" not in (_glb_json.get("extensionsUsed") or []), "Moonwraith GLB does not require meshopt/WASM")
 check("blink" in (((_glb_json.get("meshes") or [{}])[0].get("extras") or {}).get("targetNames") or []), "Moonwraith GLB keeps blink/expression morphs")
-for rel in ("moonwraith3d.mjs", "motion.mjs", "panel.mjs", "CREDITS.md", "dance.mjs", "cosmic.mjs"):
+for rel in ("moonwraith3d.mjs", "motion.mjs", "panel.mjs", "CREDITS.md", "dance.mjs", "cosmic.mjs", "particles.mjs"):
     body = (mw / rel).read_text(encoding="utf-8")
     check("Math.random(" not in body, f"moonwraith {rel} must not use Math.random")
     check(not re.search(r"Zeref is an (AI|LLM)|Zeref is a (GPT|language model|chatbot)", body, re.I), f"moonwraith {rel} must not call Zeref an AI or LLM")
@@ -402,9 +402,15 @@ check("attachDance" in (mw / "panel.mjs").read_text(encoding="utf-8") and "zeref
 check("applyCosmic" in cos and "makeQualityGuard" in cos and "uCwTime" in cos, "cosmic materials and quality guard")
 check("mulberry32" in cos and "dancing to Cory's song" in credits, "cosmic particles are seeded; credits mention the dance")
 check("applyCosmic" in s3m and "tickDance" in s3m and "DANCE_CAPTION" in s3m, "3D viewer ticks dance and wears the cosmic look")
+check("makeCosmicParticles" in s3m and "makeSignalRing" in s3m and "ensureSignalReadout" in s3m, "3D viewer mounts color particles and the signal ring")
 check(".mw.dancing" in css, "2D portrait can pulse from the same bands")
+check(".mw-signal" in css and "live audio signal" in (mw / "particles.mjs").read_text(encoding="utf-8"), "honest 3-band signal readout")
+check("mulberry32" in (mw / "particles.mjs").read_text(encoding="utf-8") and "PARTICLE_COUNTS" in (mw / "particles.mjs").read_text(encoding="utf-8"), "particles are seeded and scale with quality")
+check("ensureSignalReadout" in (mw / "panel.mjs").read_text(encoding="utf-8"), "panel mounts the signal readout for 2D and 3D")
+check("spectralCentroid" in dan and "detectDrop" in dan and "detectSuddenQuiet" in dan, "melody centroid and realistic drop/quiet detectors")
 dance_probe = r"""
-import { bandMean, rms, normalizePeak, detectOnset, dancePose, DANCE_CAPTION } from './docs/moonwraith/dance.mjs';
+import { bandMean, rms, normalizePeak, detectOnset, dancePose, DANCE_CAPTION, spectralCentroid, detectDrop, detectSuddenQuiet, dropPhase } from './docs/moonwraith/dance.mjs';
+import { SIGNAL_CAPTION, PARTICLE_COUNTS } from './docs/moonwraith/particles.mjs';
 const bins = new Uint8Array(1024);
 for (let i = 0; i < 1024; i++) bins[i] = 0;
 // 44100 Hz, fft 2048 => bin width ~21.5 Hz. Put energy only in the bass (bin 3 ~= 65 Hz).
@@ -441,6 +447,26 @@ if (!(land.squash > 0)) throw new Error('bass without hop should squash the body
 const spun = dancePose({}, { bass: 0.2, mid: 0.2, high: 0.1, loud: 0.4, hop: 0, earFlick: 0, earSide: 1, spin: 1 });
 if (!(Math.abs(spun.spin - Math.PI * 2) < 1e-9)) throw new Error('spin progress 1 is a full turn');
 if (!/dancing to Cory's song/.test(DANCE_CAPTION) || !/live audio signal/.test(DANCE_CAPTION)) throw new Error('caption');
+const low = new Uint8Array(1024); low[3] = 200; low[4] = 180;
+const highBins = new Uint8Array(1024); highBins[200] = 180; highBins[201] = 200;
+const cLow = spectralCentroid(low, sr, fft), cHigh = spectralCentroid(highBins, sr, fft);
+if (!(cHigh > cLow)) throw new Error('centroid should rise when energy moves up the spectrum');
+const drop = { prev: 0.08, quietTime: 0, last: -20, t: 0 };
+for (let i = 0; i < 40; i++) detectDrop(drop, 0.08, 0.016);
+if (detectDrop(drop, 0.08, 0.016) !== 0) throw new Error('quiet is not a drop');
+if (detectDrop(drop, 0.75, 0.016) !== 1) throw new Error('a large rise after quiet should be a drop');
+if (detectDrop(drop, 0.8, 0.016) !== 0) throw new Error('drop must respect the min gap');
+const qdet = { prev: 0.7, last: -20, t: 0 };
+if (detectSuddenQuiet(qdet, 0.08, 0.016, true) !== 1) throw new Error('a sudden fall in loudness should be curiosity');
+if (detectSuddenQuiet(qdet, 0.08, 0.016, true) !== 0) throw new Error('curiosity must respect the min gap');
+const midDrop = dropPhase(0.22);
+if (!(midDrop.startle > 0) || !(midDrop.pounce > 0)) throw new Error('drop mid-phase should startle and pounce');
+const perkP = dancePose({}, { bass: 0.2, mid: 0.2, high: 0.1, loud: 0.3, hop: 0, earFlick: 0, earSide: 1, perk: 1 });
+const sitP = dancePose({}, { bass: 0.1, mid: 0.1, high: 0.1, loud: 0.1, hop: 0, earFlick: 0, earSide: 1, settle: 1 });
+if (!(perkP.earL > 0.5) || !(perkP.headPitch < 0)) throw new Error('perk should put ears forward and look toward the visitor');
+if (!(sitP.sleepy > 0) || !(sitP.wing < perkP.wing)) throw new Error('settle should sit him down');
+if (!/live audio signal/.test(SIGNAL_CAPTION) || !/bass mid high/.test(SIGNAL_CAPTION)) throw new Error('signal caption');
+if (!(PARTICLE_COUNTS.high > PARTICLE_COUNTS.med) || PARTICLE_COUNTS.low !== 0) throw new Error('particle counts should step down');
 console.log(['ok', bass.toFixed(1), n1.toFixed(2), p1.hop.toFixed(3)].join(' '));
 """
 dance_out = _sp.check_output(["node", "--input-type=module", "-e", dance_probe], cwd=root, text=True).strip()

@@ -40,3 +40,15 @@
   idle; chat reactions still win while he is thinking or replying. Label:
   "dancing to Cory's song · driven by the live audio signal". The 2D portrait
   fallback uses the same bands as a CSS pulse.
+
+- **Color particles and signal readout**: `particles.mjs` draws a GPU point
+  cloud (cyan / violet / magenta / gold) around him. Emission and color come
+  only from the live AnalyserNode signal (bass onsets → radial bursts, mids →
+  swirl, highs → twinkle and a shift toward gold, loudness → density). At idle
+  a faint drift is seeded from the same recorded-state digest as his motion.
+  No Math.random. A small 3-band ring and an on-stage meter are labeled
+  "live audio signal · bass mid high". Realistic reactions to the song
+  (perk on start, startle then pounce on a real drop, melody sway from the
+  spectral centroid, flare on highs, settle when the audio fades, curiosity
+  on a sudden quiet) are smoothed with attack/release envelopes in `dance.mjs`.
+  Particle count steps down with the same quality guard as the cosmic look.
