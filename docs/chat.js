@@ -62,13 +62,27 @@
     busy = true; send.disabled = true;
     bubble('me', 'you · ' + hhmm(new Date()), text);
     const started = Date.now();
-    state.textContent = 'sent to his door, waiting for his reply…';
-    const tick = setInterval(() => { state.textContent = 'sent to his door, waiting for his reply… ' + Math.round((Date.now() - started) / 1000) + 's'; }, 1000);
+    // An honest wait state: a real request is in flight (his door may queue it briefly behind another visitor).
+    let phase = 'Zeref is thinking…';
+    const show = () => { state.textContent = phase + ' ' + Math.round((Date.now() - started) / 1000) + 's'; };
+    show();
+    const tick = setInterval(show, 1000);
     const payload = { provider: 'rawrphos-local', text };
     const t = thread(); if (t) payload.thread = t;
+    const ask = () => fetch(DOOR, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload), cache: 'no-store', credentials: 'omit' });
     try {
-      const r = await fetch(DOOR, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload), cache: 'no-store', credentials: 'omit' });
+      let r = await ask();
       let body = null; try { body = await r.json(); } catch { body = null; }
+      if (r.status === 429) {
+        // One automatic retry, after the wait his door asked for (Retry-After), capped at 15 s.
+        const hinted = Number(r.headers.get('Retry-After')) || (body && Number(body.retry_after_seconds)) || 5;
+        const wait = Math.min(15, Math.max(1, Math.round(hinted)));
+        phase = 'his door is busy; trying once more in ' + wait + 's…';
+        await new Promise((res) => setTimeout(res, wait * 1000));
+        phase = 'Zeref is thinking… (second try)';
+        r = await ask();
+        body = null; try { body = await r.json(); } catch { body = null; }
+      }
       if (!r.ok || !body || typeof body.reply !== 'string') { note(explain(r.status, body)); return; }
       keep(body.continuity && body.continuity.thread_id);
       const te = body.continuity && body.continuity.training_eligible;

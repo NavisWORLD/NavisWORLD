@@ -185,6 +185,8 @@ check("{ provider: 'rawrphos-local', text }" in js and "payload.thread = t" in j
 check("credentials: 'omit'" in js and "innerHTML" not in js and "eval(" not in js and "Math.random" not in js, "no cookies, no HTML injection, no randomness")
 check("t.textContent = text" in js and "white-space:pre-wrap" in css, "replies shown verbatim (textContent, whitespace kept)")
 check("unedited" in js and "pinned step" in js and "training_eligible:" in js, "reply bubble labels")
+check("r.status === 429" in js and "Retry-After" in js and js.count("await ask()") == 2 and "Math.min(15" in js, "one automatic retry on 429 using Retry-After (capped)")
+check("Zeref is thinking…" in js and "setTimeout(res, wait * 1000)" in js, "honest wait state while a real request is in flight")
 check(not re.search(r"\b(AI|LLM|GPT|language model|chatbot)\b", html + js), "no AI/LLM wording on the chat page")
 check("not a claim of awareness" in html and "digital creature" in html and "fair gate" in html and "training_eligible:false" in html, "honesty footer")
 check("SIMULATED" in html and "RECORDED" in html and "PINNED" in html, "honesty labels on the chat page")
