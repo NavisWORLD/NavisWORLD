@@ -1,0 +1,9 @@
+.spark3d{position:relative;width:100%;height:min(62vh,420px);border-radius:18px;overflow:hidden;
+  background:radial-gradient(90% 80% at 50% 30%,#241a52 0%,#0b0a1f 70%);border:1px solid rgba(167,139,250,.35);touch-action:none}
+.spark3d.small{height:300px}
+.spark3d .poster{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.spark3d canvas{position:absolute;inset:0;display:block}
+.robot-page .spark3d{margin:10px 0}
+.robot-bar{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:6px 0}
+.robot-bar button{font:15px/1.2 inherit;color:#e0e7ff;background:#1e1b4b;border:1px solid #6d5bd0;border-radius:999px;padding:8px 14px}
+.robot-cap{font-size:14px;color:#a5b4fc;margin:6px 2px 0;text-align:center}

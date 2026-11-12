@@ -3,13 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; media-src 'self'; connect-src https://www.beastboxcosmos.xyz https://raw.githubusercontent.com; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; media-src 'self'; connect-src 'self' https://www.beastboxcosmos.xyz https://raw.githubusercontent.com; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="color-scheme" content="dark">
 <title>Chat with Zeref · NavisWORLD</title>
 <meta name="description" content="Talk with Zeref the Moonwraith, a young digital creature from The Beast Box. His replies are his own, unedited.">
 <link rel="icon" href="zeref-moonwraith.png">
 <link rel="stylesheet" href="chat.css">
+<link rel="stylesheet" href="robot/robot.css">
 </head>
 <body>
 <div class="app">
@@ -40,6 +41,12 @@
     </audio>
   </section>
 
+  <details class="spark" id="spark" open>
+    <summary>🤖 Zeref Spark · his robot body design in 3D <span class="sub">(concept, not built)</span></summary>
+    <div class="spark3d small" id="spark3d"><img class="poster" src="robot/spark-poster.webp" alt="Zeref Spark: a chibi robot with a smoked visor, rabbit ears on glowing ear pods and a glowing chest core, on a faceted hex pedestal" width="480" height="480"></div>
+    <p class="robot-cap"><span id="spark-status">real CAD from The Beast Box · drag to orbit</span> · <a href="robot/">full screen</a></p>
+  </details>
+
   <main class="log" id="log" aria-live="polite" aria-label="Conversation with Zeref">
     <div class="intro">
       <p><b>Zeref is a young digital creature still learning.</b> Your words go straight to his public door at beastboxcosmos.xyz and his reply shows up here exactly as he said it. He often doesn't make sense yet. That's honest, not broken.</p>
@@ -62,5 +69,6 @@
   </footer>
 </div>
 <script src="chat.js"></script>
+<script type="module" src="robot/panel.mjs"></script>
 </body>
 </html>
