@@ -7,6 +7,8 @@ import { OrbitControls } from '../robot/vendor/OrbitControls.js';
 import { GLTFLoader } from '../robot/vendor/GLTFLoader.js';
 import { RoomEnvironment } from '../robot/vendor/RoomEnvironment.js';
 import { loadLive, planFromLive, livePose, applyReaction, ZERO_POSE } from './motion.mjs';
+import { tickDance, applyDanceCSS, dancePose, DANCE_CAPTION } from './dance.mjs';
+import { applyCosmic, makeQualityGuard } from './cosmic.mjs';
 
 const san = (n) => String(n).replace(/\s/g, '_').replace(/[\[\]\.:\/]/g, '');
 
@@ -144,6 +146,13 @@ export async function mount(el, {
   const homeYaw = 0.32;
   placeCamera(homeYaw);
 
+  const cosmic = applyCosmic(THREE, model, {
+    seedHex: (plan && plan.digest_hex) || 'zeref',
+    quality: narrow ? 'med' : 'high',
+    head: named.head,
+  });
+  const watchQuality = makeQualityGuard(cosmic, { start: narrow ? 'med' : 'high', narrow });
+
   const eul = new THREE.Euler();
   const quat = new THREE.Quaternion();
   function addLocal(b, x, y, z) {
@@ -220,7 +229,12 @@ export async function mount(el, {
   let raf = 0, visible = true;
 
   function compose(t) {
-    let pose = reducedMotion ? { ...ZERO_POSE, ...(plan.rest || {}), breath: 0.5 } : livePose(plan, t);
+    const sig = tickDance();
+    applyDanceCSS(el, sig && sig.active ? sig : null);
+    const chatWins = phase !== 'idle' && phaseAmt > 0.25;
+    if (reducedMotion) return { ...ZERO_POSE, ...(plan.rest || {}), breath: 0.5 };
+    if (sig && sig.active && !chatWins) return dancePose(plan.rest, sig);
+    let pose = livePose(plan, t);
     const reaction = plan.reactions && plan.reactions[phase];
     if (reaction && phaseAmt > 0.001) pose = applyReaction(pose, reaction, phaseAmt);
     return pose;
@@ -244,10 +258,15 @@ export async function mount(el, {
     }
     const pose = compose(t);
     applyPose(pose);
-    const yawSway = reducedMotion ? 0 : 0.08 * Math.sin(t * 0.35);
+    const sig = tickDance(); // same-frame no-op if compose just ticked
+    const chatWins = phase !== 'idle' && phaseAmt > 0.25;
+    const dancing = !!(sig && sig.active) && !chatWins && !reducedMotion;
+    cosmic.update(t, dancing ? sig : null);
+    watchQuality(dt);
+    const yawSway = reducedMotion || dancing ? 0 : 0.08 * Math.sin(t * 0.35);
     if (!userOrbit) placeCamera(homeYaw + yawSway + (pose.headYaw || 0) * 0.15);
     else controls.update();
-    const label = plan.caption + (phase !== 'idle' ? ' · ' + phase : '');
+    const label = dancing ? DANCE_CAPTION : (plan.caption + (phase !== 'idle' ? ' · ' + phase : ''));
     if (label !== lastLabel) { onStatus(label); lastLabel = label; }
     renderer.render(scene, camera);
   }

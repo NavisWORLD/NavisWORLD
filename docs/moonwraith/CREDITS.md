@@ -22,3 +22,19 @@
   while a real request is in flight, and when a reply arrives are SIMULATED motion triggered by
   those real chat events; the shape of each reaction is also taken from the same recorded-state
   seed. No Math.random. Label: "moves chosen from Zeref's recorded state · SIMULATED motion".
+- **Cosmic look**: the same sculpt and rig, his purple / violet palette with cyan
+  accents, with a starfield and nebula in the fur, iridescent wing membranes, a
+  glow on the moon marks and eyes, and a soft dust aura. Twinkle and drift are
+  deterministic (seeded from the recorded-state digest in `zeref/live.json`, then
+  time-based). No Math.random. If a phone's frame time stays low, the aura and
+  extra shaders step down on their own.
+- **Dance**: when Cory's song is playing, `dance.mjs` routes the same-origin
+  `<audio>` element through a Web Audio AnalyserNode and drives his body from
+  the live frequency bands (bass/kick → bounce and hops, mids → head and ears,
+  highs → wings and tail, loudness → energy). Rolling per-band peaks adapt to
+  quiet and loud passages; onsets come from a rise in a band, not a metronome.
+  The AudioContext is created and resumed in the visitor's play tap so iPhone
+  Safari will allow it. When the song is paused he returns to his recorded-state
+  idle; chat reactions still win while he is thinking or replying. Label:
+  "dancing to Cory's song · driven by the live audio signal". The 2D portrait
+  fallback uses the same bands as a CSS pulse.

@@ -151,6 +151,8 @@
     if (icon) icon.textContent = on ? '❚❚' : '▶';
   }
   playBtn.addEventListener('click', () => {
+    // Resume the dance AudioContext in this same tap so iPhone Safari allows it.
+    try { window.dispatchEvent(new CustomEvent('zeref-song-tap', { detail: { audio } })); } catch { /* no stage */ }
     if (audio.paused) {
       const p = audio.play();
       if (p && typeof p.then === 'function') p.catch(() => { prompt.textContent = 'The song couldn\'t start in this browser. Tap play again.'; setPlaying(false); });
