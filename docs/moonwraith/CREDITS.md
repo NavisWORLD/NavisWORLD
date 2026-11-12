@@ -131,3 +131,12 @@
   eyes stay morph / emissive driven (the sculpt has no eye or jaw bones).
   The honest caption is `SIMULATED motion`. When the song pauses or ends,
   residual momentum damps out and the seeded idle plan returns.
+
+- **Upright, nearly weightless, fluid**: gravity on the body is almost
+  zero (he's a floating cosmic creature); only a tiny droop remains on
+  the tail and ears. A strong spring restores root, spine and head to
+  the upright hover pose. Chains are underdamped (zeta 0.35–0.5) so
+  motion overshoots and waves, with a slow hover / undulation driven by
+  the synaptic river. Head roll is clamped to 15 degrees. The old
+  pose-target squash no longer stacks on the physics body; rendered
+  scale stays in 0.9–1.1 so he is never flattened.

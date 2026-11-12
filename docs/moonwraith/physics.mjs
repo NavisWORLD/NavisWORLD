@@ -4,6 +4,20 @@
 // Motion travels down each chain because a child inherits its parent's
 // angular acceleration (inertial lag), so a kick on the spine becomes a
 // wave through the neck, head, and tail with overlap and follow-through.
+//
+// He is a floating cosmic creature: gravityScale is nearly zero on the
+// body, with only a tiny droop on the tail and ears. A strong spring
+// restores root, spine and head to the upright/hover rest pose.
+// Chains are underdamped (zeta 0.35–0.5) so waves overshoot. Head roll
+// is clamped to 15 degrees. Scale squash is not applied here — the
+// renderer clamps total scale to 0.9–1.1 and must not stack the old
+// pose-target squash on top of this simulation.
+
+export const HEAD_ROLL_MAX = 15 * Math.PI / 180; // ~15 degrees; never more
+
+export function dampingFor(mass, stiffness, zeta) {
+  return 2 * zeta * Math.sqrt(Math.max(0, stiffness * mass));
+}
 
 export const PHYSICS = {
   hz: 120,
@@ -11,86 +25,91 @@ export const PHYSICS = {
   gravity: 9.8,
   leak: 0.82, // same river leak as the COSMOS performance state
   restitution: 0,
+  headRollMax: HEAD_ROLL_MAX,
+  // Underdamped so waves overshoot, then the upright spring brings him back.
   root: {
     mass: 1.4,
-    stiffness: 42,
-    damping: 8.5,
-    gravityScale: 0.22,
-    limitY: 0.22,
-    limitX: 0.12,
+    stiffness: 62,       // strong hover-height restore
+    zeta: 0.45,
+    gravityScale: 0.02,  // nearly weightless
+    restY: 0.035,        // slight hover, not a slump on the floor
+    limitY: 0.16,
+    limitX: 0.08,
   },
   // mass is inertia. inherit is how strongly a child lags a parent's alpha.
+  // zeta 0.35–0.5 (underdamped). gravityScale is ~0 on the body.
   chains: {
     spine: {
       names: ['spine', 'chest', 'neck', 'head'],
       mass: [1.15, 1.0, 0.62, 0.42],
-      stiffness: [36, 32, 26, 22],
-      damping: [7.2, 6.6, 5.8, 5.2],
-      limit: [0.55, 0.6, 0.7, 0.85],
-      gravityScale: [0.08, 0.1, 0.12, 0.16],
+      stiffness: [58, 54, 50, 56], // strong upright restore
+      zeta: 0.42,
+      limit: [0.28, 0.30, 0.32, 0.35],
+      rollLimit: [0.16, 0.18, 0.22, HEAD_ROLL_MAX],
+      gravityScale: [0.01, 0.01, 0.015, 0.02],
       inherit: 0.85,
     },
     tail: {
       names: ['tail0', 'tail1', 'tail2', 'tail3', 'tail4'],
       mass: [0.55, 0.42, 0.32, 0.24, 0.18],
-      stiffness: [18, 14, 11, 8, 6],
-      damping: [4.2, 3.6, 3.1, 2.6, 2.2],
-      limit: [0.9, 1.0, 1.15, 1.3, 1.45],
-      gravityScale: [0.22, 0.28, 0.34, 0.4, 0.48],
+      stiffness: [16, 12, 9, 7, 5],
+      zeta: 0.36,
+      limit: [0.9, 1.05, 1.2, 1.35, 1.5],
+      gravityScale: [0.02, 0.022, 0.025, 0.028, 0.03], // tiny droop only
       inherit: 0.95,
     },
     wingL: {
       names: ['wing0L', 'wing1L', 'wing2L'],
       mass: [0.5, 0.32, 0.2],
-      stiffness: [22, 16, 12],
-      damping: [5.0, 4.0, 3.2],
-      limit: [1.1, 1.2, 1.35],
-      gravityScale: [0.06, 0.1, 0.14],
+      stiffness: [20, 14, 10],
+      zeta: 0.36,
+      limit: [1.1, 1.25, 1.4],
+      gravityScale: [0.01, 0.012, 0.015],
       inherit: 0.9,
     },
     wingR: {
       names: ['wing0R', 'wing1R', 'wing2R'],
       mass: [0.5, 0.32, 0.2],
-      stiffness: [22, 16, 12],
-      damping: [5.0, 4.0, 3.2],
-      limit: [1.1, 1.2, 1.35],
-      gravityScale: [0.06, 0.1, 0.14],
+      stiffness: [20, 14, 10],
+      zeta: 0.36,
+      limit: [1.1, 1.25, 1.4],
+      gravityScale: [0.01, 0.012, 0.015],
       inherit: 0.9,
     },
     earL: {
       names: ['ear0L', 'ear1L'],
       mass: [0.22, 0.14],
       stiffness: [28, 20],
-      damping: [5.4, 4.2],
-      limit: [0.7, 0.85],
-      gravityScale: [0.08, 0.12],
+      zeta: 0.4,
+      limit: [0.55, 0.7],
+      gravityScale: [0.02, 0.03],
       inherit: 0.9,
     },
     earR: {
       names: ['ear0R', 'ear1R'],
       mass: [0.22, 0.14],
       stiffness: [28, 20],
-      damping: [5.4, 4.2],
-      limit: [0.7, 0.85],
-      gravityScale: [0.08, 0.12],
+      zeta: 0.4,
+      limit: [0.55, 0.7],
+      gravityScale: [0.02, 0.03],
       inherit: 0.9,
     },
     legL: {
       names: ['legL', 'pawL'],
       mass: [0.7, 0.28],
-      stiffness: [34, 26],
-      damping: [7.0, 5.5],
-      limit: [0.7, 0.55],
-      gravityScale: [0.05, 0.08],
+      stiffness: [40, 30],
+      zeta: 0.45,
+      limit: [0.55, 0.45],
+      gravityScale: [0.01, 0.015],
       inherit: 0.8,
     },
     legR: {
       names: ['legR', 'pawR'],
       mass: [0.7, 0.28],
-      stiffness: [34, 26],
-      damping: [7.0, 5.5],
-      limit: [0.7, 0.55],
-      gravityScale: [0.05, 0.08],
+      stiffness: [40, 30],
+      zeta: 0.45,
+      limit: [0.55, 0.45],
+      gravityScale: [0.01, 0.015],
       inherit: 0.8,
     },
   },
@@ -101,22 +120,31 @@ export const PHYSICS = {
     bassHold: 12,
     midSpine: 10,
     fluxEar: 16,
-    fluxTail: 14,
-    tensionWing: 18,
-    hatWing: 12,
+    fluxTail: 24,
+    tensionWing: 28,
+    hatWing: 18,
     snareHead: 14,
     phaseNod: 22,
     pitchGaze: 12,
     memoryAmp: 0.55,
-    quietFloor: 6,
-    drift: 8,
-    stepLeg: 22,
+    quietFloor: 4,
+    drift: 6,
+    stepLeg: 18,
+    hoverHold: 8,
+    hoverBob: 10,
+    undulate: 7,
   },
 };
 
-function makeJoint(mass, stiffness, damping, limit, gravityScale) {
+function makeJoint(mass, stiffness, zeta, limit, gravityScale, rollLimit) {
   return {
-    mass, k: stiffness, c: damping, limit, gScale: gravityScale,
+    mass,
+    k: stiffness,
+    c: dampingFor(mass, stiffness, zeta),
+    zeta,
+    limit,
+    rollLimit: rollLimit == null ? limit : rollLimit,
+    gScale: gravityScale,
     th: [0, 0, 0],
     w: [0, 0, 0],
     alpha: [0, 0, 0],
@@ -124,15 +152,22 @@ function makeJoint(mass, stiffness, damping, limit, gravityScale) {
 }
 
 export function makeRig() {
+  const r = PHYSICS.root;
+  r.damping = dampingFor(r.mass, r.stiffness, r.zeta);
   const chains = {};
   for (const [key, spec] of Object.entries(PHYSICS.chains)) {
     chains[key] = spec.names.map((_, i) => makeJoint(
-      spec.mass[i], spec.stiffness[i], spec.damping[i], spec.limit[i], spec.gravityScale[i],
+      spec.mass[i],
+      spec.stiffness[i],
+      spec.zeta,
+      spec.limit[i],
+      spec.gravityScale[i],
+      spec.rollLimit ? spec.rollLimit[i] : spec.limit[i],
     ));
   }
   return {
     acc: 0,
-    rootY: 0, rootVy: 0, rootAy: 0,
+    rootY: r.restY || 0, rootVy: 0, rootAy: 0,
     rootX: 0, rootVx: 0, rootAx: 0,
     chains,
     energy: 0,
@@ -140,7 +175,7 @@ export function makeRig() {
 }
 
 function clampAxis(j, axis) {
-  const lim = j.limit;
+  const lim = axis === 2 ? j.rollLimit : j.limit;
   if (j.th[axis] > lim) { j.th[axis] = lim; j.w[axis] = 0; }
   else if (j.th[axis] < -lim) { j.th[axis] = -lim; j.w[axis] = 0; }
 }
@@ -169,7 +204,9 @@ function stepChain(joints, inherit, forcesByIndex, dt) {
 
 function stepRoot(rig, fy, fx, dt) {
   const r = PHYSICS.root;
-  const ay = (fy / r.mass) - PHYSICS.gravity * r.gravityScale - (r.stiffness / r.mass) * rig.rootY - (r.damping / r.mass) * rig.rootVy;
+  const restY = r.restY || 0;
+  const c = r.damping == null ? dampingFor(r.mass, r.stiffness, r.zeta || 0.45) : r.damping;
+  const ay = (fy / r.mass) - PHYSICS.gravity * r.gravityScale - (r.stiffness / r.mass) * (rig.rootY - restY) - (c / r.mass) * rig.rootVy;
   rig.rootVy += ay * dt;
   rig.rootY += rig.rootVy * dt;
   if (rig.rootY > r.limitY) { rig.rootY = r.limitY; rig.rootVy = 0; }
@@ -207,16 +244,22 @@ export function audioForces(sig) {
   const nod = F.phaseNod * coh * Math.sin(phase * Math.PI * 2);
   const clock = sig.musicPhase || 0;
   const step = (sig.useGrid ? Math.sin((sig.beatPhase || 0) * Math.PI * 2) : Math.sin(clock)) * (0.5 + energy);
+  // Slow river-driven hover / undulation (synaptic memory + energy + flux).
+  // Clock is the music clock, not wall time.
+  const river = (c[11] || 0) * 0.5 + energy * 0.35 + flux * 0.15;
+  const slow = clock * 0.45;
+  const hover = play ? ((F.hoverHold || 0) * (0.35 + river) + (F.hoverBob || 0) * river * Math.sin(slow)) : 0;
+  const und = play ? (F.undulate || 0) * (0.25 + river) : 0;
 
   const z = (p, y, r) => [p * mem, y * mem, r * mem];
   return {
-    rootY: mem * (F.voiceLift * energy + F.kickImpulse * kickI + F.bassHold * bass + floor * (0.35 + energy)),
+    rootY: mem * (F.voiceLift * energy + F.kickImpulse * kickI + F.bassHold * bass + floor * (0.35 + energy) + hover),
     rootX: mem * F.drift * (bass * 0.7 + energy * 0.3) * ((sig.sway || 0) + gaze * 0.25),
     spine: [
-      z(-F.kickImpulse * 0.35 * kickI - F.bassHold * 0.25 * bass - F.midSpine * mid * 0.3, F.midSpine * (sig.sway || 0) * 0.5, F.snareHead * 0.3 * snareI * side),
-      z(-F.midSpine * mid * 0.5 - F.voiceLift * 0.08 * energy, F.midSpine * (sig.sway || 0) * 0.35, 0),
-      z(nod * 0.55, F.pitchGaze * lock * gaze * 0.45, F.snareHead * 0.4 * snareI * side),
-      z(nod * 0.7 + F.snareHead * 0.15 * (sig.snare || 0), F.pitchGaze * lock * gaze, F.snareHead * 0.6 * snareI * side),
+      z(-F.kickImpulse * 0.25 * kickI - F.bassHold * 0.15 * bass - F.midSpine * mid * 0.2 + und * Math.sin(slow), F.midSpine * (sig.sway || 0) * 0.5 + und * 0.35 * Math.sin(slow * 0.7), F.snareHead * 0.2 * snareI * side),
+      z(-F.midSpine * mid * 0.35 + und * 0.8 * Math.sin(slow + 0.4), F.midSpine * (sig.sway || 0) * 0.35, 0),
+      z(nod * 0.45 + und * 0.5 * Math.sin(slow + 0.8), F.pitchGaze * lock * gaze * 0.45, F.snareHead * 0.25 * snareI * side),
+      z(nod * 0.6 + F.snareHead * 0.1 * (sig.snare || 0), F.pitchGaze * lock * gaze, F.snareHead * 0.35 * snareI * side),
     ],
     tail: [
       z(F.fluxTail * flux * 0.35 + F.kickImpulse * 0.12 * kickI, F.fluxTail * (0.4 + bass) * side * 0.4, F.hatWing * hatI * 0.2),
@@ -311,7 +354,7 @@ export function readPose(rig) {
     lean: (joints.spine ? joints.spine[0] : 0) * 0.25,
     headPitch: head[0] + neck[0] * 0.4,
     headYaw: head[1] + neck[1] * 0.4,
-    headRoll: head[2] + neck[2] * 0.4,
+    headRoll: Math.max(-HEAD_ROLL_MAX, Math.min(HEAD_ROLL_MAX, head[2] + neck[2] * 0.4)),
     spinePitch: joints.spine ? joints.spine[0] : 0,
     spineYaw: joints.spine ? joints.spine[1] : 0,
     spineRoll: joints.spine ? joints.spine[2] : 0,

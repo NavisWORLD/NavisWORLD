@@ -606,7 +606,7 @@ print("expression check:", expr_out)
 
 phys_probe = r"""
 import { estimatePitch, inferKey, synapticStep, hzToNote, voiceFeatures, COSMOS_LEAK } from './docs/moonwraith/cosmos-audio.mjs';
-import { makeRig, audioForces, stepPhysics, readPose, PHYSICS } from './docs/moonwraith/physics.mjs';
+import { makeRig, audioForces, stepPhysics, readPose, PHYSICS, HEAD_ROLL_MAX, dampingFor } from './docs/moonwraith/physics.mjs';
 const sr = 44100, n = 2048, freq = 440;
 const buf = new Float32Array(n);
 for (let i = 0; i < n; i++) buf[i] = Math.sin(2 * Math.PI * freq * i / sr);
@@ -622,9 +622,19 @@ if (stepped[8] !== 0) throw new Error('pulse phase must stay 0 without a BPM (no
 const feat = voiceFeatures(buf, sr, 0, 1);
 if (!(feat.energy > 0.2 && feat.freq > 430)) throw new Error('voice features should see the sine');
 if (PHYSICS.hz !== 120) throw new Error('fixed timestep is 120 Hz');
+if (PHYSICS.root.gravityScale > 0.03) throw new Error('root gravityScale must be nearly zero');
+if (PHYSICS.chains.spine.gravityScale.some((g) => g > 0.03)) throw new Error('spine gravityScale must be nearly zero');
+if (PHYSICS.chains.tail.gravityScale.some((g) => g > 0.03)) throw new Error('tail droop must stay tiny (<= 0.03)');
+if (PHYSICS.headRollMax > 15 * Math.PI / 180 + 1e-9) throw new Error('head roll cap is 15 degrees');
+const zetas = [PHYSICS.root.zeta, ...Object.values(PHYSICS.chains).map((c) => c.zeta)];
+if (zetas.some((z) => z < 0.35 || z > 0.5)) throw new Error('chain zeta should be underdamped 0.35–0.5');
 const rig = makeRig();
 for (let i = 0; i < 40; i++) stepPhysics(rig, {}, 1 / 120);
-if (readPose(rig).hop !== 0) throw new Error('zero-force rest hop should stay 0');
+const restHop = readPose(rig).hop;
+const restY = PHYSICS.root.restY || 0;
+if (Math.abs(restHop - restY) > 0.015) throw new Error('zero-force hover should sit near restY, got ' + restHop);
+const restPose = readPose(rig);
+if (Math.abs(restPose.spinePitch) > 0.02 || Math.abs(restPose.headRoll) > 0.02) throw new Error('zero-force pose should be upright');
 // Isolated pitch torque on the spine only: the head should lag, then follow through.
 const pulse = { spine: [[80, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]], rootY: 0, rootX: 0 };
 stepPhysics(rig, pulse, 1 / 120);
@@ -642,6 +652,11 @@ for (let i = 0; i < 30; i++) {
   if (Math.sign(h) === Math.sign(spine0) && Math.abs(h) > 0.005) follow = true;
 }
 if (!follow) throw new Error('head should reverse and follow the spine wave, max=' + headMax);
+const roller = makeRig();
+for (let i = 0; i < 16; i++) stepPhysics(roller, { spine: [[0,0,0],[0,0,0],[0,0,40],[0,0,80]] }, 1 / 120);
+const rolled = readPose(roller).headRoll;
+if (Math.abs(rolled) > HEAD_ROLL_MAX + 1e-6) throw new Error('head roll must stay within 15 degrees, got ' + rolled);
+
 const kick = { playing: true, cosmos: [0.6,0,0,0.8,0,0,0,0,0,0.8,0,0.2], kickHit: 1, bass: 0.7, mid: 0, high: 0, earSide: 1, useGrid: true, beatPhase: 0, beatConf: 0.7, bpm: 90 };
 const kicked = makeRig();
 for (let i = 0; i < 8; i++) stepPhysics(kicked, audioForces(kick), 1 / 120);

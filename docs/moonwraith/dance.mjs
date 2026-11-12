@@ -296,6 +296,7 @@ export function dancePose(rest, sig) {
   };
   // When the physics rig has been stepped, body angles come from the
   // simulation (forces in, pose out). Face morphs stay as computed above.
+  const rollMax = 15 * Math.PI / 180;
   if (sig && sig.joints) {
     const p = sig.phys || {};
     pose.hop = p.hop || 0;
@@ -310,7 +311,10 @@ export function dancePose(rest, sig) {
     pose.chestPitch = p.chestPitch || 0;
     pose.chestYaw = p.chestYaw || 0;
     pose.joints = sig.joints;
+    // Do not stack the old kinematic squash on the physics body.
+    pose.squash = 0;
   }
+  pose.headRoll = Math.max(-rollMax, Math.min(rollMax, pose.headRoll || 0));
   return pose;
 }
 
