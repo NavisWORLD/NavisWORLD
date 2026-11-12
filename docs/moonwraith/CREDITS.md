@@ -67,3 +67,19 @@
   The song still overrides body motion; the recorded iris and base mood stay.
   The 2D portrait fallback gets the same iris tint and glow. No Math.random.
   Read-only; nothing here is written into training, pins, or gates.
+
+- **Rhythm and harmonics**: `rhythm.mjs` reads the same live AnalyserNode /
+  FFT (no fake beats, no Math.random). Kick (40–120 Hz) hops and squashes
+  the body; snare (150–400 Hz + 2–5 kHz) snaps the head and flicks the
+  ears, with ear tips following through; hats (6–12 kHz) flick the tail tip
+  and shimmer the wing tips; a confident tempo (autocorrelation of spectral
+  flux, checked against inter-onset intervals) drives a beat-phase tracker
+  so he can anticipate beats and put a little more weight on the downbeat
+  every 4 — when confidence is low he follows pure onsets only, and the
+  readout says so. Harmonic energy spreads the wings and adds a slow wing
+  beat; the dominant chroma pitch class tints the aura / particles (12 hues
+  on a color wheel); a chroma-vector jump is a short turn / pose change;
+  melody (centroid and pitch class) tilts his gaze. The 2D portrait gets
+  the same beat pulse and hue. The recorded-mood expression from the live
+  card is still the base. Readout: "live audio signal · beat · harmonics"
+  plus BPM, confidence, and pitch class.
