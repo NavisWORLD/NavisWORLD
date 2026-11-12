@@ -73,3 +73,14 @@ textarea:focus{outline:none;border-color:var(--cy)}
   transform:translateY(calc(var(--dance-hop, 0) * -28px)) scale(calc(1 + var(--dance-bass, 0) * 0.12 - var(--dance-hop, 0) * 0.06)) rotate(calc(var(--dance-spin, 0) * 360deg));
   filter:brightness(calc(1 + var(--dance-loud, 0) * 0.32)) drop-shadow(0 0 18px rgba(143,232,255, calc(0.28 + var(--dance-high, 0) * 0.7))) drop-shadow(0 0 10px rgba(255,80,180, calc(0.15 + var(--dance-mid, 0) * 0.4)))}
 @media (prefers-reduced-motion: reduce){.mw.dancing .portrait{transform:none;filter:none}}
+.mw-signal{position:absolute;left:8px;right:8px;bottom:6px;z-index:2;display:flex;align-items:center;gap:8px;pointer-events:none}
+.mw-signal[hidden]{display:none}
+.mw-signal-label{font-size:10px;line-height:1.2;color:#c4b5fd;letter-spacing:.01em;overflow-wrap:anywhere;flex:1}
+.mw-signal-bars{display:flex;gap:3px;align-items:flex-end;height:18px;flex:0 0 auto}
+.mw-signal-bars i{display:block;width:5px;border-radius:3px 3px 1px 1px;min-height:2px;opacity:.95}
+.mw-signal-bars .bass{background:#8fe8ff;height:calc(2px + var(--dance-bass, 0) * 16px)}
+.mw-signal-bars .mid{background:#c084fc;height:calc(2px + var(--dance-mid, 0) * 16px)}
+.mw-signal-bars .high{background:#ffd76a;height:calc(2px + var(--dance-high, 0) * 16px)}
+/* 2D fallback sparkles, colored from the same live bands */
+.mw.dancing .portrait{box-shadow:inset 0 0 28px rgba(143,232,255, calc(var(--dance-high, 0) * .35))}
+@media (max-width:360px){.mw-signal-label{font-size:9.5px}}

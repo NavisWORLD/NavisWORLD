@@ -9,6 +9,7 @@ import { RoomEnvironment } from '../robot/vendor/RoomEnvironment.js';
 import { loadLive, planFromLive, livePose, applyReaction, ZERO_POSE } from './motion.mjs';
 import { tickDance, applyDanceCSS, dancePose, DANCE_CAPTION } from './dance.mjs';
 import { applyCosmic, makeQualityGuard } from './cosmic.mjs';
+import { makeCosmicParticles, makeSignalRing, ensureSignalReadout } from './particles.mjs';
 
 const san = (n) => String(n).replace(/\s/g, '_').replace(/[\[\]\.:\/]/g, '');
 
@@ -147,12 +148,19 @@ export async function mount(el, {
   const homeYaw = 0.32;
   placeCamera(homeYaw);
 
-  const cosmic = applyCosmic(THREE, model, {
-    seedHex: (plan && plan.digest_hex) || 'zeref',
-    quality: narrow ? 'med' : 'high',
-    head: named.head,
-  });
-  const watchQuality = makeQualityGuard(cosmic, { start: narrow ? 'med' : 'high', narrow });
+  const seedHex = (plan && plan.digest_hex) || 'zeref';
+  const startQ = narrow ? 'med' : 'high';
+  const cosmic = applyCosmic(THREE, model, { seedHex, quality: startQ, head: named.head });
+  const particles = makeCosmicParticles(THREE, model, { seedHex, quality: startQ });
+  const ring = makeSignalRing(THREE, model, { quality: startQ });
+  const watchQuality = makeQualityGuard({
+    setQuality(q) {
+      cosmic.setQuality(q);
+      particles.setQuality(q);
+      ring.setQuality(q);
+    },
+  }, { start: startQ, narrow });
+  ensureSignalReadout(el);
 
   const eul = new THREE.Euler();
   const quat = new THREE.Quaternion();
@@ -240,7 +248,7 @@ export async function mount(el, {
 
   function compose(t) {
     const sig = tickDance();
-    applyDanceCSS(el, sig && sig.active ? sig : null);
+    applyDanceCSS(el, sig);
     const chatWins = phase !== 'idle' && phaseAmt > 0.25;
     if (reducedMotion) return { ...ZERO_POSE, ...(plan.rest || {}), breath: 0.5 };
     if (sig && sig.active && !chatWins) return dancePose(plan.rest, sig);
@@ -272,6 +280,8 @@ export async function mount(el, {
     const chatWins = phase !== 'idle' && phaseAmt > 0.25;
     const dancing = !!(sig && sig.active) && !chatWins && !reducedMotion;
     cosmic.update(t, dancing ? sig : null);
+    particles.update(t, sig, { reducedMotion });
+    ring.update(t, sig);
     watchQuality(dt);
     const yawSway = reducedMotion || dancing ? 0 : 0.14 * Math.sin(t * 0.42);
     if (!userOrbit) placeCamera(homeYaw + yawSway + (pose.headYaw || 0) * 0.15);
