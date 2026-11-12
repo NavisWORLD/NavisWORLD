@@ -373,10 +373,14 @@ if (JSON.stringify(p.acts) !== JSON.stringify(p2.acts)) throw new Error('not det
 if (JSON.stringify(p.acts) === JSON.stringify(p3.acts)) throw new Error('different seed must change the plan');
 if (!(p.duration > 8) || p.acts.length < 6) throw new Error('plan too short');
 if (!p.cycles || !(p.cycles.breathPeriod >= 3 && p.cycles.breathPeriod <= 9)) throw new Error('breath period must follow recorded energy (3-9s)');
+if (!(p.cycles.bobAmp > 0.008) || !(p.cycles.glanceAmp > 0)) throw new Error('idle should glance and bob more livelily');
 if (!p.reactions || !p.reactions.think || !p.reactions.reply) throw new Error('chat reactions missing');
+const kinds = p.acts.map((a) => a.type).join(' ');
+if (!/(hop-up|stretch|curl)/.test(kinds)) throw new Error('idle plan should include a hop, stretch or tail curl');
 const a = livePose(p, 1.0), b = livePose(p, 1.0);
 if (JSON.stringify(a) !== JSON.stringify(b)) throw new Error('livePose must be deterministic at a given t');
 if (p.caption.indexOf('SIMULATED motion') < 0) throw new Error('caption must label SIMULATED motion');
+if (!('squash' in a) || !('spin' in a)) throw new Error('pose must carry squash and spin');
 console.log(['ok', p.duration.toFixed(2), p.acts.length, p.digest_hex.slice(0,12)].join(' '));
 """
 mw_out = _sp.check_output(["node", "--input-type=module", "-e", mw_probe], cwd=root, text=True).strip()
@@ -430,7 +434,12 @@ if (detectOnset(on, 0.9, 0.016) !== 0) throw new Error('onset must respect the m
 const p1 = dancePose({}, { bass: 0.8, mid: 0.2, high: 0.1, loud: 0.5, hop: 1, earFlick: 0, earSide: 1 });
 const p2 = dancePose({}, { bass: 0.8, mid: 0.2, high: 0.1, loud: 0.5, hop: 1, earFlick: 0, earSide: 1 });
 if (JSON.stringify(p1) !== JSON.stringify(p2)) throw new Error('dancePose must be deterministic');
-if (!(p1.hop > 0.05) || !(p1.headPitch < 0)) throw new Error('bass/hop should bounce the body and nod the head');
+if (!(p1.hop > 0.10) || !(p1.headPitch < 0)) throw new Error('bass/hop should bounce the body and nod the head');
+if (!(p1.squash < 0)) throw new Error('a hop in the air should stretch (negative squash)');
+const land = dancePose({}, { bass: 0.8, mid: 0.1, high: 0.1, loud: 0.5, hop: 0, earFlick: 0, earSide: 1 });
+if (!(land.squash > 0)) throw new Error('bass without hop should squash the body');
+const spun = dancePose({}, { bass: 0.2, mid: 0.2, high: 0.1, loud: 0.4, hop: 0, earFlick: 0, earSide: 1, spin: 1 });
+if (!(Math.abs(spun.spin - Math.PI * 2) < 1e-9)) throw new Error('spin progress 1 is a full turn');
 if (!/dancing to Cory's song/.test(DANCE_CAPTION) || !/live audio signal/.test(DANCE_CAPTION)) throw new Error('caption');
 console.log(['ok', bass.toFixed(1), n1.toFixed(2), p1.hop.toFixed(3)].join(' '));
 """

@@ -1,5 +1,5 @@
 // Zeref the Moonwraith — motion planner for his 3D body on the Pages chat.
-// Choice of idle looks, blink rhythm, breath, tail/wing/ear motion, and the
+// Choice of idle looks, blink rhythm, breath, tail curls, wing stretches, little hops, and the
 // shape of his chat reactions comes from SHA-256 of Zeref's recorded state
 // (zeref/live.json: heartbeat, diary, spark, brain, last-said time, fetched_at),
 // then a mulberry32 PRNG seeded only with the first 4 bytes of that digest.
@@ -25,6 +25,8 @@ export const ZERO_POSE = Object.freeze({
   tail: 0,
   hop: 0,
   lean: 0,
+  squash: 0,
+  spin: 0,
   blink: 0,
   happy: 0,
   curious: 0,
@@ -166,52 +168,57 @@ export function planFromHex(hex, live = {}) {
 
   const cycles = {
     breathPeriod,
-    tailAmp: (sleepy ? 0.12 : 0.22) + rnd() * 0.12,
-    tailPeriod: (sleepy ? 3.6 : 2.2) + rnd() * 1.4,
+    tailAmp: (sleepy ? 0.22 : 0.48) + rnd() * 0.22,
+    tailPeriod: (sleepy ? 3.0 : 1.55) + rnd() * 0.9,
     tailPhase: rnd() * Math.PI * 2,
-    wingAmp: (connected ? 0.22 : 0.10) * (sleepy ? 0.5 : 1) + rnd() * 0.08,
-    wingPeriod: (connected ? 2.0 : 3.2) + rnd() * 1.2,
+    wingAmp: (connected ? 0.42 : 0.24) * (sleepy ? 0.55 : 1) + rnd() * 0.14,
+    wingPeriod: (connected ? 1.45 : 2.2) + rnd() * 0.8,
     wingPhase: rnd() * Math.PI * 2,
-    earAmp: 0.08 + rnd() * 0.1,
-    earPeriod: 4.5 + rnd() * 2.5,
-    bobAmp: sleepy ? 0.004 : 0.008 + rnd() * 0.004,
-    blinkPeriod: (sleepy ? 5.5 : 3.2) + rnd() * 2.4,
-    blinkWidth: 0.12 + rnd() * 0.06,
+    earAmp: 0.16 + rnd() * 0.16,
+    earPeriod: 3.0 + rnd() * 2.0,
+    bobAmp: sleepy ? 0.010 : 0.022 + rnd() * 0.012,
+    blinkPeriod: (sleepy ? 5.0 : 2.4) + rnd() * 1.8,
+    blinkWidth: 0.12 + rnd() * 0.05,
     blinkPhase: rnd() * 4,
+    glanceAmp: (sleepy ? 0.08 : 0.18) + rnd() * 0.10,
+    glancePeriod: 5.5 + rnd() * 3.0,
+    glancePhase: rnd() * Math.PI * 2,
+    glancePitch: (sleepy ? 0.03 : 0.07) + rnd() * 0.04,
   };
 
   // Chat-reaction shapes, also from the seed so two visitors with the same
   // recorded state see the same tilt / hop, not a roll of the dice.
   const reactions = {
     listen: {
-      earL: 0.35 + rnd() * 0.2,
-      earR: 0.35 + rnd() * 0.2,
-      curious: 0.55 + rnd() * 0.3,
-      smile: 0.2 + rnd() * 0.2,
-      lean: 0.05 + rnd() * 0.05,
-      headPitch: -(0.05 + rnd() * 0.08),
-      browsUp: 0.25 + rnd() * 0.25,
+      earL: 0.45 + rnd() * 0.25,
+      earR: 0.45 + rnd() * 0.25,
+      curious: 0.65 + rnd() * 0.3,
+      smile: 0.25 + rnd() * 0.25,
+      lean: 0.07 + rnd() * 0.05,
+      headPitch: -(0.08 + rnd() * 0.1),
+      browsUp: 0.35 + rnd() * 0.3,
     },
     think: {
-      headRoll: (rnd() < 0.5 ? -1 : 1) * (0.16 + rnd() * 0.14),
-      headPitch: 0.06 + rnd() * 0.1,
-      headYaw: (rnd() * 2 - 1) * 0.12,
-      curious: 0.4 + rnd() * 0.3,
-      mouthO: 0.08 + rnd() * 0.12,
-      earL: 0.1 + rnd() * 0.2,
-      earR: -(0.1 + rnd() * 0.25),
-      browsUp: 0.2 + rnd() * 0.3,
+      headRoll: (rnd() < 0.5 ? -1 : 1) * (0.22 + rnd() * 0.18),
+      headPitch: 0.08 + rnd() * 0.12,
+      headYaw: (rnd() * 2 - 1) * 0.18,
+      curious: 0.5 + rnd() * 0.35,
+      mouthO: 0.12 + rnd() * 0.16,
+      earL: 0.15 + rnd() * 0.25,
+      earR: -(0.15 + rnd() * 0.3),
+      browsUp: 0.3 + rnd() * 0.35,
     },
     reply: {
-      happy: 0.85 + rnd() * 0.15,
-      grin: 0.55 + rnd() * 0.35,
-      smile: 0.3,
-      hop: 0.03 + rnd() * 0.025,
-      tail: 0.8 + rnd() * 0.5,
-      wing: 0.35 + rnd() * 0.25,
-      earL: 0.25 + rnd() * 0.2,
-      earR: 0.25 + rnd() * 0.2,
-      lean: 0.02,
+      happy: 0.9 + rnd() * 0.1,
+      grin: 0.65 + rnd() * 0.3,
+      smile: 0.4,
+      hop: 0.055 + rnd() * 0.04,
+      squash: -0.35,
+      tail: 1.1 + rnd() * 0.55,
+      wing: 0.55 + rnd() * 0.35,
+      earL: 0.35 + rnd() * 0.25,
+      earR: 0.35 + rnd() * 0.25,
+      lean: 0.04,
     },
     error: {
       sleepy: 0.2 + rnd() * 0.15,
@@ -238,58 +245,87 @@ export function planFromHex(hex, live = {}) {
     pose = copyPose(end);
   }
 
-  push('idle-hold', copyPose(pose), 1.2 + rnd() * 1.8);
+  push('idle-hold', copyPose(pose), 0.45 + rnd() * 0.7);
 
   const bag = sleepy
-    ? ['look', 'pause', 'ear', 'pause', 'look', 'pause']
+    ? ['look', 'pause', 'ear', 'curl', 'look', 'pause', 'ear']
     : playful
-      ? ['look', 'ear', 'perk', 'look', 'stretch', 'ear', 'pause']
-      : ['look', 'ear', 'pause', 'look', 'pause', 'ear', 'perk'];
-  const n = 6 + Math.floor(rnd() * 5);
+      ? ['look', 'ear', 'perk', 'hop', 'stretch', 'curl', 'look', 'hop', 'ear']
+      : ['look', 'ear', 'hop', 'look', 'stretch', 'curl', 'perk', 'ear', 'look'];
+  const n = sleepy ? 7 + Math.floor(rnd() * 4) : 10 + Math.floor(rnd() * 6);
   for (let i = 0; i < n; i++) {
     const typ = bag[Math.floor(rnd() * bag.length)];
     const next = copyPose(pose);
     if (typ === 'pause') {
       Object.assign(next, rest);
-      push('pause', next, 0.7 + rnd() * 1.8);
+      push('pause', next, 0.4 + rnd() * 0.9);
     } else if (typ === 'look') {
-      next.headYaw = (rnd() * 2 - 1) * (sleepy ? 0.25 : 0.55);
-      next.headPitch = (rnd() * 2 - 1) * 0.18;
-      next.curious = Math.max(next.curious || 0, 0.25 + rnd() * 0.3);
-      push('look', next, 0.8 + rnd() * 1.2);
+      next.headYaw = (rnd() * 2 - 1) * (sleepy ? 0.35 : 0.75);
+      next.headPitch = (rnd() * 2 - 1) * 0.28;
+      next.curious = Math.max(next.curious || 0, 0.3 + rnd() * 0.35);
+      push('look', next, 0.7 + rnd() * 1.0);
       const back = copyPose(next);
       Object.assign(back, rest);
       back.headYaw = 0;
       back.headPitch = 0;
-      push('look-center', back, 0.6 + rnd() * 0.8);
+      push('look-center', back, 0.5 + rnd() * 0.7);
     } else if (typ === 'ear') {
-      next.earL = (rnd() * 2 - 1) * 0.55;
-      next.earR = (rnd() * 2 - 1) * 0.55;
-      push('ear', next, 0.3 + rnd() * 0.4);
+      next.earL = (rnd() * 2 - 1) * 0.75;
+      next.earR = (rnd() * 2 - 1) * 0.75;
+      push('ear', next, 0.28 + rnd() * 0.35);
       const back = copyPose(next);
       back.earL = 0;
       back.earR = 0;
-      push('ear-back', back, 0.3 + rnd() * 0.4);
+      push('ear-back', back, 0.28 + rnd() * 0.35);
     } else if (typ === 'perk') {
-      next.earL = 0.35 + rnd() * 0.25;
-      next.earR = 0.35 + rnd() * 0.25;
-      next.headPitch = -(0.08 + rnd() * 0.08);
-      next.browsUp = 0.3 + rnd() * 0.3;
-      next.hop = 0.01 + rnd() * 0.015;
-      push('perk', next, 0.35 + rnd() * 0.25);
+      next.earL = 0.45 + rnd() * 0.3;
+      next.earR = 0.45 + rnd() * 0.3;
+      next.headPitch = -(0.12 + rnd() * 0.1);
+      next.browsUp = 0.4 + rnd() * 0.35;
+      next.hop = 0.03 + rnd() * 0.03;
+      next.squash = -0.3;
+      push('perk', next, 0.32 + rnd() * 0.22);
       const back = copyPose(next);
       Object.assign(back, rest);
       back.hop = 0;
-      push('perk-back', back, 0.4 + rnd() * 0.3);
+      back.squash = 0;
+      push('perk-back', back, 0.35 + rnd() * 0.25);
     } else if (typ === 'stretch') {
-      next.wing = 0.5 + rnd() * 0.3;
-      next.tail = 0.4 + rnd() * 0.3;
-      next.headPitch = -(0.1 + rnd() * 0.08);
-      next.mouthO = 0.2 + rnd() * 0.3;
-      push('stretch', next, 0.8 + rnd() * 0.6);
+      next.wing = 0.85 + rnd() * 0.4;
+      next.tail = 0.65 + rnd() * 0.35;
+      next.headPitch = -(0.14 + rnd() * 0.1);
+      next.mouthO = 0.3 + rnd() * 0.35;
+      next.squash = -0.2;
+      push('stretch', next, 0.7 + rnd() * 0.5);
       const back = copyPose(next);
       Object.assign(back, rest);
-      push('stretch-back', back, 0.6 + rnd() * 0.4);
+      back.squash = 0;
+      push('stretch-back', back, 0.5 + rnd() * 0.35);
+    } else if (typ === 'hop') {
+      next.hop = (sleepy ? 0.028 : 0.055) + rnd() * 0.03;
+      next.squash = -0.55;
+      next.wing = 0.3 + rnd() * 0.25;
+      next.smile = Math.max(next.smile || 0, 0.35);
+      push('hop-up', next, 0.16 + rnd() * 0.08);
+      const land = copyPose(next);
+      land.hop = 0;
+      land.squash = 0.55 + rnd() * 0.15;
+      land.wing = 0.12;
+      push('hop-land', land, 0.14 + rnd() * 0.08);
+      const back = copyPose(land);
+      Object.assign(back, rest);
+      back.hop = 0;
+      back.squash = 0;
+      push('hop-back', back, 0.2 + rnd() * 0.15);
+    } else if (typ === 'curl') {
+      next.tail = (sleepy ? 0.75 : 1.2) + rnd() * 0.4;
+      next.headYaw = (rnd() * 2 - 1) * 0.3;
+      next.headPitch = 0.08 + rnd() * 0.1;
+      push('curl', next, 0.7 + rnd() * 0.5);
+      const back = copyPose(next);
+      Object.assign(back, rest);
+      back.tail = 0;
+      push('curl-back', back, 0.45 + rnd() * 0.3);
     }
   }
 
@@ -303,6 +339,8 @@ export function planFromHex(hex, live = {}) {
   pose.tail = 0;
   pose.hop = 0;
   pose.lean = 0;
+  pose.squash = 0;
+  pose.spin = 0;
   pose.mouthO = rest.mouthO || 0;
   push('return', copyPose(pose), 1.0 + rnd() * 0.8);
 
@@ -356,7 +394,11 @@ export function livePose(plan, t) {
   const earW = (t * 2 * Math.PI) / (c.earPeriod || 5);
   pose.earL += (c.earAmp || 0.1) * Math.sin(earW);
   pose.earR += (c.earAmp || 0.1) * Math.sin(earW + 0.9);
-  pose.hop += (c.bobAmp || 0.006) * Math.sin((t * 2 * Math.PI) / breathPeriod);
+  const bob = (c.bobAmp || 0.016) * Math.sin((t * 2 * Math.PI) / breathPeriod);
+  pose.hop += bob;
+  pose.squash = (pose.squash || 0) - bob * 6;
+  pose.headYaw += (c.glanceAmp || 0) * Math.sin((t * 2 * Math.PI) / (c.glancePeriod || 6) + (c.glancePhase || 0));
+  pose.headPitch += (c.glancePitch || 0) * Math.sin((t * 2 * Math.PI) / ((c.glancePeriod || 6) * 1.3) + 1.1);
   const bp = c.blinkPeriod || 4, bw = c.blinkWidth || 0.14, bph = c.blinkPhase || 0;
   const bu = (((t + bph) % bp) + bp) % bp;
   // Don't force a blink over a sleepy-closed eye; the sleepy morph already droops the lids.

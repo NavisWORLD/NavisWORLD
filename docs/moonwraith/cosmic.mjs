@@ -43,19 +43,21 @@ float cwHash(vec3 p){
 float cwStars(vec3 p, float t){
   vec3 f = floor(p);
   float n = cwHash(f);
-  float tw = 0.45 + 0.55 * sin(t * (0.8 + n * 2.6) + n * 6.2831853);
+  float tw = 0.30 + 0.70 * sin(t * (1.15 + n * 3.4) + n * 6.2831853);
   float d = length(fract(p) - 0.5);
-  return smoothstep(0.10, 0.015, d) * step(0.78, n) * tw;
+  return smoothstep(0.08, 0.012, d) * step(0.64, n) * tw;
 }
 vec3 cwNebula(vec3 p, float t){
   float n = 0.0;
-  n += 0.60 * sin(p.x * 2.1 + p.y * 1.4 + t * 0.17);
-  n += 0.30 * sin(p.y * 3.3 - p.z * 2.0 + t * 0.11 + uCwSeed);
-  n += 0.18 * sin((p.x + p.z) * 5.1 - t * 0.23);
-  n = clamp(0.5 + 0.5 * n, 0.0, 1.0);
-  vec3 vio = vec3(0.45, 0.22, 0.95);
-  vec3 cyn = vec3(0.40, 0.85, 1.0);
-  return mix(vio, cyn, n) * n;
+  n += 0.50 * sin(p.x * 2.3 + p.y * 1.5 + t * 0.22);
+  n += 0.32 * sin(p.y * 3.6 - p.z * 2.2 + t * 0.14 + uCwSeed);
+  n += 0.22 * sin((p.x + p.z) * 5.4 - t * 0.28);
+  float m = 0.5 + 0.5 * sin(p.z * 2.8 + p.x * 1.7 - t * 0.19 + uCwSeed * 2.0);
+  n = clamp(n * 0.55 + 0.45, 0.0, 1.0);
+  vec3 vio = vec3(0.62, 0.10, 1.0);
+  vec3 cyn = vec3(0.05, 0.95, 1.0);
+  vec3 mag = vec3(1.0, 0.12, 0.62);
+  return mix(mix(vio, cyn, n), mag, m * 0.55) * (0.35 + 0.65 * n);
 }
 `;
 
@@ -84,16 +86,17 @@ function patchFur(shader) {
   shader.fragmentShader = shader.fragmentShader.replace(
     '#include <emissivemap_fragment>',
     `#include <emissivemap_fragment>
-     vec3 cwP = vCwPos * 7.4;
-     float stars = cwStars(cwP, uCwTime) + 0.65 * cwStars(cwP * 1.9 + 3.7, uCwTime * 1.15);
-     vec3 neb = cwNebula(vCwPos * 2.2, uCwTime);
-     float pulse = 0.75 + 0.55 * uCwPulse;
-     totalEmissiveRadiance += vec3(0.70, 0.82, 1.0) * stars * (1.15 + uCwGlow * 0.35) * pulse;
-     totalEmissiveRadiance += neb * (0.08 + 0.16 * uCwPulse) * uCwGlow;
+     vec3 cwP = vCwPos * 8.2;
+     float stars = cwStars(cwP, uCwTime) + 0.85 * cwStars(cwP * 2.15 + 3.7, uCwTime * 1.2);
+     vec3 neb = cwNebula(vCwPos * 2.6, uCwTime);
+     float pulse = 0.85 + 0.7 * uCwPulse;
+     float nebMask = pow(clamp(length(neb) / 1.15, 0.0, 1.0), 1.35);
+     totalEmissiveRadiance += vec3(0.75, 0.92, 1.0) * stars * (1.95 + uCwGlow * 0.6) * pulse;
+     totalEmissiveRadiance += neb * nebMask * (0.22 + 0.24 * uCwPulse) * uCwGlow;
      vec3 V = normalize(-vViewPosition);
      vec3 N = normalize(vCwNrm);
-     float fres = pow(clamp(1.0 - abs(dot(N, V)), 0.0, 1.0), 2.6);
-     totalEmissiveRadiance += vec3(0.55, 0.78, 1.0) * fres * (0.10 + 0.22 * uCwPulse);
+     float fres = pow(clamp(1.0 - abs(dot(N, V)), 0.0, 1.0), 2.4);
+     totalEmissiveRadiance += vec3(0.20, 0.90, 1.0) * fres * (0.22 + 0.38 * uCwPulse);
     `,
   );
 }
@@ -106,15 +109,18 @@ function patchWing(shader) {
     `#include <emissivemap_fragment>
      vec3 V = normalize(-vViewPosition);
      vec3 N = normalize(vCwNrm);
-     float fres = pow(clamp(1.0 - abs(dot(N, V)), 0.0, 1.0), 1.8);
-     vec3 irid = mix(vec3(0.62, 0.28, 1.0), vec3(0.35, 0.95, 1.0), fres);
-     irid = mix(irid, vec3(1.0, 0.45, 0.85), 0.35 * sin(uCwTime * 0.4 + vCwPos.y * 4.0 + uCwSeed));
-     float stars = cwStars(vCwPos * 11.0, uCwTime);
-     float pulse = 0.8 + 0.55 * uCwPulse;
-     totalEmissiveRadiance += irid * (0.22 + fres * 0.55) * pulse * uCwGlow;
-     totalEmissiveRadiance += vec3(0.8, 0.9, 1.0) * stars * 0.9 * pulse;
-     diffuseColor.rgb = mix(diffuseColor.rgb, irid, 0.12 + 0.12 * fres);
-     diffuseColor.a = max(diffuseColor.a, 0.62 + fres * 0.18);
+     float fres = pow(clamp(1.0 - abs(dot(N, V)), 0.0, 1.0), 1.65);
+     vec3 irid = mix(vec3(0.55, 0.08, 1.0), vec3(0.05, 0.95, 1.0), fres);
+     irid = mix(irid, vec3(1.0, 0.12, 0.62), 0.45 * (0.5 + 0.5 * sin(uCwTime * 0.5 + vCwPos.y * 4.2 + uCwSeed)));
+     vec3 neb = cwNebula(vCwPos * 3.4, uCwTime);
+     float stars = cwStars(vCwPos * 10.0, uCwTime);
+     float pulse = 0.9 + 0.7 * uCwPulse;
+     totalEmissiveRadiance += irid * (0.48 + fres * 1.15) * pulse * uCwGlow;
+     totalEmissiveRadiance += neb * (0.85 + fres * 1.0) * pulse * uCwGlow;
+     totalEmissiveRadiance += vec3(0.85, 0.95, 1.0) * stars * 1.55 * pulse;
+     vec3 sat = mix(vec3(0.28, 0.05, 0.75), irid, 0.55);
+     diffuseColor.rgb *= mix(vec3(1.0), sat, 0.38 + 0.22 * fres);
+     diffuseColor.a = max(diffuseColor.a, 0.60 + fres * 0.22);
     `,
   );
 }
@@ -123,11 +129,11 @@ function patchGlow(shader, kind) {
   injectUniforms(shader, { seed: 0 });
   patchWorld(shader);
   const extra = kind === 'eye'
-    ? `totalEmissiveRadiance *= (1.25 + 0.55 * uCwPulse) * uCwGlow;
-       totalEmissiveRadiance += vec3(0.75, 0.55, 1.0) * (0.25 + 0.4 * uCwPulse);`
-    : `totalEmissiveRadiance += vec3(0.85, 0.75, 1.0) * (0.55 + 0.7 * uCwPulse) * uCwGlow;
+    ? `totalEmissiveRadiance *= (1.7 + 0.9 * uCwPulse) * uCwGlow;
+       totalEmissiveRadiance += vec3(0.90, 0.55, 1.0) * (0.65 + 0.85 * uCwPulse);`
+    : `totalEmissiveRadiance += vec3(0.98, 0.86, 1.0) * (1.05 + 1.2 * uCwPulse) * uCwGlow;
        float stars = cwStars(vCwPos * 14.0, uCwTime);
-       totalEmissiveRadiance += vec3(1.0, 0.9, 1.0) * stars * 0.8;`;
+       totalEmissiveRadiance += vec3(1.0, 0.92, 1.0) * stars * 1.35;`;
   shader.fragmentShader = shader.fragmentShader.replace(
     '#include <emissivemap_fragment>',
     `#include <emissivemap_fragment>\n${extra}\n`,
@@ -143,7 +149,7 @@ function hook(mat, kind, store) {
     else patchGlow(shader, kind);
     store.push(shader);
   };
-  mat.customProgramCacheKey = () => 'cw-' + kind + '-v1';
+  mat.customProgramCacheKey = () => 'cw-' + kind + '-v2';
   mat.needsUpdate = true;
 }
 
@@ -152,11 +158,11 @@ function makeAura(THREE, seedHex, count) {
   const positions = new Float32Array(count * 3);
   const seeds = [];
   for (let i = 0; i < count; i++) {
-    const radius = 0.16 + rnd() * 0.28;
-    const y0 = 0.04 + rnd() * 0.42;
+    const radius = 0.14 + rnd() * 0.38;
+    const y0 = 0.02 + rnd() * 0.50;
     const speed = 0.18 + rnd() * 0.45;
     const phase = rnd() * Math.PI * 2;
-    const size = 0.7 + rnd() * 1.4;
+    const size = 0.95 + rnd() * 1.9;
     seeds.push({ radius, y0, speed, phase, size });
     positions[i * 3] = Math.cos(phase) * radius;
     positions[i * 3 + 1] = y0;
@@ -168,13 +174,13 @@ function makeAura(THREE, seedHex, count) {
   for (let i = 0; i < count; i++) sizes[i] = seeds[i].size;
   geo.setAttribute('aSize', new THREE.BufferAttribute(sizes, 1));
   const mat = new THREE.PointsMaterial({
-    map: softSprite(THREE, 'rgba(220,230,255,1)', 'rgba(140,180,255,0.55)', 'rgba(80,40,160,0)'),
-    color: 0xc9e8ff,
-    size: 0.042,
+    map: softSprite(THREE, 'rgba(255,255,255,1)', 'rgba(160,210,255,0.7)', 'rgba(120,30,180,0)'),
+    color: 0xd8f0ff,
+    size: 0.068,
     transparent: true,
     depthWrite: false,
     blending: THREE.AdditiveBlending,
-    opacity: 0.9,
+    opacity: 1.0,
     sizeAttenuation: true,
   });
   const pts = new THREE.Points(geo, mat);
@@ -222,33 +228,44 @@ export function applyCosmic(THREE, model, { seedHex = 'zeref', quality = 'high',
       const kind = kindOf(m, o);
       if (!kind) continue;
       if (kind === 'eye' || kind === 'glow') {
-        if ('emissiveIntensity' in m) m.emissiveIntensity = Math.max(m.emissiveIntensity || 0, kind === 'eye' ? 1.3 : 1.2);
-        if (m.emissive && m.emissive.getHex && m.emissive.getHex() === 0) m.emissive.setHex(kind === 'eye' ? 0xb57bff : 0xbfa0ff);
+        if ('emissiveIntensity' in m) m.emissiveIntensity = Math.max(m.emissiveIntensity || 0, kind === 'eye' ? 2.05 : 1.75);
+        if (m.emissive && m.emissive.getHex && m.emissive.getHex() === 0) m.emissive.setHex(kind === 'eye' ? 0xd090ff : 0xffd6ff);
       }
       if (quality !== 'low') hook(m, kind, shaders);
     }
   });
 
-  // Soft bloom-like halos parented to the head bone (local offsets, since the
-  // skinned face is not a child mesh of the bone). Tuned to the chibi head.
+  // Tight glow + a larger bloom halo, parented to the head bone (local offsets,
+  // since the skinned face is not a child mesh of the bone).
   const anchor = head || model;
   if (quality !== 'low' && head) {
-    halos.push(addHalo(THREE, head, new THREE.Vector3(-0.038, 0.05, 0.072), 'rgba(180,120,255,0.45)', 0.07));
-    halos.push(addHalo(THREE, head, new THREE.Vector3( 0.038, 0.05, 0.072), 'rgba(180,120,255,0.45)', 0.07));
-    halos.push(addHalo(THREE, head, new THREE.Vector3( 0.0, 0.10, 0.055), 'rgba(230,210,255,0.4)', 0.06));
+    halos.push(addHalo(THREE, head, new THREE.Vector3(-0.038, 0.05, 0.072), 'rgba(210,150,255,0.7)', 0.11));
+    halos.push(addHalo(THREE, head, new THREE.Vector3(-0.038, 0.05, 0.072), 'rgba(120,200,255,0.35)', 0.20));
+    halos.push(addHalo(THREE, head, new THREE.Vector3( 0.038, 0.05, 0.072), 'rgba(210,150,255,0.7)', 0.11));
+    halos.push(addHalo(THREE, head, new THREE.Vector3( 0.038, 0.05, 0.072), 'rgba(120,200,255,0.35)', 0.20));
+    halos.push(addHalo(THREE, head, new THREE.Vector3( 0.0, 0.10, 0.055), 'rgba(255,230,255,0.75)', 0.10));
+    halos.push(addHalo(THREE, head, new THREE.Vector3( 0.0, 0.10, 0.055), 'rgba(200,160,255,0.4)', 0.18));
   }
 
-  const count = quality === 'high' ? 96 : quality === 'med' ? 48 : 0;
+  const count = quality === 'high' ? 120 : quality === 'med' ? 64 : 0;
   const aura = count ? makeAura(THREE, seedHex, count) : null;
   if (aura) model.add(aura);
 
-  // A faint cyan back-rim, in addition to the scene rim, parented to the model.
-  const auraLight = new THREE.PointLight(0x8fe8ff, 0.22, 1.4, 2);
+  // Soft body bloom behind the torso, plus a cyan back-rim and a magenta fill.
+  let bodyBloom = null;
+  if (quality !== 'low') {
+    bodyBloom = addHalo(THREE, model, new THREE.Vector3(0, 0.22, -0.02), 'rgba(160,90,255,0.28)', 0.50);
+    halos.push(bodyBloom);
+  }
+  const auraLight = new THREE.PointLight(0x8fe8ff, 0.32, 1.55, 2);
   auraLight.position.set(0, 0.28, -0.2);
   model.add(auraLight);
-  const frontFill = new THREE.PointLight(0xc9a0ff, 0.12, 1.2, 2);
+  const frontFill = new THREE.PointLight(0xd080ff, 0.18, 1.3, 2);
   frontFill.position.set(0, 0.3, 0.35);
   model.add(frontFill);
+  const magFill = new THREE.PointLight(0xff4da6, 0.12, 1.2, 2);
+  magFill.position.set(0.22, 0.18, 0.15);
+  model.add(magFill);
 
   let q = quality;
   const seed = (hashInt(seedHex) % 1000) / 1000;
@@ -261,34 +278,39 @@ export function applyCosmic(THREE, model, { seedHex = 'zeref', quality = 'high',
   }
 
   function update(t, dance) {
-    const pulse = dance && dance.active ? (0.35 * dance.loud + 0.45 * dance.high + 0.2 * dance.bass) : 0;
+    const idleGlow = 0.22 + 0.20 * (0.5 + 0.5 * Math.sin(t * 1.35));
+    const pulse = dance && dance.active
+      ? (0.40 * dance.loud + 0.40 * dance.high + 0.25 * dance.bass + 0.3 * (dance.hop || 0))
+      : idleGlow;
     for (const sh of shaders) {
       if (sh.uniforms.uCwTime) sh.uniforms.uCwTime.value = t;
       if (sh.uniforms.uCwSeed) sh.uniforms.uCwSeed.value = seed;
       if (sh.uniforms.uCwPulse) sh.uniforms.uCwPulse.value = pulse;
     }
-    const glow = 1 + pulse * 0.8;
+    const glow = 1 + pulse * 0.95;
     for (const h of halos) {
       const b = h.userData.cwHalo.base;
       h.scale.setScalar(b * glow);
-      h.material.opacity = 0.7 + pulse * 0.3;
+      h.material.opacity = 0.75 + pulse * 0.35;
     }
-    auraLight.intensity = 0.18 + pulse * 0.55;
-    frontFill.intensity = 0.1 + pulse * 0.25;
+    auraLight.intensity = 0.24 + pulse * 0.4;
+    frontFill.intensity = 0.14 + pulse * 0.22;
+    magFill.intensity = 0.08 + pulse * 0.18;
     if (aura && aura.visible) {
       const rec = aura.userData.cwAura;
       const pos = rec.positions;
-      const swell = 1 + pulse * 0.25;
+      const swell = 1 + pulse * 0.4;
       for (let i = 0; i < rec.seeds.length; i++) {
         const s = rec.seeds[i];
         const a = t * s.speed + s.phase;
         const r = s.radius * swell;
         pos[i * 3] = Math.cos(a) * r;
-        pos[i * 3 + 1] = s.y0 + 0.045 * Math.sin(a * 1.3) + (dance && dance.active ? dance.hop * 0.04 : 0);
+        pos[i * 3 + 1] = s.y0 + 0.055 * Math.sin(a * 1.3) + (dance && dance.active ? dance.hop * 0.06 : 0);
         pos[i * 3 + 2] = Math.sin(a * 0.92) * r;
       }
       aura.geometry.attributes.position.needsUpdate = true;
-      aura.material.opacity = 0.7 + pulse * 0.3;
+      aura.material.opacity = 0.85 + pulse * 0.35;
+      aura.material.size = 0.068 * (1 + pulse * 0.25);
     }
   }
 
