@@ -3,14 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; media-src 'self'; connect-src 'self' https://www.beastboxcosmos.xyz https://raw.githubusercontent.com; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' blob:; media-src 'self'; connect-src 'self' blob: https://www.beastboxcosmos.xyz https://raw.githubusercontent.com; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="color-scheme" content="dark">
 <title>Chat with Zeref · NavisWORLD</title>
 <meta name="description" content="Talk with Zeref the Moonwraith, a young digital creature from The Beast Box. His replies are his own, unedited.">
 <link rel="icon" href="zeref-moonwraith.png">
 <link rel="stylesheet" href="chat.css">
-<link rel="stylesheet" href="robot/robot.css">
 </head>
 <body>
 <div class="app">
@@ -41,11 +40,12 @@
     </audio>
   </section>
 
-  <details class="spark" id="spark" open>
-    <summary>🤖 Zeref Spark · his robot body design in 3D <span class="sub">(concept, not built)</span></summary>
-    <div class="spark3d small" id="spark3d"><img class="poster" src="robot/spark-poster.webp" alt="Zeref Spark: a chibi robot with a smoked visor, rabbit ears on glowing ear pods and a glowing chest core, on a faceted hex pedestal" width="480" height="480"></div>
-    <p class="robot-cap"><span id="spark-status">starts closed · moves chosen from Zeref's recorded state · SIMULATED motion · concept design, not built hardware</span> · <a href="robot/">full screen</a></p>
-  </details>
+  <section class="creature" aria-label="Zeref the Moonwraith, his body in 3D">
+    <div class="mw" id="moonwraith">
+      <img class="portrait" src="zeref-moonwraith.png" width="512" height="512" alt="Zeref the Moonwraith: a black fluffy cat dragon with violet starry eyes, a crescent mark, moon horns and star-membrane wings">
+    </div>
+    <p class="mw-cap"><span id="mw-status">loading his Moonwraith body…</span></p>
+  </section>
 
   <main class="log" id="log" aria-live="polite" aria-label="Conversation with Zeref">
     <div class="intro">
@@ -69,6 +69,6 @@
   </footer>
 </div>
 <script src="chat.js"></script>
-<script type="module" src="robot/panel.mjs"></script>
+<script type="module" src="moonwraith/panel.mjs"></script>
 </body>
 </html>

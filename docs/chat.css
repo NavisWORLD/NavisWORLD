@@ -61,7 +61,11 @@ textarea:focus{outline:none;border-color:var(--cy)}
 .cite blockquote{margin:4px 0 0;white-space:pre-wrap;font-size:15px;color:#e0f2fe}
 .shelf{color:#a7f3d0}
 
-.spark{margin:8px 0 4px;border:1px solid rgba(167,139,250,.3);border-radius:16px;padding:6px 8px;background:rgba(18,12,46,.6)}
-.spark summary{cursor:pointer;font-weight:700;color:#e0e7ff;font-size:15px;padding:2px 4px}
-.spark summary .sub{font-weight:400;color:#a5b4fc}
-.spark .spark3d.small{height:260px;margin-top:6px}
+.creature{margin:8px 0 4px}
+.mw{position:relative;width:100%;height:270px;border-radius:18px;overflow:hidden;
+  background:radial-gradient(90% 80% at 50% 28%,#2a1b58 0%,#0b0a1f 72%);border:1px solid rgba(167,139,250,.35)}
+.mw .portrait{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center 55%;
+  animation:breathe var(--breath) ease-in-out infinite}
+.mw canvas{position:absolute;inset:0;display:block;width:100%;height:100%}
+.mw-cap{font-size:12.5px;color:#a5b4fc;margin:6px 4px 0;text-align:center;overflow-wrap:anywhere}
+@media (min-width:768px){.mw{height:340px}}

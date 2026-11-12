@@ -190,7 +190,7 @@ check("Zeref is thinking…" in js and "setTimeout(res, wait * 1000)" in js, "ho
 check(not re.search(r"\b(AI|LLM|GPT|language model|chatbot)\b", html + js), "no AI/LLM wording on the chat page")
 check("not a claim of awareness" in html and "digital creature" in html and "fair gate" in html and "training_eligible:false" in html, "honesty footer")
 check("SIMULATED" in html and "RECORDED" in html and "PINNED" in html, "honesty labels on the chat page")
-check("Content-Security-Policy" in html and "script-src 'self'" in html and "connect-src 'self' https://www.beastboxcosmos.xyz https://raw.githubusercontent.com" in html, "strict CSP")
+check("Content-Security-Policy" in html and "script-src 'self'" in html and "connect-src 'self' blob: https://www.beastboxcosmos.xyz https://raw.githubusercontent.com" in html and "img-src 'self' blob:" in html, "strict CSP (blob: only so the GLB's own textures can load)")
 check(not re.search(r"(token|secret|api[_-]?key|bearer|password)\w*['\"]?\s*[:=]", js, re.I) and "Authorization" not in js, "no secrets in the client")
 check("talk-to-zeref.yml" in html, "Pages chat keeps the issue fallback")
 # Cory's song on the Pages chat: tap to play, no autoplay, same-origin MP3, credited.
@@ -302,7 +302,7 @@ check(min(z_i, r_i, w_i) >= 0 and z_i < r_i < w_i, "robot has its own profile se
 check("zeref-spark-3d.webp" not in readme[z_i:r_i] and "zeref-spark-3d.webp" in readme[r_i:w_i], "robot card lives in the robot section, not the Zeref section")
 check("navisworld.github.io/NavisWORLD/robot/" in readme[r_i:w_i], "profile robot section links the live 3D view")
 check("moves chosen from Zeref's recorded state" in readme[r_i:w_i] and "SIMULATED motion" in readme[r_i:w_i] and "concept design" in readme[r_i:w_i].lower(), "profile robot section carries honesty labels")
-check("canRun3D" in (rb / "panel.mjs").read_text() and 'src="robot/panel.mjs"' in html and "robot/spark-poster.webp" in html, "chat page shows the robot with a still-render fallback")
+check("canRun3D" in (rb / "panel.mjs").read_text() and 'src="robot/panel.mjs"' not in html and "robot/spark-poster.webp" not in html, "chat page no longer embeds the robot (he keeps his own /robot/ page)")
 check("CONCEPT DESIGN / NOT BUILT HARDWARE" in (rb / "index.html").read_text() and "SIMULATED motion" in (rb / "index.html").read_text(), "robot page labels it a concept design with simulated motion")
 check("raw.githubusercontent.com" in (rb / "index.html").read_text().split("Content-Security-Policy")[1].split(">")[0], "robot page CSP allows the live.json fetch")
 # Same seed => same plan, always starts and ends closed, no Math.random in the planner.
@@ -333,6 +333,55 @@ console.log(['ok', p.duration.toFixed(2), p.acts.length, p.digest_hex.slice(0,12
 out = _sp.check_output(["node", "--input-type=module", "-e", probe], cwd=root, text=True).strip()
 check(out.startswith("ok "), f"motion planner self-check: {out}")
 print("motion plan:", out)
+
+# Chat-area Zeref is the Moonwraith (sculpted 3D body, 2D cutout fallback)
+mw = docs / "moonwraith"
+mw_glb = (mw / "zeref.glb").read_bytes()
+check(mw_glb[:4] == b"glTF" and len(mw_glb) < 3_000_000, "Moonwraith GLB present and under 3 MB")
+# Meshopt needs a WASM decoder, which a strict Pages CSP would block — the Pages copy must not require it.
+import struct as _st
+_cl = _st.unpack_from("<I", mw_glb, 12)[0]
+_glb_json = _js.loads(mw_glb[20:20 + _cl].split(b"\x00")[0])
+check("EXT_meshopt_compression" not in (_glb_json.get("extensionsRequired") or []) and "EXT_meshopt_compression" not in (_glb_json.get("extensionsUsed") or []), "Moonwraith GLB does not require meshopt/WASM")
+check("blink" in (((_glb_json.get("meshes") or [{}])[0].get("extras") or {}).get("targetNames") or []), "Moonwraith GLB keeps blink/expression morphs")
+for rel in ("moonwraith3d.mjs", "motion.mjs", "panel.mjs", "CREDITS.md"):
+    body = (mw / rel).read_text(encoding="utf-8")
+    check("Math.random(" not in body, f"moonwraith {rel} must not use Math.random")
+    check(not re.search(r"Zeref is an (AI|LLM)|Zeref is a (GPT|language model|chatbot)", body, re.I), f"moonwraith {rel} must not call Zeref an AI or LLM")
+mot_m = (mw / "motion.mjs").read_text(encoding="utf-8")
+s3m = (mw / "moonwraith3d.mjs").read_text(encoding="utf-8")
+check("SIMULATED motion" in mot_m and "canonicalSeed" in mot_m and "mulberry32" in mot_m and "zeref-moonwraith-motion/v1" in mot_m, "Moonwraith motion is seeded and honest")
+check("zeref/live.json" in mot_m and "raw.githubusercontent.com/NavisWORLD/NavisWORLD/main/zeref/live.json" in mot_m, "Moonwraith plans moves from the recorded live card")
+check("../robot/motion-seed.json" in mot_m, "Moonwraith falls back to the committed live-card seed")
+check("canRun3D" in (mw / "panel.mjs").read_text(encoding="utf-8") and 'src="moonwraith/panel.mjs"' in html and 'id="moonwraith"' in html, "chat page mounts the Moonwraith stage")
+check("zeref-moonwraith.png" in html and "2D portrait" in (mw / "panel.mjs").read_text(encoding="utf-8"), "canonical 2D Moonwraith art is the WebGL fallback")
+check("CustomEvent('zeref-chat'" in js and "signal('listen')" in js and "signal('think')" in js and "signal('reply')" in js and "signal('error')" in js, "chat signals listen/think/reply to the 3D creature")
+credits = (mw / "CREDITS.md").read_text(encoding="utf-8")
+check("SIMULATED motion" in credits and "The-beast-box-" in credits and "Apache-2.0" in credits, "Moonwraith credits the Beast Box sculpt and honesty labels")
+check("../robot/vendor/three.module.min.js" in s3m, "Moonwraith reuses the vendored three.js already on Pages")
+mw_probe = r"""
+import { canonicalSeed, planFromHex, poseAt, livePose } from './docs/moonwraith/motion.mjs';
+import { readFileSync } from 'fs';
+import { createHash } from 'crypto';
+const live = JSON.parse(readFileSync('zeref/live.json','utf8'));
+const key = canonicalSeed(live);
+const hex = createHash('sha256').update(key).digest('hex');
+const p = planFromHex(hex, live);
+const p2 = planFromHex(hex, live);
+const p3 = planFromHex(createHash('sha256').update(key + 'x').digest('hex'), live);
+if (JSON.stringify(p.acts) !== JSON.stringify(p2.acts)) throw new Error('not deterministic');
+if (JSON.stringify(p.acts) === JSON.stringify(p3.acts)) throw new Error('different seed must change the plan');
+if (!(p.duration > 8) || p.acts.length < 6) throw new Error('plan too short');
+if (!p.cycles || !(p.cycles.breathPeriod >= 3 && p.cycles.breathPeriod <= 9)) throw new Error('breath period must follow recorded energy (3-9s)');
+if (!p.reactions || !p.reactions.think || !p.reactions.reply) throw new Error('chat reactions missing');
+const a = livePose(p, 1.0), b = livePose(p, 1.0);
+if (JSON.stringify(a) !== JSON.stringify(b)) throw new Error('livePose must be deterministic at a given t');
+if (p.caption.indexOf('SIMULATED motion') < 0) throw new Error('caption must label SIMULATED motion');
+console.log(['ok', p.duration.toFixed(2), p.acts.length, p.digest_hex.slice(0,12)].join(' '));
+"""
+mw_out = _sp.check_output(["node", "--input-type=module", "-e", mw_probe], cwd=root, text=True).strip()
+check(mw_out.startswith("ok "), f"Moonwraith motion planner self-check: {mw_out}")
+print("moonwraith motion plan:", mw_out)
 
 if fails:
     print("ZEREF SELFTEST FAILED"); [print(" -", f) for f in fails]; sys.exit(1)
