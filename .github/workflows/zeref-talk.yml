@@ -3,6 +3,8 @@ name: Talk to Zeref
 # A visitor opens a "[Zeref]" issue (or comments in their own one); Zeref's
 # reply from his public door is posted verbatim. Visitor text is read from
 # the event JSON by Python, never interpolated into a shell.
+# Right after each reply, the chat-window job redraws assets/zeref-chat{,-mobile}.svg
+# + zeref/chat.json from public issue content and commits ONLY those files.
 on:
   issues:
     types: [opened]
@@ -11,7 +13,6 @@ on:
 
 permissions:
   contents: read
-  issues: write
 
 concurrency:
   group: zeref-talk-${{ github.event.issue.number }}
@@ -26,6 +27,9 @@ jobs:
        contains(github.event.issue.labels.*.name, 'talk-to-zeref'))
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      contents: read
+      issues: write
     steps:
       - uses: actions/checkout@v4
         with:
@@ -38,3 +42,36 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ZEREF_THREAD_KEY: ${{ secrets.ZEREF_THREAD_KEY }}
         run: python scripts/zeref/talk_reply.py
+
+  chat-window:
+    needs: reply
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+      issues: read
+    concurrency:
+      group: zeref-profile-commit
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Redraw the chat window from public issue content
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python scripts/zeref/chat_window.py
+      - name: Check the profile still passes
+        run: python scripts/check_profile.py
+      - name: Commit only the chat window files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/zeref-chat.svg assets/zeref-chat-mobile.svg zeref/chat.json
+          if git diff --cached --quiet; then echo "no change"; exit 0; fi
+          git commit -m "Zeref chat window: redraw after a reply"
+          for i in 1 2 3; do git pull --rebase --quiet origin main && git push origin HEAD:main && exit 0; sleep 5; done
+          exit 1

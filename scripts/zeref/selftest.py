@@ -123,6 +123,52 @@ for k, svg in mob.items():
     check(sizes and min(sizes) >= 23, f"{k} phone layout has text under 23 units: {min(sizes) if sizes else None}")
 check("unavailable" in mob["card"], "phone card must render unavailable values")
 check("training_eligible:false" in mob["card"] and "fair gate" in mob["card"], "phone card keeps the footer")
+# chat window: public exchanges only, verbatim replies, moderation, escaping, real status, phone legibility
+import chat_window as cw
+def C(login, body, bot=False, minimized=False):
+    return {"author": {"login": login, "__typename": "Bot" if bot else "User"}, "body": body, "isMinimized": minimized, "url": "u", "createdAt": "2026-01-01T00:00:00Z"}
+def R(reply, at, kind="reply", minimized=False, who="alice"):
+    return C("github-actions", t.meta_comment(kind, who, at, step=39024, reply=reply) + "\nvisible text", bot=True, minimized=minimized)
+def I(n, author, body, comments, labels=(), locked=False, reason=None):
+    return {"number": n, "url": f"https://x/{n}", "locked": locked, "activeLockReason": reason, "author": {"login": author},
+            "body": body, "labels": {"nodes": [{"name": l} for l in labels]}, "comments": {"nodes": comments}}
+issues = [
+    I(1, "alice", "### Your message\n\nhello <b>&amp; ]]> --> zeref", [R(" Bujengi <x> & ``` ", "2026-01-01T00:00:01Z"),
+       C("bob", "not the author"), C("alice", "second?"), R("second reply", "2026-01-01T00:00:03Z"),
+       C("alice", "rude thing", minimized=True), R("third reply", "2026-01-01T00:00:05Z"),
+       C("alice", "fourth"), R("hidden reply", "2026-01-01T00:00:06Z", minimized=True),
+       C("alice", "fifth"), R("x", "2026-01-01T00:00:07Z", kind="error")]),
+    I(2, "mallory", "### Your message\n\nspam", [R("spam reply", "2026-01-01T00:00:02Z")], labels=["zeref-hidden"]),
+    I(3, "eve", "### Your message\n\nheated", [R("heated reply", "2026-01-01T00:00:02Z")], locked=True, reason="TOO_HEATED"),
+    I(4, "carol", "### Your message\n\n" + "long " * 200, [R("y" * 900, "2026-01-01T00:00:04Z", who="carol")]),
+]
+ex = cw.exchanges_from_issues(issues)
+check([e["reply"] for e in ex] == [" Bujengi <x> & ``` ", "second reply", "y" * 900, "third reply"], f"chat exchanges picked: {[e['reply'][:12] for e in ex]}")
+check(ex[0]["said"].startswith("hello <b>") and ex[0]["who"] == "@alice", "visitor words + handle from the issue form")
+check(ex[3]["said_hidden"] and ex[3]["said"] == "", "minimized visitor message is labelled hidden, not shown")
+check(not any("spam" in e["reply"] or "heated" in e["reply"] or "hidden reply" == e["reply"] for e in ex), "moderated issues / replies left out")
+check(len(cw.exchanges_from_issues(issues * 3)) <= cw.SHOW, "at most SHOW exchanges")
+check(cw.handle("evil\"><script>") == "@visitor" and cw.handle("Good-Name1") == "@Good-Name1", "handles are sanitised")
+check(cw.clean("a\x00b\u202ec  d\n e", 50)[0] == "a b c d e" and cw.clean("x" * 300, 200)[0].endswith("…"), "text cleaned + truncated")
+status = {"tick": 778, "heartbeat_label": "SIMULATED (per-second tick)", "mood": "sleepy", "brain_step": 39024, "period": 8.0}
+for mob in (False, True):
+    svg = cw.render({"fetched_at": "2026-01-01T00:00:00Z", "status": status, "exchanges": ex}, mobile=mob)
+    ET.fromstring(svg)
+    check("<script" not in svg and "<b>" not in svg and "&lt;b&gt;" in svg, "chat text XML-escaped")
+    check("brain step 39024 (PINNED)" in svg and "tick 778" in svg, "chat status from real values")
+    check("unedited" in svg and "Say something to Zeref…" in svg and "training_eligible:false" in svg, "chat labels + input bar + footer")
+    check("y" * 200 not in svg and "excerpt" in svg, "long replies truncated and marked excerpt")
+    check(cw.HIDDEN_TXT in svg, "hidden message labelled")
+    check(len(svg.encode()) < 300_000, "chat window under 300 KB")
+    # measure readable text only (the decorative nap "z"s live inside the creature's own pixel space)
+    sizes = [float(x) for x in re.findall(r'font-size="([0-9.]+)"', re.sub(r'<svg x=.*?</svg>', "", svg, flags=re.S))]
+    if mob:
+        # README column on a 393 px iPhone 15 is ~311 px; 25 units of 720 = 10.8 px >= 10.5 px
+        check(min(sizes) >= 25 and 'viewBox="0 0 720 ' in svg, f"phone chat text under 25 units: {min(sizes)}")
+    check(cw.render({"fetched_at": "2026-01-01T00:00:00Z", "status": status, "exchanges": ex}, mobile=mob) == svg, "chat window deterministic")
+bad = cw.render({"fetched_at": None, "status": {}, "exchanges": None}, mobile=True)
+check("chat history unavailable" in bad and "step unavailable" in bad and "tick unavailable" in bad, "chat unavailable rendering")
+check("import random" not in Path(cw.__file__).read_text(), "chat window must not use randomness")
 for p in (root / "assets").glob("zeref-*.svg"):
     check(p.stat().st_size < 300_000, f"{p.name} over 300 KB")
 
