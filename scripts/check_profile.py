@@ -45,6 +45,12 @@ required_files = [
     "assets/zeref-constellation-mobile.svg",
     "assets/zeref-chat.svg",
     "assets/zeref-chat-mobile.svg",
+    "assets/zeref-feed.svg",
+    "assets/zeref-feed-mobile.svg",
+    "zeref/feed/README.md",
+    "zeref/feed/status.json",
+    "zeref/feed/index/index.json",
+    ".github/ISSUE_TEMPLATE/feed-zeref.yml",
     ".github/ISSUE_TEMPLATE/talk-to-zeref.yml",
 ]
 for rel in required_files:

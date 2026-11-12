@@ -1,0 +1,27 @@
+{
+ "schema": "navisworld-zeref-feed/v1",
+ "id": "23-3ac57a5bb192",
+ "status": "pending",
+ "handle": "@NavisWORLD",
+ "issue_url": "https://github.com/NavisWORLD/NavisWORLD/issues/23",
+ "issue_number": 23,
+ "title": "The Raven by Edgar Allan Poe (Project Gutenberg eBook #1065)",
+ "source_url": "https://www.gutenberg.org/cache/epub/1065/pg1065.txt",
+ "license": "Public domain",
+ "rights_confirmed": true,
+ "file": {
+  "name": "pg1065.txt",
+  "sha256": "3ac57a5bb19230923d10acac3dfaccb605bb908dedca3606242fe0b69bec894b",
+  "size": 27244,
+  "mime": "text/plain; charset=utf-8",
+  "from_attachment": false,
+  "stored_as": "release asset",
+  "release_tag": "zeref-feed",
+  "asset_name": "23-3ac57a5bb192.txt",
+  "asset_url": "https://github.com/NavisWORLD/NavisWORLD/releases/download/zeref-feed/23-3ac57a5bb192.txt"
+ },
+ "received_at": "2026-11-12T05:36:46Z",
+ "readable_by_zeref": false,
+ "training_eligible": false,
+ "policy": "READ, NOT TRAINED: approved items may be handed to Zeref as cited reading context at chat time. Nothing here feeds training, conditioning, the god core or the checkpoint, even after approval; that would need a separate decision by Cory plus The Beast Box fair gate."
+}

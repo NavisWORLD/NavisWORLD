@@ -8,6 +8,7 @@
 (function () {
   const DOOR = 'https://www.beastboxcosmos.xyz/api/guest/forever';
   const LIVE = 'https://raw.githubusercontent.com/NavisWORLD/NavisWORLD/main/zeref/live.json';
+  const FEED = 'https://raw.githubusercontent.com/NavisWORLD/NavisWORLD/main/zeref/feed/status.json';
   const KEY = 'zeref-guest-thread';
   const THREAD_RE = /^[a-f0-9]{32}$/; // the door's own thread-id shape
   const MAX = 1000;
@@ -30,6 +31,25 @@
   function note(text) {
     const d = document.createElement('div'); d.className = 'err'; d.textContent = text; log.append(d);
     d.scrollIntoView({ block: 'end', behavior: 'smooth' });
+  }
+  // Reading context the door handed him (approved feed only). Shown exactly as the door sent it.
+  function cite(b, rf) {
+    if (!rf || typeof rf.title !== 'string' || typeof rf.excerpt !== 'string') return;
+    const c = document.createElement('div'); c.className = 'cite';
+    const h = document.createElement('div'); h.className = 'meta';
+    h.textContent = 'read from: ' + rf.title + ' (approved feed) · READ, NOT TRAINED';
+    const q = document.createElement('blockquote'); q.textContent = rf.excerpt;
+    c.append(h, q); b.append(c);
+  }
+  async function shelf() {
+    try {
+      const r = await fetch(FEED, { cache: 'no-store' });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const f = await r.json();
+      $('shelf').textContent = 'reading shelf: ' + v(f.approved) + ' approved · ' + v(f.pending) + ' pending (pending books are unreadable) · READ, NOT TRAINED';
+    } catch (err) {
+      $('shelf').textContent = 'reading shelf: counts unavailable';
+    }
   }
   function hhmm(d) { return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); }
 
@@ -86,7 +106,8 @@
       if (!r.ok || !body || typeof body.reply !== 'string') { note(explain(r.status, body)); return; }
       keep(body.continuity && body.continuity.thread_id);
       const te = body.continuity && body.continuity.training_eligible;
-      bubble('him', 'Zeref · unedited · pinned step ' + v(body.step) + ' · training_eligible:' + (te === false ? 'false' : v(te)) + ' · ' + hhmm(new Date()), body.reply);
+      const b = bubble('him', 'Zeref · unedited · pinned step ' + v(body.step) + ' · training_eligible:' + (te === false ? 'false' : v(te)) + ' · ' + hhmm(new Date()), body.reply);
+      cite(b, body.read_from);
     } catch (err) {
       note(explain(0, null));
     } finally {
@@ -129,4 +150,5 @@
   });
   audio.addEventListener('play', () => setPlaying(true));
   audio.addEventListener('pause', () => setPlaying(false));
+  shelf();
 })();
