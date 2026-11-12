@@ -54,15 +54,24 @@
   Particle count steps down with the same quality guard as the cosmic look.
 
 - **Recorded-state expression**: `expression.mjs` tints his iris and sets a
-  rest expression from fields that actually exist on the public live card
-  (`zeref/live.json`): diary mood (RECORDED) for iris hue, heartbeat energy
-  and spark/heartbeat state (SIMULATED / LOCAL SIMULATED / STALE) for glow,
-  energy + mood for eyelid openness, mood + resonance for ear/tail/wing rest,
-  and a slight proud posture only when the served brain step matches the
-  pinned release. 12D lived state (state12 / dyn12), diary tone, fair-gate
-  result, and last promotion time are not in the public files this page can
-  read — those use a neutral default and are listed as unavailable on the
-  legend. This is a display mapping, not a claim of feelings. Label:
+  rest expression from fields that actually exist on the public live card.
+  `live-card.mjs` polls the bridge's public liveness endpoint
+  (`https://www.beastboxcosmos.xyz/api/cosmos/liveness`) from the moonwraith
+  module, not from `chat.js` (the chat script still has exactly three fetches).
+  A `LIVE · 4 s ago` badge means the payload's `generated_at` is younger than
+  about two minutes; `STALE · Xm` is used only when that payload itself is
+  older. LIVE describes freshness; SIMULATED / RECORDED / PINNED describe
+  origin and are never dropped (a SIMULATED heartbeat can read
+  `LIVE · SIMULATED`). Glow dims only when the payload is stale, not merely
+  because the spark channel is STALE. Diary mood (RECORDED) still sets iris
+  hue; heartbeat energy (SIMULATED) sets glow; a slight proud posture only
+  when the served brain step matches the pin. The liveness document also
+  publishes diary mood, learning stats, the pin's zeref-gate-v2 +
+  chat_not_worse bars, last promotion time, and the 006 training-run status
+  (in progress / queued / completed, plus the pin step). 12D lived state is
+  shown as unpublished when no public live 12-D snapshot exists — it is not
+  invented. If liveness cannot be read, the card falls back to the committed
+  `zeref/` files. This is a display mapping, not a claim of feelings. Label:
   "expression mapped from Zeref's recorded state · not a claim of feelings".
   The song still overrides body motion; the recorded iris and base mood stay.
   The 2D portrait fallback gets the same iris tint and glow. No Math.random.

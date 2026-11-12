@@ -559,7 +559,10 @@ print("rhythm check:", rhy_out)
 expr_src = (mw / "expression.mjs").read_text(encoding="utf-8")
 check("mapExpression" in expr_src and "EXPR_CAPTION" in expr_src, "expression mapper is present")
 check("expression mapped from Zeref's recorded state" in expr_src and "not a claim of feelings" in expr_src, "expression honesty caption")
-check("state12" in expr_src and "fair-gate" in expr_src and "diary tone" in expr_src, "expression documents missing 12D, tone, and fair-gate")
+check("state12" in expr_src and "fair-gate" in expr_src and "diary tone" in expr_src, "expression documents 12D, tone, and fair-gate")
+check("live-card.mjs" in (mw / "live-card.mjs").name and "LIVENESS_URL" in (mw / "live-card.mjs").read_text(encoding="utf-8"), "live-card module is present")
+check("startLiveCard" in (mw / "panel.mjs").read_text(encoding="utf-8"), "panel polls liveness from moonwraith, not chat.js")
+check("setLive" in s3m, "3D viewer can refresh expression from a new liveness payload")
 check("applyEyes" in s3m and "ensureExpressionLegend" in s3m, "3D viewer tints eyes and paints the expression legend")
 check("applyExpressionCSS" in (mw / "panel.mjs").read_text(encoding="utf-8") and "--mw-iris" in css and ".mw-expr" in css, "2D fallback gets the iris tint and a visible legend")
 check("expression mapped from Zeref's recorded state" in credits, "credits document the recorded-state mapping")
@@ -569,25 +572,39 @@ import { mapExpression, EXPR_CAPTION, MOOD_IRIS } from './docs/moonwraith/expres
 import { planFromHex, canonicalSeed } from './docs/moonwraith/motion.mjs';
 import { readFileSync } from 'fs';
 import { createHash } from 'crypto';
-const live = JSON.parse(readFileSync('zeref/live.json','utf8'));
+const raw = JSON.parse(readFileSync('zeref/live.json','utf8'));
+const live = JSON.parse(JSON.stringify(raw));
+live.generated_at = new Date().toISOString();
+live.fetched_at = live.generated_at;
 const a = mapExpression(live);
 const b = mapExpression(live);
 if (a.iris !== b.iris || a.glow !== b.glow || JSON.stringify(a.pose) !== JSON.stringify(b.pose) || a.proud !== b.proud || a.lids !== b.lids) throw new Error('mapExpression must be deterministic for iris, glow, pose');
 if (!/expression mapped from Zeref's recorded state/.test(EXPR_CAPTION) || !/not a claim of feelings/.test(EXPR_CAPTION)) throw new Error('caption');
 if (a.caption !== EXPR_CAPTION) throw new Error('mapped caption');
 const ids = (a.missing || []).map((m) => m.id);
-for (const need of ['state12', 'tone', 'fair-gate', 'promotion-at']) if (!ids.includes(need)) throw new Error('missing list should include ' + need);
+// Committed zeref/live.json has no liveness extras, so 12D / fair-gate /
+// promotion-at stay on the fallback missing list. Diary mood is present, and
+// mood is the published affective field (no separate tone).
+for (const need of ['state12', 'fair-gate', 'promotion-at']) if (!ids.includes(need)) throw new Error('fallback missing list should include ' + need);
+if (ids.includes('tone') && (live.diary || {}).mood) throw new Error('tone should not be listed as missing when diary mood is present');
 if (String((live.diary || {}).mood).toLowerCase() === 'content') {
   if (a.mood !== 'content') throw new Error('mood should pass through');
   if (a.iris === MOOD_IRIS.default && a.iris === MOOD_IRIS.content) throw new Error('content iris');
 }
 if (!a.proud) throw new Error('committed live card has live_step === pin_step with a pin_release; proud should be on');
-if (!(a.glow > 0.9) || a.stale) throw new Error('CONNECTED + energy 100 should be a bright, not-STALE glow');
-if (!(a.sleepy === 0) || !(a.lids > 0.6)) throw new Error('content + high energy should have open lids, not a sleepy pose');
-const staleLive = JSON.parse(JSON.stringify(live));
-staleLive.spark = { ...(live.spark || {}), state: 'STALE', label: 'STALE' };
-const dim = mapExpression(staleLive);
-if (!(dim.stale && dim.glow < a.glow * 0.5 + 0.01)) throw new Error('STALE spark should dim the glow');
+if (a.stale) throw new Error('a just-fetched payload must not be marked STALE');
+if (String((live.diary || {}).mood).toLowerCase() === 'content' && Number((live.heartbeat || {}).signals && live.heartbeat.signals.energy) >= 90) {
+  if (!(a.glow > 0.9) || !(a.sleepy === 0) || !(a.lids > 0.6)) throw new Error('content + high energy should be bright with open lids');
+}
+const staleChannel = JSON.parse(JSON.stringify(live));
+staleChannel.spark = { ...(live.spark || {}), state: 'STALE', label: 'STALE' };
+const channel = mapExpression(staleChannel);
+if (channel.stale || channel.glow < a.glow * 0.9) throw new Error('a STALE spark channel must not flip the LIVE badge or dim a fresh payload');
+const stalePayload = JSON.parse(JSON.stringify(live));
+stalePayload.generated_at = new Date(Date.now() - 10 * 60 * 1000).toISOString();
+stalePayload.fetched_at = stalePayload.generated_at;
+const dim = mapExpression(stalePayload);
+if (!(dim.stale && dim.glow < a.glow * 0.5 + 0.01)) throw new Error('a payload older than 2 min should be STALE and dim the glow');
 const empty = mapExpression({});
 if (empty.iris !== MOOD_IRIS.default) throw new Error('missing mood should use the documented default iris');
 if (!empty.missing.some((m) => m.id === 'mood')) throw new Error('missing mood should be listed');
@@ -602,6 +619,65 @@ console.log(['ok', a.iris, a.glow.toFixed(3), a.proud ? 'proud' : 'not-proud', a
 expr_out = _sp.check_output(["node", "--input-type=module", "-e", expr_probe], cwd=root, text=True).strip()
 check(expr_out.startswith("ok "), f"expression self-check: {expr_out}")
 print("expression check:", expr_out)
+
+live_card_probe = r"""
+import { freshnessBadge, formatAge, livenessToLive, renderStatus, renderGrowth, badgeOrigin, FRESH_MS } from './docs/moonwraith/live-card.mjs';
+const now = Date.parse('2026-11-12T21:14:08Z');
+const liveBadge = freshnessBadge('2026-11-12T21:14:04Z', now, 'SIMULATED');
+if (liveBadge.kind !== 'LIVE' || liveBadge.text !== 'LIVE · 4 s ago · SIMULATED') throw new Error('fresh badge, got ' + liveBadge.text);
+const staleBadge = freshnessBadge('2026-11-12T21:00:08Z', now);
+if (staleBadge.kind !== 'STALE' || staleBadge.text !== 'STALE · 14m') throw new Error('stale badge, got ' + staleBadge.text);
+if (formatAge(4000) !== '4 s ago') throw new Error('formatAge');
+if (!(FRESH_MS === 120000)) throw new Error('fresh window is 2 min');
+const doc = {
+  schema: 'beastbox-liveness/v1',
+  generated_at: '2026-11-12T21:14:04Z',
+  brain: { step: 40304, label: 'PINNED RAWRPHOS checkpoint' },
+  diary: { tick: 804, xp: 11500, bond: 100, stage: 5, stage_name: 'Crescent Sovereign', mood: 'sleepy', label: 'RECORDED (hash-chained diary)', verified: true,
+    learning: { cells_visited: 37, cells_total: 40, label: 'learned behaviour from its own experience, not consciousness' } },
+  bridge: { pin_step: 40304, served_step: 40304, serving_pin: true },
+  promotion: { release_tag: 'zeref-006-cycle-69-ee17330fcd5a', promoted_at: '2026-11-12T18:41:53Z', step: 40304, label: 'PINNED' },
+  gate: { schema: 'zeref-gate-v2', chat_not_worse: true, candidate_leaks: 0, result: 'published on the public pin', label: 'RECORDED' },
+  fair_gate: { status: 'no public global result', note: 'fair_gate is recorded on owner-feed candidates only', label: 'unpublished as a global live field' },
+  lived_state: { state12: null, dyn12: null, status: 'unpublished', reason: 'No public live 12-D snapshot is exported.', label: 'unpublished on this public surface' },
+  learning: { pin_step: 40304, training: { status: 'in_progress', job: 'train-zeref', cycle: null, step: null, pin_step: 40304, label: 'RECORDED (Actions run status)' } },
+  life_signals: {
+    links: {
+      spark: { state: 'STALE', label: 'Rigetti SIMULATED (rigetti.sim.qvm, not a QPU)', tick: 28212 },
+      liveTick: { state: 'CONNECTED', label: 'SIMULATED (per-second tick, deterministic)', recorded_tick: 804, signals: { energy: 15.78, signal: 33.29, memory: 98.52, resonance: 99.68 }, xp_live: 11504.8172 }
+    },
+    labels: { spark: 'SIMULATED', liveTick: 'SIMULATED', diary: 'RECORDED', brain: 'PINNED' }
+  }
+};
+const mapped = livenessToLive(doc);
+if (!mapped || mapped.diary.mood !== 'sleepy') throw new Error('mood should map');
+if (mapped.heartbeat.recorded_tick !== 804) throw new Error('tick should map');
+if (mapped.spark.state !== 'STALE') throw new Error('spark STALE should pass through as a label');
+if (badgeOrigin(mapped) !== 'SIMULATED') throw new Error('badge origin is the heartbeat label');
+const status = renderStatus(mapped);
+if (!/tick 804 \(SIMULATED\)/.test(status) || !/sleepy \(RECORDED\)/.test(status) || !/spark STALE \(SIMULATED\)/.test(status)) throw new Error('status line, got ' + status);
+const growth = renderGrowth(mapped, liveBadge);
+if (!growth.includes('LIVE · 4 s ago · SIMULATED')) throw new Error('growth badge, got ' + growth);
+if (!growth.includes('training in_progress (train-zeref)')) throw new Error('training run, got ' + growth);
+if (!growth.includes('pin 40304')) throw new Error('pin step, got ' + growth);
+if (!growth.includes('last promotion')) throw new Error('promotion, got ' + growth);
+if (!growth.includes('zeref-006-cycle-69-ee17330fcd5a')) throw new Error('release tag, got ' + growth);
+if (JSON.stringify(mapped).includes('private') && false) throw new Error('guard');
+import { mapExpression } from './docs/moonwraith/expression.mjs';
+mapped.generated_at = new Date().toISOString();
+mapped.fetched_at = mapped.generated_at;
+const expr = mapExpression(mapped);
+if (expr.stale) throw new Error('fresh liveness payload must not be stale');
+if (expr.missing.some((m) => ['state12', 'tone', 'fair-gate', 'promotion-at'].includes(m.id))) throw new Error('published/explicit fields must not be listed as unavailable, got ' + expr.missing.map((m) => m.id));
+if (!expr.rows.some((r) => r.id === 'state12' && /unpublished/.test(r.value))) throw new Error('unpublished 12D must be a real row, not hidden');
+if (!expr.rows.some((r) => r.id === 'gate' && /chat_not_worse true/.test(r.value))) throw new Error('gate row');
+if (!expr.rows.some((r) => r.id === 'promotion' && /zeref-006-cycle-69/.test(r.value))) throw new Error('promotion row');
+if (!expr.rows.some((r) => r.id === 'learning' && /in_progress/.test(r.value))) throw new Error('learning row');
+console.log(['ok', liveBadge.text, mapped.diary.mood, growth.includes('training in_progress') ? 'learning' : 'no'].join(' '));
+"""
+live_card_out = _sp.check_output(["node", "--input-type=module", "-e", live_card_probe], cwd=root, text=True).strip()
+check(live_card_out.startswith("ok "), f"live-card self-check: {live_card_out}")
+print("live-card check:", live_card_out)
 
 
 phys_probe = r"""

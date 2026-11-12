@@ -170,7 +170,7 @@ export async function mount(el, {
     },
   }, { start: startQ, narrow });
   ensureSignalReadout(el);
-  const expr = (plan && plan.expression) || null;
+  let expr = (plan && plan.expression) || null;
   if (expr) {
     applyEyes(model, expr, { cosmic });
     const legendHost = el.parentElement || el;
@@ -362,6 +362,13 @@ export async function mount(el, {
 
   return {
     plan,
+    setLive(nextLive, nextExpr) {
+      if (nextExpr) {
+        expr = nextExpr;
+        const legendHost = el.parentElement || el;
+        ensureExpressionLegend(legendHost, expr);
+      }
+    },
     setPhase(next) {
       const p = String(next || 'idle');
       if (p === phase && p !== 'idle') return;
