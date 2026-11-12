@@ -344,7 +344,7 @@ _cl = _st.unpack_from("<I", mw_glb, 12)[0]
 _glb_json = _js.loads(mw_glb[20:20 + _cl].split(b"\x00")[0])
 check("EXT_meshopt_compression" not in (_glb_json.get("extensionsRequired") or []) and "EXT_meshopt_compression" not in (_glb_json.get("extensionsUsed") or []), "Moonwraith GLB does not require meshopt/WASM")
 check("blink" in (((_glb_json.get("meshes") or [{}])[0].get("extras") or {}).get("targetNames") or []), "Moonwraith GLB keeps blink/expression morphs")
-for rel in ("moonwraith3d.mjs", "motion.mjs", "panel.mjs", "CREDITS.md"):
+for rel in ("moonwraith3d.mjs", "motion.mjs", "panel.mjs", "CREDITS.md", "dance.mjs", "cosmic.mjs"):
     body = (mw / rel).read_text(encoding="utf-8")
     check("Math.random(" not in body, f"moonwraith {rel} must not use Math.random")
     check(not re.search(r"Zeref is an (AI|LLM)|Zeref is a (GPT|language model|chatbot)", body, re.I), f"moonwraith {rel} must not call Zeref an AI or LLM")
@@ -382,6 +382,61 @@ console.log(['ok', p.duration.toFixed(2), p.acts.length, p.digest_hex.slice(0,12
 mw_out = _sp.check_output(["node", "--input-type=module", "-e", mw_probe], cwd=root, text=True).strip()
 check(mw_out.startswith("ok "), f"Moonwraith motion planner self-check: {mw_out}")
 print("moonwraith motion plan:", mw_out)
+
+# Dance: live analyser bands, no fake beats; cosmic look is seeded and can step down
+dan = (mw / "dance.mjs").read_text(encoding="utf-8")
+cos = (mw / "cosmic.mjs").read_text(encoding="utf-8")
+check("AnalyserNode" in dan or "createAnalyser" in dan, "dance uses a Web Audio analyser")
+check("createMediaElementSource" in dan and "attachDance" in dan, "dance routes the same-origin audio element")
+check("webkitAudioContext" in dan, "dance handles the iOS AudioContext prefix")
+check("zeref-song-tap" in js and "detail: { audio" in js, "play tap resumes the dance AudioContext in the same gesture")
+check(js.count("fetch(") == 3, "dance adds no extra fetch")
+check("DANCE_CAPTION" in dan and "dancing to Cory's song" in dan and "driven by the live audio signal" in dan, "dance honesty label")
+check("30" in dan and "140" in dan and "250" in dan and "3500" in dan, "dance documents bass/mid/high band edges")
+check("normalizePeak" in dan and "detectOnset" in dan and "getByteFrequencyData" in dan, "adaptive peaks and real analyser bins")
+check("attachDance" in (mw / "panel.mjs").read_text(encoding="utf-8") and "zeref-song-tap" in (mw / "panel.mjs").read_text(encoding="utf-8"), "panel hooks the play tap")
+check("applyCosmic" in cos and "makeQualityGuard" in cos and "uCwTime" in cos, "cosmic materials and quality guard")
+check("mulberry32" in cos and "dancing to Cory's song" in credits, "cosmic particles are seeded; credits mention the dance")
+check("applyCosmic" in s3m and "tickDance" in s3m and "DANCE_CAPTION" in s3m, "3D viewer ticks dance and wears the cosmic look")
+check(".mw.dancing" in css, "2D portrait can pulse from the same bands")
+dance_probe = r"""
+import { bandMean, rms, normalizePeak, detectOnset, dancePose, DANCE_CAPTION } from './docs/moonwraith/dance.mjs';
+const bins = new Uint8Array(1024);
+for (let i = 0; i < 1024; i++) bins[i] = 0;
+// 44100 Hz, fft 2048 => bin width ~21.5 Hz. Put energy only in the bass (bin 3 ~= 65 Hz).
+bins[3] = 200; bins[4] = 180;
+const sr = 44100, fft = 2048;
+const bass = bandMean(bins, sr, fft, 30, 140);
+const mid = bandMean(bins, sr, fft, 250, 2000);
+const high = bandMean(bins, sr, fft, 3500, 10000);
+if (!(bass > 50) || mid !== 0 || high !== 0) throw new Error('band split is wrong: ' + [bass, mid, high]);
+if (Math.abs(rms(new Float32Array([0.5, -0.5, 0.5, -0.5])) - 0.5) > 1e-6) throw new Error('rms');
+const a = { peak: 0.07 }, b = { peak: 0.07 };
+const n1 = normalizePeak(a, 0.8, 0.016);
+const n2 = normalizePeak(a, 0.8, 0.016);
+if (n1 !== n2) throw new Error('normalize must be deterministic');
+if (!(n1 > 0.9)) throw new Error('fresh peak should normalize near 1');
+// After a loud peak, a quieter value is scaled against it; later, as the peak
+// falls, the same quiet value reads higher (adaptive).
+normalizePeak(b, 1.0, 0.016);
+const quietSoon = normalizePeak(b, 0.2, 0.016);
+for (let i = 0; i < 200; i++) normalizePeak(b, 0.0, 0.05);
+const quietLater = normalizePeak({ ...b }, 0.2, 0.016);
+if (!(quietLater > quietSoon)) throw new Error('rolling peak should adapt to a quiet passage');
+const on = { prev: 0.1, fluxPeak: 0.02, last: -10, t: 0 };
+if (detectOnset(on, 0.1, 0.016) !== 0) throw new Error('flat signal is not an onset');
+if (detectOnset(on, 0.85, 0.016) !== 1) throw new Error('a sharp bass rise should onset');
+if (detectOnset(on, 0.9, 0.016) !== 0) throw new Error('onset must respect the min gap');
+const p1 = dancePose({}, { bass: 0.8, mid: 0.2, high: 0.1, loud: 0.5, hop: 1, earFlick: 0, earSide: 1 });
+const p2 = dancePose({}, { bass: 0.8, mid: 0.2, high: 0.1, loud: 0.5, hop: 1, earFlick: 0, earSide: 1 });
+if (JSON.stringify(p1) !== JSON.stringify(p2)) throw new Error('dancePose must be deterministic');
+if (!(p1.hop > 0.05) || !(p1.headPitch < 0)) throw new Error('bass/hop should bounce the body and nod the head');
+if (!/dancing to Cory's song/.test(DANCE_CAPTION) || !/live audio signal/.test(DANCE_CAPTION)) throw new Error('caption');
+console.log(['ok', bass.toFixed(1), n1.toFixed(2), p1.hop.toFixed(3)].join(' '));
+"""
+dance_out = _sp.check_output(["node", "--input-type=module", "-e", dance_probe], cwd=root, text=True).strip()
+check(dance_out.startswith("ok "), f"dance self-check: {dance_out}")
+print("dance check:", dance_out)
 
 if fails:
     print("ZEREF SELFTEST FAILED"); [print(" -", f) for f in fails]; sys.exit(1)
