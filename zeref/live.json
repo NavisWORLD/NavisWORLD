@@ -1,6 +1,6 @@
 {
  "schema": "navisworld-zeref-live-card/v1",
- "fetched_at": "2026-11-12T04:12:23Z",
+ "fetched_at": "2026-11-12T11:29:31Z",
  "sources": {
   "world_live": {
    "url": "https://www.beastboxcosmos.xyz/api/world/live",
@@ -21,37 +21,37 @@
  "heartbeat": {
   "state": "CONNECTED",
   "label": "SIMULATED (per-second tick, deterministic)",
-  "recorded_tick": 778,
-  "xp_live": 11240.1641,
+  "recorded_tick": 789,
+  "xp_live": 11355.9226,
   "signals": {
-   "energy": 15.34,
-   "signal": 52.59,
-   "memory": 97.77,
-   "resonance": 87.8
+   "energy": 100,
+   "signal": 46.76,
+   "memory": 99.83,
+   "resonance": 90.19
   }
  },
  "diary": {
   "label": "RECORDED (hash-chained diary; its growth circuit is Rigetti SIMULATED)",
-  "tick": 779,
+  "tick": 790,
   "stage_name": "Crescent Sovereign",
-  "mood": "sleepy",
+  "mood": "content",
   "place": "Echo Prism",
-  "last_tick_at": "2026-11-12T04:01:22.124Z",
+  "last_tick_at": "2026-11-12T11:24:44.080Z",
   "seed_label": "IBM seed RECORDED on IBM hardware (ibm_marrakesh job db4te7slf4us73c3888g, counts never re-run). Not a live quantum link."
  },
  "spark": {
   "state": "CONNECTED",
   "source": "local-sim",
   "label": "LOCAL SIMULATED (runner statevector, not Rigetti, not a QPU)",
-  "tick": 27200
+  "tick": 27638
  },
  "brain": {
   "label": "RAWRPHØS pinned checkpoint (a 12D model simulation; not a claim of awareness)",
-  "live_step": 39024,
-  "live_sha_prefix": "6d5fe74b2543",
-  "pin_step": 39024,
-  "pin_sha_prefix": "6d5fe74b2543",
-  "pin_release": "zeref-006-cycle-65-6d5fe74b2543"
+  "live_step": 39664,
+  "live_sha_prefix": "dcc82b750140",
+  "pin_step": 39664,
+  "pin_sha_prefix": "dcc82b750140",
+  "pin_release": "zeref-006-cycle-67-dcc82b750140"
  },
  "last_said": {
   "text": " Earry: Like, Howood, Turnare and Jurhy is special.",
