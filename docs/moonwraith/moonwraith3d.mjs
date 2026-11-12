@@ -35,7 +35,7 @@ export async function mount(el, {
   renderer.setPixelRatio(Math.min(narrow ? 1.5 : 2, window.devicePixelRatio || 1));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.12;
+  renderer.toneMappingExposure = 1.16;
   renderer.shadowMap.enabled = shadows;
   if (shadows) renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   el.append(renderer.domElement);
@@ -45,7 +45,7 @@ export async function mount(el, {
   scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
   const camera = new THREE.PerspectiveCamera(28, 1, 0.02, 8);
 
-  scene.add(new THREE.HemisphereLight(0xc9c2ff, 0x1a1030, 0.85));
+  scene.add(new THREE.HemisphereLight(0xd0c6ff, 0x1a1030, 0.8));
   const key = new THREE.DirectionalLight(0xfff4ff, 2.0);
   key.position.set(0.45, 1.1, 0.7);
   key.castShadow = shadows;
@@ -55,8 +55,9 @@ export async function mount(el, {
     key.shadow.bias = -0.0004;
   }
   scene.add(key);
-  const fill = new THREE.DirectionalLight(0x8fe8ff, 0.45); fill.position.set(-0.6, 0.3, 0.4); scene.add(fill);
-  const rim = new THREE.DirectionalLight(0xa78bfa, 1.35); rim.position.set(-0.5, 0.5, -0.8); scene.add(rim);
+  const fill = new THREE.DirectionalLight(0x8fe8ff, 0.62); fill.position.set(-0.6, 0.3, 0.4); scene.add(fill);
+  const rim = new THREE.DirectionalLight(0xc084fc, 1.65); rim.position.set(-0.5, 0.5, -0.8); scene.add(rim);
+  const magRim = new THREE.DirectionalLight(0xff4da6, 0.35); magRim.position.set(0.6, 0.2, -0.4); scene.add(magRim);
 
   const ground = new THREE.Mesh(new THREE.CircleGeometry(0.55, 48), new THREE.ShadowMaterial({ opacity: 0.32 }));
   ground.rotation.x = -Math.PI / 2;
@@ -163,20 +164,29 @@ export async function mount(el, {
 
   function applyPose(pose) {
     const breath = pose.breath == null ? 0.5 : pose.breath;
-    const br = 1 + 0.03 * (breath * 2 - 1);
+    const br = 1 + 0.06 * (breath * 2 - 1);
+    const sq = Math.max(-0.85, Math.min(0.85, pose.squash || 0));
+    const sx = br * (1 + 0.22 * sq);
+    const sy = (2 - br) * (1 - 0.28 * sq);
     if (named.spine && bind.has(named.spine)) {
       const s = bind.get(named.spine).s;
-      named.spine.scale.set(s.x * br, s.y * (2 - br), s.z * br);
+      named.spine.scale.set(s.x * sx, s.y * sy, s.z * sx);
     }
     if (named.chest && bind.has(named.chest)) {
       const s = bind.get(named.chest).s;
-      named.chest.scale.set(s.x * (1 + 0.02 * (breath * 2 - 1)), s.y, s.z * (1 + 0.02 * (breath * 2 - 1)));
+      const cx = 1 + 0.035 * (breath * 2 - 1) + 0.12 * sq;
+      named.chest.scale.set(s.x * cx, s.y * (1 - 0.1 * sq), s.z * cx);
     }
     if (named.root && bind.has(named.root)) {
       const b = bind.get(named.root);
       named.root.position.copy(b.p);
       named.root.position.y += pose.hop || 0;
       named.root.position.z += (pose.lean || 0);
+      const spin = pose.spin || 0;
+      eul.set(0, spin, (pose.lean || 0) * 0.8);
+      named.root.quaternion.copy(b.q).multiply(quat.setFromEuler(eul));
+      const rs = 1 - 0.08 * sq;
+      named.root.scale.set(b.s.x * (1 + 0.1 * sq), b.s.y * rs, b.s.z * (1 + 0.1 * sq));
     }
     // Neck/head split so a turn doesn't crease (same idea as the Beast Box driver).
     const nod = pose.headPitch || 0;
@@ -188,14 +198,14 @@ export async function mount(el, {
     } else {
       addLocal(named.head, nod, yawH, tilt);
     }
-    addLocal(named.ear0L, -(pose.earL || 0) * 0.55, 0, (pose.earL || 0) * 0.35);
-    addLocal(named.ear0R, -(pose.earR || 0) * 0.55, 0, -(pose.earR || 0) * 0.35);
-    const w = pose.wing || 0;
-    addLocal(named.wing0L, 0.05 * w, -0.08 * w, -w);
-    addLocal(named.wing1L, 0, 0, -w * 0.45);
-    addLocal(named.wing0R, 0.05 * w, 0.08 * w, w);
-    addLocal(named.wing1R, 0, 0, w * 0.45);
-    const tw = pose.tail || 0;
+    addLocal(named.ear0L, -(pose.earL || 0) * 0.65, 0, (pose.earL || 0) * 0.42);
+    addLocal(named.ear0R, -(pose.earR || 0) * 0.65, 0, -(pose.earR || 0) * 0.42);
+    const w = Math.max(-1.7, Math.min(1.7, pose.wing || 0));
+    addLocal(named.wing0L, 0.06 * w, -0.1 * w, -w);
+    addLocal(named.wing1L, 0, 0, -w * 0.55);
+    addLocal(named.wing0R, 0.06 * w, 0.1 * w, w);
+    addLocal(named.wing1R, 0, 0, w * 0.55);
+    const tw = Math.max(-1.8, Math.min(1.8, pose.tail || 0));
     addLocal(named.tail0, 0.05 * tw, tw * 0.45, 0);
     addLocal(named.tail1, 0, tw * 0.55, 0);
     addLocal(named.tail2, 0, tw * 0.7, 0);
@@ -263,7 +273,7 @@ export async function mount(el, {
     const dancing = !!(sig && sig.active) && !chatWins && !reducedMotion;
     cosmic.update(t, dancing ? sig : null);
     watchQuality(dt);
-    const yawSway = reducedMotion || dancing ? 0 : 0.08 * Math.sin(t * 0.35);
+    const yawSway = reducedMotion || dancing ? 0 : 0.14 * Math.sin(t * 0.42);
     if (!userOrbit) placeCamera(homeYaw + yawSway + (pose.headYaw || 0) * 0.15);
     else controls.update();
     const label = dancing ? DANCE_CAPTION : (plan.caption + (phase !== 'idle' ? ' · ' + phase : ''));

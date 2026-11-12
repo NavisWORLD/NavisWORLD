@@ -7,10 +7,11 @@
 // flux, not a clock.
 //
 // Band map:
-//   bass / kick (30–140 Hz)  -> body bounce + onset hops
+//   bass / kick (30–140 Hz)  -> body bounce + onset hops with squash/stretch
 //   mids (250–2000 Hz)       -> head bob + mid-onset ear flicks
 //   highs (3500–10000 Hz)    -> wing flutter + tail swish
 //   overall loudness (RMS)   -> energy / how big the moves are
+//   strong bass onsets       -> flourish pose; every 4th strong kick can spin
 //
 // Label: "dancing to Cory's song · driven by the live audio signal".
 // AudioContext is created and resumed inside the visitor's play tap
@@ -83,38 +84,45 @@ export function detectOnset(state, env, dt, minGap = ONSET_GAP) {
 }
 
 const ZERO_SIG = Object.freeze({
-  bass: 0, mid: 0, high: 0, loud: 0, hop: 0, earFlick: 0, earSide: 1, active: false,
+  bass: 0, mid: 0, high: 0, loud: 0, hop: 0, earFlick: 0, earSide: 1,
+  spin: 0, flourish: 0, active: false,
 });
 
 export function dancePose(rest, sig) {
   const r = rest || {};
-  const g = 0.45 + 0.55 * (sig.loud || 0); // overall energy scales the moves
+  const g = 0.5 + 0.6 * (sig.loud || 0); // overall energy scales the moves
   const bass = (sig.bass || 0) * g;
   const mid = (sig.mid || 0) * g;
   const high = (sig.high || 0) * g;
   const hop = (sig.hop || 0);
   const side = sig.earSide < 0 ? -1 : 1;
   const flick = sig.earFlick || 0;
+  const fl = sig.flourish || 0;
+  const spin = sig.spin || 0; // 0..1 progress of a full turn; 0 when not spinning
+  // In the air (hop high) he stretches; as the hop lands he squashes; bass also compresses the chest.
+  const squash = bass * 0.22 - hop * 0.7 + fl * 0.08;
   return {
-    headYaw: 0,
-    headPitch: -0.06 - mid * 0.28 - bass * 0.08,
-    headRoll: mid * 0.08 * side,
-    earL: 0.08 + mid * 0.25 + (side > 0 ? flick * 0.7 : flick * 0.15),
-    earR: 0.08 + mid * 0.25 + (side < 0 ? flick * 0.7 : flick * 0.15),
-    wing: 0.12 + high * 0.85 + bass * 0.1,
-    tail: (high * 0.9 + mid * 0.25) * (side),
-    hop: hop * 0.07 + bass * 0.028,
-    lean: bass * 0.04 - mid * 0.01,
+    headYaw: mid * 0.16 * side + fl * 0.22 * side,
+    headPitch: -0.10 - mid * 0.48 - bass * 0.16 - hop * 0.08 + fl * 0.12,
+    headRoll: mid * 0.18 * side + fl * 0.28 * side,
+    earL: 0.12 + mid * 0.4 + (side > 0 ? flick * 1.05 : flick * 0.2) + fl * 0.25,
+    earR: 0.12 + mid * 0.4 + (side < 0 ? flick * 1.05 : flick * 0.2) + fl * 0.25,
+    wing: 0.18 + high * 1.25 + bass * 0.28 + hop * 0.2 + fl * 0.7,
+    tail: (high * 1.35 + mid * 0.5 + fl * 0.4) * side,
+    hop: hop * 0.145 + bass * 0.05,
+    lean: bass * 0.09 - mid * 0.03 + side * high * 0.05,
+    squash,
+    spin: spin * Math.PI * 2,
     blink: 0,
-    happy: 0.15 + sig.loud * 0.35,
-    curious: 0,
+    happy: Math.max(r.happy || 0, 0.2 + (sig.loud || 0) * 0.45 + fl * 0.25),
+    curious: fl * 0.2,
     sleepy: 0,
     scared: 0,
-    grin: sig.loud * 0.25,
-    smile: 0.2 + sig.loud * 0.25,
-    mouthO: 0,
-    browsUp: mid * 0.2,
-    breath: 0.5 + bass * 0.5,
+    grin: (sig.loud || 0) * 0.35 + fl * 0.3,
+    smile: Math.max(r.smile || 0, 0.25 + (sig.loud || 0) * 0.35),
+    mouthO: fl * 0.55,
+    browsUp: mid * 0.3 + fl * 0.35,
+    breath: 0.5 + bass * 0.55 + hop * 0.25,
   };
 }
 
@@ -140,6 +148,9 @@ const st = {
   hop: 0,
   earFlick: 0,
   earSide: 1,
+  spinT: 0,
+  flourish: 0,
+  bassHits: 0,
   sig: { ...ZERO_SIG },
 };
 
@@ -224,14 +235,25 @@ export function tickDance(nowMs) {
   const loudE = smoothToward(st.loud, running ? loudN : 0, dt, running ? 0.08 : 0.2);
 
   if (running) {
-    if (detectOnset(st.onsetB, bassE, dt)) st.hop = 1;
+    if (detectOnset(st.onsetB, bassE, dt)) {
+      st.hop = 1;
+      st.bassHits += 1;
+      // Flourish and spin are triggered by real bass onsets only (no metronome).
+      if (bassE > 0.62 && loudE > 0.5) st.flourish = 1;
+      if (st.spinT <= 0 && st.bassHits % 4 === 0 && (bassE + loudE) > 0.85) st.spinT = 0.001;
+    }
     if (detectOnset(st.onsetM, midE, dt, 0.16)) {
       st.earFlick = 1;
       st.earSide = -st.earSide;
     }
   }
-  st.hop = Math.max(0, st.hop - dt / 0.16);
+  st.hop = Math.max(0, st.hop - dt / 0.18);
   st.earFlick = Math.max(0, st.earFlick - dt / 0.14);
+  st.flourish = Math.max(0, st.flourish - dt / 0.28);
+  if (st.spinT > 0) {
+    st.spinT += dt / 0.55;
+    if (st.spinT >= 1) st.spinT = 0;
+  }
 
   const energy = bassE + midE + highE + loudE + st.hop;
   const active = running || energy > 0.02;
@@ -243,6 +265,8 @@ export function tickDance(nowMs) {
     hop: st.hop,
     earFlick: st.earFlick,
     earSide: st.earSide,
+    spin: st.spinT,
+    flourish: st.flourish,
     active,
   };
   return st.sig;
@@ -261,4 +285,5 @@ export function applyDanceCSS(el, sig) {
   el.style.setProperty('--dance-high', sig.high.toFixed(3));
   el.style.setProperty('--dance-loud', sig.loud.toFixed(3));
   el.style.setProperty('--dance-hop', sig.hop.toFixed(3));
+  el.style.setProperty('--dance-spin', (sig.spin || 0).toFixed(3));
 }
