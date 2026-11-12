@@ -7,3 +7,5 @@
 .robot-bar{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:6px 0}
 .robot-bar button{font:15px/1.2 inherit;color:#e0e7ff;background:#1e1b4b;border:1px solid #6d5bd0;border-radius:999px;padding:8px 14px}
 .robot-cap{font-size:14px;color:#a5b4fc;margin:6px 2px 0;text-align:center}
+
+#motion-cap{font-size:13px;color:#c4b5fd;margin:4px 2px 0;overflow-wrap:anywhere}

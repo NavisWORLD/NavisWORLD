@@ -8,7 +8,11 @@
   `scripts/robot/build_spark_glb.py` (deterministic: same STLs, same bytes). Colours follow `cad/render.py`.
 - **Renderer**: [three.js](https://threejs.org) r180 (MIT, `vendor/LICENSE`): core, GLTFLoader, OrbitControls,
   RoomEnvironment, BufferGeometryUtils, vendored unchanged except their `three` import path.
-- **Motion**: written here (`spark3d.mjs`), a pure function of time (16 s loop): the shells open on their y=0
-  seam, LED rings pulse, the crystal station cycles white / 365 nm UV / 940 nm IR. Limbs are static in the design.
+- **Motion**: planned in `motion.mjs` from SHA-256 of Zeref's recorded state (`zeref/live.json`: heartbeat tick,
+  diary mood, spark tick, brain step, last-said time, fetched_at), then a mulberry32 PRNG seeded only with that
+  digest. The sequence always starts closed. Shells open on their y=0 seam; LED rings pulse; the crystal station
+  cycles white / 365 nm UV / 940 nm IR. Limb, head and ear motion is SIMULATED (those parts are static in the
+  CAD). No Math.random. Label: "moves chosen from Zeref's recorded state · SIMULATED motion".
 - **Stills / loop**: `spark-poster.webp` and `assets/zeref-spark-3d.webp` are frames rendered from this viewer
-  (headless Chrome, fixed times and angles).
+  (headless Chrome, times taken from the current recorded-state plan). The live 3D view re-plans whenever
+  `zeref/live.json` is refreshed; the committed webp is a snapshot of that same plan.

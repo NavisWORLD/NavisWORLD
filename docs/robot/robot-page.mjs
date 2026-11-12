@@ -1,12 +1,14 @@
 import { mount, canRun3D } from './spark3d.mjs';
 const el = document.getElementById('spark3d'), st = document.getElementById('spark-status');
 const tog = document.getElementById('spark-toggle'), fol = document.getElementById('spark-follow'), load = document.getElementById('spark-load');
+const cap = document.getElementById('motion-cap');
 const say = (s) => { st.textContent = s; };
 async function go() {
   load.hidden = true;
   try {
     const v = await mount(el, { onStatus: say });
     el.querySelector('.poster')?.remove();
+    if (cap && v.plan && v.plan.caption) cap.textContent = v.plan.caption;
     tog.onclick = () => v.toggle(); fol.onclick = () => v.follow();
   } catch (e) { say('3D view could not start here (' + (e && e.message ? e.message : 'error') + '); showing a still render.'); }
 }

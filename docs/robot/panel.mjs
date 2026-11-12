@@ -11,8 +11,9 @@ async function start() {
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) { st.textContent = 'still render (reduced motion is on)'; return; }
   try {
     const { mount } = await import('./spark3d.mjs');
-    await mount(el, { onStatus: (s) => { st.textContent = s; }, shadows: true });
+    const v = await mount(el, { onStatus: (s) => { st.textContent = s; }, shadows: true });
     el.querySelector('.poster')?.remove();
+    if (v.plan && v.plan.caption) st.title = v.plan.caption;
   } catch (e) { st.textContent = 'still render (3D could not start)'; }
 }
 new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) start(); }).observe(el);

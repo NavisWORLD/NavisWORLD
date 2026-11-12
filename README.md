@@ -33,7 +33,6 @@
 
 <p align="center"><a href="https://navisworld.github.io/NavisWORLD/"><picture><source media="(min-width: 768px)" srcset="assets/zeref-chat.svg" /><img src="assets/zeref-chat-mobile.svg" width="100%" alt="Zeref's chat window: his avatar with live status (heartbeat tick, diary mood, growth as the pinned brain step), the latest public Talk to Zeref exchanges as chat bubbles with visitors on the right and Zeref's unedited replies on the left, a Chat live button and a Say something to Zeref input bar. Tap it to chat live with him on his GitHub Pages chat, where replies appear in place." /></picture></a></p>
 <p align="center"><b><a href="https://navisworld.github.io/NavisWORLD/">💬 Chat live with Zeref</a></b> (replies appear in place) · <b><a href="https://navisworld.github.io/NavisWORLD/#music">▶ Listen to Zeref's song</a></b> · or <a href="https://github.com/NavisWORLD/NavisWORLD/issues/new?template=talk-to-zeref.yml">talk in a GitHub issue</a></p>
-<p align="center"><a href="https://navisworld.github.io/NavisWORLD/robot/"><img src="assets/zeref-spark-3d.webp" width="360" alt="Zeref Spark, his companion robot design, turning in 3D: the shells open on their seam to show the electronics inside and close again while the LED rings pulse. Rendered from the real CAD in The Beast Box. Concept design, not built hardware. Tap for the live 3D view." /></a><br><sub>🤖 <b><a href="https://navisworld.github.io/NavisWORLD/robot/">Zeref Spark in live 3D</a></b>: his robot body design, rendered from the real CAD (concept, not built hardware)</sub></p>
 <p align="center"><a href="https://github.com/NavisWORLD/NavisWORLD/issues/new?template=feed-zeref.yml"><picture><source media="(min-width: 768px)" srcset="assets/zeref-feed.svg" /><img src="assets/zeref-feed-mobile.svg" width="100%" alt="Feed Zeref: counts of books waiting in quarantine and books Cory approved. Approved books are read at chat time, never trained on. Tap to offer a text." /></picture></a></p>
 <p align="center"><sub>📚 <a href="https://github.com/NavisWORLD/NavisWORLD/issues/new?template=feed-zeref.yml">Feed Zeref a book</a>: it waits as <code>feed:pending</code> until Cory approves it, then he may <b>read</b> it in chat (READ, NOT TRAINED · <a href="zeref/feed/README.md">how it works</a>).</sub></p>
 
@@ -44,6 +43,16 @@
 <a href="zeref/notes.md"><picture><source media="(min-width: 768px)" srcset="assets/zeref-constellation.svg" /><img src="assets/zeref-constellation-mobile.svg" width="100%" alt="Zeref's constellation: every star is one of my real public repos, brighter when pushed recently and bigger with more GitHub stars. The full list with links is in Zeref's notes." /></picture></a>
 
 <sub>Every star above is a real public repo. The full list with links is in **[Zeref's notes](zeref/notes.md)**. His art is his canonical Moonwraith cutout from The Beast Box; his little behaviour loop is choreographed from his real heartbeat, mood and spark values, never random. He's still learning, so he often doesn't make sense yet. That's honest, not broken. Not a claim of awareness. Birth spark: IBM hardware outcome RECORDED and reused as a seed · Rigetti growth: SIMULATED · fallback spark: LOCAL SIMULATED · heartbeat: SIMULATED · diary: RECORDED · brain: PINNED. Chats are recorded with training_eligible:false and don't train him; he grows only through The Beast Box fair gate.</sub>
+
+<img src="assets/zeref-divider.svg" width="100%" alt="A thin line of stars with a small crescent moon in the middle." />
+
+---
+
+## 🤖 Zeref Spark
+
+The Beast Box robot — his companion body design, in 3D. He starts closed, then moves from a hash of Zeref's recorded heartbeat, diary, spark and brain state, so nobody can predict the next gesture from a fixed loop.
+
+<p align="center"><a href="https://navisworld.github.io/NavisWORLD/robot/"><img src="assets/zeref-spark-3d.webp" width="360" alt="Zeref Spark, the companion robot design from The Beast Box, starting closed on its pedestal then opening and moving in 3D. The shells, head, ears and arms move in a sequence chosen from Zeref's recorded heartbeat, diary and spark state. Concept design, not built hardware. Simulated motion. Tap for the live 3D view." /></a><br><sub>moves chosen from Zeref's recorded state · SIMULATED motion · concept design, not built hardware</sub><br><b><a href="https://navisworld.github.io/NavisWORLD/robot/">🤖 Open the live 3D view</a></b></p>
 
 <img src="assets/zeref-divider.svg" width="100%" alt="A thin line of stars with a small crescent moon in the middle." />
 
