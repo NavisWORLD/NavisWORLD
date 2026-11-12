@@ -6,6 +6,7 @@ import { canRun3D } from './moonwraith3d.mjs';
 import { attachDance, tickDance, applyDanceCSS, DANCE_CAPTION } from './dance.mjs';
 import { ensureSignalReadout } from './particles.mjs';
 import { mapExpression, applyExpressionCSS, ensureExpressionLegend } from './expression.mjs';
+import { startLiveCard } from './live-card.mjs';
 
 const el = document.getElementById('moonwraith');
 const st = document.getElementById('mw-status');
@@ -14,6 +15,23 @@ ensureSignalReadout(el);
 
 let started = false;
 let view = null;
+
+// Own the liveness fetch here (not in chat.js, so the 3-fetch rule stays).
+// Overwrites #status / #growth when the public endpoint answers, and falls
+// back to the committed zeref/ files if it cannot be read.
+startLiveCard({
+  document,
+  loadFallback: async () => {
+    const { loadLive } = await import('./motion.mjs');
+    return loadLive();
+  },
+  onUpdate({ live }) {
+    const expr = mapExpression(live || {});
+    applyExpressionCSS(el, expr);
+    ensureExpressionLegend(el.parentElement || el, expr);
+    if (view && typeof view.setLive === 'function') view.setLive(live, expr);
+  },
+});
 
 window.addEventListener('zeref-song-tap', (e) => {
   const audio = e && e.detail && e.detail.audio;

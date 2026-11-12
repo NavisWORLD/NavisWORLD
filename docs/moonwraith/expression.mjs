@@ -24,7 +24,7 @@ export const MOOD_IRIS = Object.freeze({
   default: '#7c3aed',
 });
 
-const STALE_MS = 2 * 60 * 60 * 1000; // snapshot-age note only; glow dims when spark/heartbeat is STALE, not by clock
+const STALE_MS = 2 * 60 * 1000; // payload freshness window; LIVE if generated_at/fetched_at is younger than this
 
 function num(v) {
   const n = Number(v);
@@ -67,30 +67,23 @@ function mixHex(a, b, t) {
 }
 
 function freshness(live) {
+  // LIVE / STALE describes payload freshness only. A spark channel that is
+  // STALE stays a field label; it does not flip the card badge or dim the glow.
+  const fetched = parseTime(live.generated_at || live.fetched_at);
+  let ageMs = null;
+  let ageH = null;
+  if (fetched != null) {
+    ageMs = Math.max(0, Date.now() - fetched);
+    ageH = ageMs / 3600000;
+  }
+  const stale = ageMs == null ? false : ageMs >= STALE_MS;
+  const bits = [];
+  if (stale) bits.push('payload older than 2 min');
   const sp = live.spark || {};
   const hb = live.heartbeat || {};
-  const bits = [];
   const spState = String(sp.state || '').toUpperCase();
   const hbState = String(hb.state || '').toUpperCase();
-  const spLabel = String(sp.label || '');
-  const hbLabel = String(hb.label || '');
-  let stale = false;
-  if (/STALE/.test(spState) || /STALE/.test(hbState) || /STALE/i.test(spLabel) || /STALE/i.test(hbLabel)) {
-    stale = true;
-    bits.push('recorded state is STALE');
-  }
-  if (spState && spState !== 'CONNECTED') {
-    stale = true;
-    bits.push('spark ' + spState);
-  }
-  if (hbState && hbState !== 'CONNECTED') {
-    stale = true;
-    bits.push('heartbeat ' + hbState);
-  }
-  const fetched = parseTime(live.fetched_at);
-  let ageH = null;
-  if (fetched != null) ageH = (Date.now() - fetched) / 3600000;
-  return { stale, bits, ageH, sparkState: spState || null, heartbeatState: hbState || null };
+  return { stale, bits, ageH, ageMs, sparkState: spState || null, heartbeatState: hbState || null };
 }
 
 /**
@@ -107,28 +100,45 @@ export function mapExpression(live = {}) {
   const missing = [];
   const rows = [];
 
-  // 12D lived state is mentioned on the brain label but the vector itself
-  // is not published in the public files this page can read.
-  missing.push({
-    id: 'state12',
-    name: '12D lived state (state12 / dyn12)',
-    note: 'not in the public recorded files this page can read',
-  });
-  missing.push({
-    id: 'tone',
-    name: 'diary tone',
-    note: 'the diary publishes mood, not a separate tone field',
-  });
-  missing.push({
-    id: 'fair-gate',
-    name: 'fair-gate result',
-    note: 'not a field on the live card (the pin release tag is recorded)',
-  });
-  missing.push({
-    id: 'promotion-at',
-    name: 'last promotion time',
-    note: 'no promotion timestamp is published; only the release tag and step',
-  });
+  // Published public-safe fields are shown as rows below. Only list a field
+  // as unavailable when this snapshot does not carry it at all (fallback
+  // zeref/ files). An explicit "unpublished" status is a real public result,
+  // not a missing read.
+  const lived = live.lived_state || null;
+  const promo = live.promotion || null;
+  const gate = live.gate || null;
+  const fairGate = live.fair_gate || null;
+  if (!lived) {
+    missing.push({
+      id: 'state12',
+      name: '12D lived state (state12 / dyn12)',
+      note: 'not in this snapshot (liveness publishes an explicit unpublished status when the public surface has no live 12-D vector)',
+    });
+  } else if (lived.status !== 'published' || !Array.isArray(lived.state12)) {
+    // shown as a published row, not as a generic unavailable line
+  }
+  if (dy.mood == null || dy.mood === '') {
+    // diary tone is not a separate published field; mood is the affective field
+    missing.push({
+      id: 'tone',
+      name: 'diary tone',
+      note: 'the diary publishes mood, not a separate tone field; mood is also missing from this snapshot',
+    });
+  }
+  if (!gate && !fairGate) {
+    missing.push({
+      id: 'fair-gate',
+      name: 'fair-gate result',
+      note: 'not in this snapshot',
+    });
+  }
+  if (!promo) {
+    missing.push({
+      id: 'promotion-at',
+      name: 'last promotion time',
+      note: 'not in this snapshot',
+    });
+  }
 
   const moodRaw = dy.mood == null || dy.mood === '' ? null : String(dy.mood);
   const mood = moodRaw ? moodRaw.toLowerCase() : null;
@@ -181,9 +191,11 @@ export function mapExpression(live = {}) {
     hop: 0,
   };
 
-  const ageNote = fresh.ageH == null
-    ? 'snapshot time unavailable'
-    : (fresh.ageH < 0.1 ? 'snapshot just fetched' : 'snapshot ' + fresh.ageH.toFixed(1) + 'h old');
+  const ageNote = fresh.ageMs == null
+    ? 'freshness unknown'
+    : (fresh.stale
+      ? 'STALE · ' + Math.max(1, Math.round(fresh.ageMs / 60000)) + 'm'
+      : 'LIVE · ' + (fresh.ageMs < 60000 ? Math.round(fresh.ageMs / 1000) + ' s ago' : Math.round(fresh.ageMs / 60000) + 'm'));
   rows.push({
     id: 'iris',
     label: 'iris',
@@ -197,7 +209,7 @@ export function mapExpression(live = {}) {
     value: (energy == null ? 'mid (default)' : 'energy ' + energy)
       + (fresh.stale ? ' · dimmed (' + (fresh.bits.join('; ') || 'STALE') + ')' : ' · full')
       + ' · ' + ageNote,
-    source: 'heartbeat energy SIMULATED; dim when spark/heartbeat is STALE or not CONNECTED',
+    source: 'heartbeat energy SIMULATED; glow dims only when the payload itself is STALE (older than ~2 min), not when the spark channel is STALE',
   });
   rows.push({
     id: 'lids',
@@ -209,7 +221,7 @@ export function mapExpression(live = {}) {
     id: 'posture',
     label: 'rest',
     value: (moodRaw ? 'mood ' + moodRaw : 'neutral') + (resonance != null ? ', resonance ' + resonance : '') + (proud ? ' · proud (served step matches pin)' : ''),
-    source: 'diary.mood + resonance; proud uses live_step === pin_step (promotion time is not published)',
+    source: 'diary.mood + resonance; proud uses live_step === pin_step',
   });
   rows.push({
     id: 'signals',
@@ -219,13 +231,85 @@ export function mapExpression(live = {}) {
       + ' · training ' + (liveStep ?? 'unavailable') + (pinStep != null ? ' / pin ' + pinStep : '') + (pinRelease ? ' · ' + pinRelease : ''),
     source: 'spark (IBM RECORDED seed / Rigetti SIMULATED / LOCAL SIMULATED / STALE) · heartbeat SIMULATED · brain PINNED',
   });
-  rows.push({
-    id: 'missing',
-    label: 'unavailable',
-    value: missing.map((m) => m.name).join('; '),
-    source: 'not in the public files this page can read; shown as a neutral default, not invented',
-    missing: true,
-  });
+  if (lived) {
+    const published = lived.status === 'published' && Array.isArray(lived.state12) && lived.state12.length === 12;
+    rows.push({
+      id: 'state12',
+      label: '12D lived state',
+      value: published
+        ? lived.state12.map((n) => Number(n).toFixed(3)).join(' ')
+        : (lived.status || 'unpublished') + (lived.reason ? ' · ' + lived.reason : ''),
+      source: (lived.source || 'public liveness') + (lived.label ? ' · ' + lived.label : ''),
+    });
+  }
+  if (dy.mood) {
+    rows.push({
+      id: 'mood-tone',
+      label: 'diary mood',
+      value: String(dy.mood) + ' (the published affective field; the diary has no separate tone)',
+      source: 'diary.mood RECORDED',
+    });
+  }
+  if (gate) {
+    const gbits = [];
+    if (gate.schema) gbits.push(gate.schema);
+    if (gate.chat_not_worse === true) gbits.push('chat_not_worse true');
+    else if (gate.chat_not_worse === false) gbits.push('chat_not_worse false');
+    if (gate.candidate_leaks != null) gbits.push('leaks ' + gate.candidate_leaks);
+    if (gate.result) gbits.push(gate.result);
+    rows.push({
+      id: 'gate',
+      label: 'published gate',
+      value: gbits.join(' · ') || 'published',
+      source: (gate.source || 'public pin') + (gate.label ? ' · ' + gate.label : ''),
+    });
+  }
+  if (fairGate) {
+    rows.push({
+      id: 'fair-gate',
+      label: 'fair-gate',
+      value: (fairGate.status || '') + (fairGate.note ? ' · ' + fairGate.note : ''),
+      source: fairGate.label || 'unpublished as a global live field',
+    });
+  }
+  if (promo) {
+    const when = promo.promoted_at || 'time not on this snapshot';
+    rows.push({
+      id: 'promotion',
+      label: 'last promotion',
+      value: (promo.release_tag || 'tag unavailable') + ' · ' + when + (promo.step != null ? ' · step ' + promo.step : ''),
+      source: (promo.source || 'public pin') + (promo.label ? ' · ' + promo.label : ''),
+    });
+  }
+  const learn = live.learning || {};
+  const tr = learn.training || {};
+  if (learn.training || learn.diary || learn.pin_step != null) {
+    const lbits = [];
+    if (tr.status) lbits.push(tr.status);
+    else if (tr.state) lbits.push(tr.state);
+    if (tr.job) lbits.push(tr.job);
+    if (tr.cycle != null) lbits.push('cycle ' + tr.cycle);
+    if (tr.step != null) lbits.push('run step ' + tr.step);
+    if (learn.pin_step != null || (live.brain && live.brain.pin_step != null)) {
+      lbits.push('pin ' + (learn.pin_step != null ? learn.pin_step : live.brain.pin_step));
+    }
+    if (promo && promo.promoted_at) lbits.push('last promotion ' + promo.promoted_at);
+    rows.push({
+      id: 'learning',
+      label: 'learning',
+      value: lbits.join(' · ') || 'status unread',
+      source: (tr.source || tr.label || 'public Actions + pin') + '',
+    });
+  }
+  if (missing.length) {
+    rows.push({
+      id: 'missing',
+      label: 'unavailable',
+      value: missing.map((m) => m.name).join('; '),
+      source: 'not in this snapshot; shown as a neutral default, not invented',
+      missing: true,
+    });
+  }
 
   const miss = rows.filter((r) => r.missing);
   const kept = rows.filter((r) => !r.missing);

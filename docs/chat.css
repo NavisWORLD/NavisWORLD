@@ -100,3 +100,7 @@ textarea:focus{outline:none;border-color:var(--cy)}
 .mw-expr-legend li.missing{color:#9ca3af}
 .mw-expr-legend li.missing b{color:#d1d5db}
 @media (max-width:360px){.mw-expr{padding:6px 8px}.mw-expr-cap{font-size:10.5px}.mw-expr-legend{font-size:9.5px}}
+
+/* LIVE / STALE freshness on the growth line (payload age, not spark-channel state). */
+.mw-live-growth[data-fresh="LIVE"]{color:#86efac}
+.mw-live-growth[data-fresh="STALE"]{color:#fbbf24}
