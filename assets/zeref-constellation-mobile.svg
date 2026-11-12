@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="720" height="1680" viewBox="0 0 720 1680" role="img" aria-labelledby="zk-t zk-d">
 <title id="zk-t">Zeref's constellation of Cory's repos</title>
-<desc id="zk-d">Constellation of NavisWORLD's 31 public repositories as explored 2026-11-12T03:08:42Z. Each star is a real repo, ordered by most recent push from the centre outward; size grows with its GitHub stars, brightness with how recently it was pushed. Repo list with links is in zeref/notes.md.</desc>
+<desc id="zk-d">Constellation of NavisWORLD's 31 public repositories as explored 2026-11-12T21:54:32Z. Each star is a real repo, ordered by most recent push from the centre outward; size grows with its GitHub stars, brightness with how recently it was pushed. Repo list with links is in zeref/notes.md.</desc>
 <style>.kL0{animation:kdrift 135s linear infinite alternate}.kL1{animation:kdrift 90s linear infinite alternate}.kL2{animation:kdrift 45s linear infinite alternate}@keyframes kdrift{from{transform:translate(0,0)}to{transform:translate(-18px,6px)}}.ktw0{animation:ktw 3.1s ease-in-out infinite}.ktw1{animation:ktw 4.7s ease-in-out infinite}.ktw2{animation:ktw 6.3s ease-in-out infinite}@keyframes ktw{0%,100%{opacity:1}50%{opacity:.2}}.kl{stroke-dasharray:2 6;animation:kld 20s linear infinite}@keyframes kld{to{stroke-dashoffset:-160}}.kh{animation:khp 4s ease-in-out infinite}@keyframes khp{0%,100%{opacity:.55}50%{opacity:1}}.ttl{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;letter-spacing:.3em}.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}@media (prefers-reduced-motion: reduce){*{animation:none!important}}</style>
 <defs><radialGradient id="kbg" cx=".5" cy=".5" r=".75"><stop offset="0" stop-color="#140c33"/><stop offset="1" stop-color="#04050d"/></radialGradient><filter id="kglow" x="-200%" y="-200%" width="500%" height="500%"><feGaussianBlur stdDeviation="3.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter><radialGradient id="nb7c3aed"><stop offset="0" stop-color="#7c3aed" stop-opacity="1"/><stop offset=".45" stop-color="#7c3aed" stop-opacity=".45"/><stop offset="1" stop-color="#7c3aed" stop-opacity="0"/></radialGradient><radialGradient id="nb0891b2"><stop offset="0" stop-color="#0891b2" stop-opacity="1"/><stop offset=".45" stop-color="#0891b2" stop-opacity=".45"/><stop offset="1" stop-color="#0891b2" stop-opacity="0"/></radialGradient><radialGradient id="nbc026d3"><stop offset="0" stop-color="#c026d3" stop-opacity="1"/><stop offset=".45" stop-color="#c026d3" stop-opacity=".45"/><stop offset="1" stop-color="#c026d3" stop-opacity="0"/></radialGradient><radialGradient id="nb1d4ed8"><stop offset="0" stop-color="#1d4ed8" stop-opacity="1"/><stop offset=".45" stop-color="#1d4ed8" stop-opacity=".45"/><stop offset="1" stop-color="#1d4ed8" stop-opacity="0"/></radialGradient><radialGradient id="nbdb2777"><stop offset="0" stop-color="#db2777" stop-opacity="1"/><stop offset=".45" stop-color="#db2777" stop-opacity=".45"/><stop offset="1" stop-color="#db2777" stop-opacity="0"/></radialGradient><radialGradient id="nb0e7490"><stop offset="0" stop-color="#0e7490" stop-opacity="1"/><stop offset=".45" stop-color="#0e7490" stop-opacity=".45"/><stop offset="1" stop-color="#0e7490" stop-opacity="0"/></radialGradient><radialGradient id="nb6d28d9"><stop offset="0" stop-color="#6d28d9" stop-opacity="1"/><stop offset=".45" stop-color="#6d28d9" stop-opacity=".45"/><stop offset="1" stop-color="#6d28d9" stop-opacity="0"/></radialGradient></defs>
 <rect width="720" height="1680" rx="24" fill="url(#kbg)"/>
@@ -201,43 +201,43 @@
 <circle cx="140.4" cy="330.0" r="3.2" fill="#f0abfc" fill-opacity="0.93" filter="url(#kglow)"/>
 <text x="153.6" y="338.8" text-anchor="start" class="mono" font-size="25" fill="#e0e7ff" fill-opacity="0.96">Bio-integration-pipeline</text>
 <circle cx="92.1" cy="370.0" r="3.2" fill="#67e8f9" fill-opacity="0.90" filter="url(#kglow)"/>
-<text x="105.3" y="378.8" text-anchor="start" class="mono" font-size="25" fill="#e0e7ff" fill-opacity="0.95">Cosmic-synapse-the-living-uni…</text>
+<text x="105.3" y="378.8" text-anchor="start" class="mono" font-size="25" fill="#e0e7ff" fill-opacity="0.94">Cosmic-synapse-the-living-uni…</text>
 <circle cx="52.4" cy="410.0" r="5.8" fill="#c4b5fd" fill-opacity="0.86" filter="url(#kglow)"/>
-<text x="68.2" y="418.8" text-anchor="start" class="mono" font-size="25" fill="#e0e7ff" fill-opacity="0.93">The-theory-of-CST</text>
-<circle cx="64.7" cy="450.0" r="3.2" fill="#f0abfc" fill-opacity="0.85" filter="url(#kglow)"/>
-<text x="77.9" y="458.8" text-anchor="start" class="mono" font-size="25" fill="#e0e7ff" fill-opacity="0.92">Synapse-os</text>
+<text x="68.2" y="418.8" text-anchor="start" class="mono" font-size="25" fill="#e0e7ff" fill-opacity="0.92">The-theory-of-CST</text>
+<circle cx="64.7" cy="450.0" r="3.2" fill="#f0abfc" fill-opacity="0.84" filter="url(#kglow)"/>
+<text x="77.9" y="458.8" text-anchor="start" class="mono" font-size="25" fill="#e0e7ff" fill-opacity="0.91">Synapse-os</text>
 <circle cx="115.6" cy="490.0" r="3.2" fill="#67e8f9" fill-opacity="0.80" filter="url(#kglow)"/>
 <text x="128.8" y="498.8" text-anchor="start" class="mono" font-size="25" fill="#e0e7ff" fill-opacity="0.89">Cory-Davis-portfolio</text>
-<circle cx="149.4" cy="530.0" r="3.2" fill="#c4b5fd" fill-opacity="0.78" filter="url(#kglow)"/>
-<text x="162.6" y="538.8" text-anchor="start" class="mono" font-size="25" fill="#e0e7ff" fill-opacity="0.88">Quantum-azure-ibm-bridge-atta…</text>
-<circle cx="129.2" cy="570.0" r="3.2" fill="#f0abfc" fill-opacity="0.78" filter="url(#kglow)"/>
-<text x="142.4" y="578.8" text-anchor="start" class="mono" font-size="25" fill="#e0e7ff" fill-opacity="0.88">infinite-adaptive-audio-12d-u…</text>
-<circle cx="77.1" cy="610.0" r="3.2" fill="#67e8f9" fill-opacity="0.78" filter="url(#kglow)"/>
-<text x="90.3" y="618.8" text-anchor="start" class="mono" font-size="25" fill="#e0e7ff" fill-opacity="0.88">COSMOS-HEARTLIGHT</text>
-<circle cx="50.0" cy="650.0" r="3.2" fill="#c4b5fd" fill-opacity="0.78" filter="url(#kglow)"/>
-<text x="63.2" y="658.8" text-anchor="start" class="mono" font-size="25" fill="#e0e7ff" fill-opacity="0.88">Death-on-a-sub</text>
-<circle cx="77.5" cy="690.0" r="3.2" fill="#f0abfc" fill-opacity="0.78" filter="url(#kglow)"/>
-<text x="90.7" y="698.8" text-anchor="start" class="mono" font-size="25" fill="#e0e7ff" fill-opacity="0.88">Reality-bridge-universal-prob…</text>
-<circle cx="129.6" cy="730.0" r="3.2" fill="#67e8f9" fill-opacity="0.78" filter="url(#kglow)"/>
-<text x="142.8" y="738.8" text-anchor="start" class="mono" font-size="25" fill="#e0e7ff" fill-opacity="0.88">Flock-camera-bio-update</text>
-<circle cx="149.3" cy="770.0" r="3.2" fill="#c4b5fd" fill-opacity="0.78" filter="url(#kglow)"/>
-<text x="162.5" y="778.8" text-anchor="start" class="mono" font-size="25" fill="#e0e7ff" fill-opacity="0.88">The-Cosmic-Davis-12D-Hebbian-…</text>
-<circle cx="115.2" cy="810.0" r="3.2" fill="#f0abfc" fill-opacity="0.78" filter="url(#kglow)"/>
-<text x="128.4" y="818.8" text-anchor="start" class="mono" font-size="25" fill="#e0e7ff" fill-opacity="0.88">The-Cosmic-Davis-12D-Hebbian-…</text>
-<circle cx="64.4" cy="850.0" r="3.2" fill="#67e8f9" fill-opacity="0.78" filter="url(#kglow)"/>
-<text x="77.6" y="858.8" text-anchor="start" class="mono" font-size="25" fill="#e0e7ff" fill-opacity="0.88">Electionapp</text>
-<circle cx="52.6" cy="890.0" r="3.2" fill="#c4b5fd" fill-opacity="0.78" filter="url(#kglow)"/>
-<text x="65.8" y="898.8" text-anchor="start" class="mono" font-size="25" fill="#e0e7ff" fill-opacity="0.88">reality-bridge-alien-conducto…</text>
-<circle cx="92.6" cy="930.0" r="3.2" fill="#f0abfc" fill-opacity="0.78" filter="url(#kglow)"/>
-<text x="105.8" y="938.8" text-anchor="start" class="mono" font-size="25" fill="#e0e7ff" fill-opacity="0.88">Cosmic-nova-os-GGUF-model-and…</text>
-<circle cx="140.7" cy="970.0" r="3.2" fill="#67e8f9" fill-opacity="0.78" filter="url(#kglow)"/>
-<text x="153.9" y="978.8" text-anchor="start" class="mono" font-size="25" fill="#e0e7ff" fill-opacity="0.88">audio-model-12dyn</text>
-<circle cx="144.4" cy="1010.0" r="3.2" fill="#c4b5fd" fill-opacity="0.78" filter="url(#kglow)"/>
-<text x="157.6" y="1018.8" text-anchor="start" class="mono" font-size="25" fill="#e0e7ff" fill-opacity="0.88">Cosmos</text>
-<circle cx="99.6" cy="1050.0" r="3.2" fill="#f0abfc" fill-opacity="0.78" filter="url(#kglow)"/>
-<text x="112.8" y="1058.8" text-anchor="start" class="mono" font-size="25" fill="#e0e7ff" fill-opacity="0.88">Cosmic-quantum-video-picture-…</text>
-<circle cx="55.2" cy="1090.0" r="3.2" fill="#67e8f9" fill-opacity="0.78" filter="url(#kglow)"/>
-<text x="68.4" y="1098.8" text-anchor="start" class="mono" font-size="25" fill="#e0e7ff" fill-opacity="0.88">REALITY_BRIDGE_ALIEN_CONDUCTO…</text>
+<circle cx="149.4" cy="530.0" r="3.2" fill="#c4b5fd" fill-opacity="0.77" filter="url(#kglow)"/>
+<text x="162.6" y="538.8" text-anchor="start" class="mono" font-size="25" fill="#e0e7ff" fill-opacity="0.87">Quantum-azure-ibm-bridge-atta…</text>
+<circle cx="129.2" cy="570.0" r="3.2" fill="#f0abfc" fill-opacity="0.77" filter="url(#kglow)"/>
+<text x="142.4" y="578.8" text-anchor="start" class="mono" font-size="25" fill="#e0e7ff" fill-opacity="0.87">infinite-adaptive-audio-12d-u…</text>
+<circle cx="77.1" cy="610.0" r="3.2" fill="#67e8f9" fill-opacity="0.77" filter="url(#kglow)"/>
+<text x="90.3" y="618.8" text-anchor="start" class="mono" font-size="25" fill="#e0e7ff" fill-opacity="0.87">COSMOS-HEARTLIGHT</text>
+<circle cx="50.0" cy="650.0" r="3.2" fill="#c4b5fd" fill-opacity="0.77" filter="url(#kglow)"/>
+<text x="63.2" y="658.8" text-anchor="start" class="mono" font-size="25" fill="#e0e7ff" fill-opacity="0.87">Death-on-a-sub</text>
+<circle cx="77.5" cy="690.0" r="3.2" fill="#f0abfc" fill-opacity="0.77" filter="url(#kglow)"/>
+<text x="90.7" y="698.8" text-anchor="start" class="mono" font-size="25" fill="#e0e7ff" fill-opacity="0.87">Reality-bridge-universal-prob…</text>
+<circle cx="129.6" cy="730.0" r="3.2" fill="#67e8f9" fill-opacity="0.77" filter="url(#kglow)"/>
+<text x="142.8" y="738.8" text-anchor="start" class="mono" font-size="25" fill="#e0e7ff" fill-opacity="0.87">Flock-camera-bio-update</text>
+<circle cx="149.3" cy="770.0" r="3.2" fill="#c4b5fd" fill-opacity="0.77" filter="url(#kglow)"/>
+<text x="162.5" y="778.8" text-anchor="start" class="mono" font-size="25" fill="#e0e7ff" fill-opacity="0.87">The-Cosmic-Davis-12D-Hebbian-…</text>
+<circle cx="115.2" cy="810.0" r="3.2" fill="#f0abfc" fill-opacity="0.77" filter="url(#kglow)"/>
+<text x="128.4" y="818.8" text-anchor="start" class="mono" font-size="25" fill="#e0e7ff" fill-opacity="0.87">The-Cosmic-Davis-12D-Hebbian-…</text>
+<circle cx="64.4" cy="850.0" r="3.2" fill="#67e8f9" fill-opacity="0.77" filter="url(#kglow)"/>
+<text x="77.6" y="858.8" text-anchor="start" class="mono" font-size="25" fill="#e0e7ff" fill-opacity="0.87">Electionapp</text>
+<circle cx="52.6" cy="890.0" r="3.2" fill="#c4b5fd" fill-opacity="0.77" filter="url(#kglow)"/>
+<text x="65.8" y="898.8" text-anchor="start" class="mono" font-size="25" fill="#e0e7ff" fill-opacity="0.87">reality-bridge-alien-conducto…</text>
+<circle cx="92.6" cy="930.0" r="3.2" fill="#f0abfc" fill-opacity="0.77" filter="url(#kglow)"/>
+<text x="105.8" y="938.8" text-anchor="start" class="mono" font-size="25" fill="#e0e7ff" fill-opacity="0.87">Cosmic-nova-os-GGUF-model-and…</text>
+<circle cx="140.7" cy="970.0" r="3.2" fill="#67e8f9" fill-opacity="0.77" filter="url(#kglow)"/>
+<text x="153.9" y="978.8" text-anchor="start" class="mono" font-size="25" fill="#e0e7ff" fill-opacity="0.87">audio-model-12dyn</text>
+<circle cx="144.4" cy="1010.0" r="3.2" fill="#c4b5fd" fill-opacity="0.77" filter="url(#kglow)"/>
+<text x="157.6" y="1018.8" text-anchor="start" class="mono" font-size="25" fill="#e0e7ff" fill-opacity="0.87">Cosmos</text>
+<circle cx="99.6" cy="1050.0" r="3.2" fill="#f0abfc" fill-opacity="0.77" filter="url(#kglow)"/>
+<text x="112.8" y="1058.8" text-anchor="start" class="mono" font-size="25" fill="#e0e7ff" fill-opacity="0.87">Cosmic-quantum-video-picture-…</text>
+<circle cx="55.2" cy="1090.0" r="3.2" fill="#67e8f9" fill-opacity="0.77" filter="url(#kglow)"/>
+<text x="68.4" y="1098.8" text-anchor="start" class="mono" font-size="25" fill="#e0e7ff" fill-opacity="0.87">REALITY_BRIDGE_ALIEN_CONDUCTO…</text>
 <circle cx="59.8" cy="1130.0" r="5.8" fill="#c4b5fd" fill-opacity="0.73" filter="url(#kglow)"/>
 <text x="75.6" y="1138.8" text-anchor="start" class="mono" font-size="25" fill="#e0e7ff" fill-opacity="0.85">cosmic-synapse-A-lmi-v.2</text>
 <circle cx="108.3" cy="1170.0" r="3.2" fill="#f0abfc" fill-opacity="0.58" filter="url(#kglow)"/>
@@ -258,7 +258,7 @@
 <text x="163.2" y="1458.8" text-anchor="start" class="mono" font-size="25" fill="#e0e7ff" fill-opacity="0.77">CosmicSynapse</text>
 <text x="40" y="62" class="ttl" font-size="34" font-weight="800" fill="#e0e7ff">ZEREF’S CONSTELLATION</text>
 <text x="40" y="98" class="mono" font-size="25" fill="#67e8f9">31 real public repos</text>
-<text x="40" y="128" class="mono" font-size="25" fill="#67e8f9">explored 2026-11-12T03:08:42Z</text>
+<text x="40" y="128" class="mono" font-size="25" fill="#67e8f9">explored 2026-11-12T21:54:32Z</text>
 <text x="40" y="158" class="mono" font-size="25" fill="#67e8f9">top = most recent push</text>
 <text x="40" y="1540" class="mono" font-size="25" fill="#b4bfd4">star size = GitHub stars (log)</text>
 <text x="40" y="1572" class="mono" font-size="25" fill="#b4bfd4">brightness = days since last push</text>
