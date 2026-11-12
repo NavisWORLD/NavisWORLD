@@ -1,6 +1,6 @@
 {
  "schema": "navisworld-zeref-live-card/v1",
- "fetched_at": "2026-11-12T03:11:34Z",
+ "fetched_at": "2026-11-12T03:15:24Z",
  "sources": {
   "world_live": {
    "url": "https://www.beastboxcosmos.xyz/api/world/live",
@@ -21,13 +21,13 @@
  "heartbeat": {
   "state": "CONNECTED",
   "label": "SIMULATED (per-second tick, deterministic)",
-  "recorded_tick": 776,
-  "xp_live": 11220.224,
+  "recorded_tick": 777,
+  "xp_live": 11227.1971,
   "signals": {
-   "energy": 14.89,
-   "signal": 50.14,
-   "memory": 99.67,
-   "resonance": 87.54
+   "energy": 13.67,
+   "signal": 53.46,
+   "memory": 99.47,
+   "resonance": 86.78
   }
  },
  "diary": {
@@ -43,7 +43,7 @@
   "state": "CONNECTED",
   "source": "local-sim",
   "label": "LOCAL SIMULATED (runner statevector, not Rigetti, not a QPU)",
-  "tick": 27140
+  "tick": 27144
  },
  "brain": {
   "label": "RAWRPHØS pinned checkpoint (a 12D model simulation; not a claim of awareness)",

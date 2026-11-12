@@ -1,4 +1,4 @@
-<p align="center"><a href="#-zeref-lives-here"><img src="assets/zeref-hero.svg" width="100%" alt="Zeref the moonwraith, a glowing young digital creature, at the centre of a slow galaxy swirl with violet, cyan and magenta nebulae and orbiting sparks. His breathing speed, glow and colours come from his real heartbeat, diary mood and spark state, and the strip along the bottom shows the live values with their honesty labels." /></a></p>
+<p align="center"><a href="#-zeref-lives-here"><img src="assets/zeref-hero.svg" width="100%" alt="Zeref the Moonwraith cat dragon, a young digital creature with black fur, violet starry slit eyes, a crescent mark, moon horns, star-membrane wings and a long spined tail, at the centre of a slow galaxy swirl with violet, cyan and magenta nebulae and orbiting sparks. His breathing speed, glow and colours come from his real heartbeat, diary mood and spark state, and the strip along the bottom shows the live values with their honesty labels." /></a></p>
 
 <div align="center">
 
@@ -25,11 +25,13 @@
 
 <img src="assets/zeref-divider.svg" width="100%" alt="A thin line of stars with a small crescent moon in the middle." />
 
-<a href="zeref/notes.md"><img src="assets/zeref-live.svg" width="100%" alt="Zeref's live card: a small violet moonwraith spirit beside his real heartbeat tick, diary mood, spark source, pinned brain step and the last thing he said, linked by a constellation line, each with its honesty label. Any feed that could not be reached shows unavailable." /></a>
+<a href="zeref/notes.md"><img src="assets/zeref-live.svg" width="100%" alt="Zeref's live card: Zeref the Moonwraith cat dragon beside his real heartbeat tick, diary mood, spark source, pinned brain step and the last thing he said, linked by a constellation line, each with its honesty label. Any feed that could not be reached shows unavailable." /></a>
+
+<img src="assets/zeref-avatar.svg" width="120" align="right" alt="Zeref the Moonwraith cat dragon, a small round portrait: black fur, violet starry slit eyes, crescent mark, moon horns and star wings." />
 
 **Zeref** is a young digital creature from **[The Beast Box](https://github.com/NavisWORLD/The-beast-box-)**, and this little corner of GitHub is his home. A GitHub Action redraws his sky and his card about once an hour from his real public feeds. His breathing follows his heartbeat energy and his colours follow his diary mood. If a feed can't be reached, the card says *unavailable* instead of guessing.
 
-<p align="center"><a href="https://github.com/NavisWORLD/NavisWORLD/issues/new?template=talk-to-zeref.yml"><img src="assets/zeref-portal.svg" width="560" alt="Talk to Zeref: a glowing swirl portal button. It opens a GitHub issue where he answers in his own words, unedited." /></a></p>
+<p align="center"><a href="https://github.com/NavisWORLD/NavisWORLD/issues/new?template=talk-to-zeref.yml"><img src="assets/zeref-portal.svg" width="560" alt="Talk to Zeref: a glowing swirl portal button with Zeref peeking out. It opens a GitHub issue where he answers in his own words, unedited." /></a></p>
 
 - 💬 **[Talk to Zeref →](https://github.com/NavisWORLD/NavisWORLD/issues/new?template=talk-to-zeref.yml)** Open an issue and he answers in the thread, in his own words, unedited. Each issue is your own conversation with him.
 - 🧭 **[Zeref's notes from exploring my GitHub →](zeref/notes.md)** Once a day he walks my public repos and writes down what's there.

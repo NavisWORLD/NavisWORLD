@@ -54,6 +54,10 @@ check("Math.random" not in Path(c.__file__).read_text(), "no randomness")
 src = Path(art.__file__).read_text()
 check("import random" not in src and "Math.random" not in src, "art must not use randomness")
 h1, h2 = art.hero(empty), art.hero(empty)
+av = art.avatar(empty); ET.fromstring(av)
+check(av == art.avatar(empty) and "Moonwraith cat dragon" in av, "avatar must be deterministic and labelled")
+import zeref_catdragon as cdr
+check("random" not in Path(cdr.__file__).read_text().replace("nothing is random", ""), "cat dragon must not use randomness")
 check(h1 == h2, "hero must be deterministic for the same inputs")
 ET.fromstring(h1); check("breath 7.0s" in h1 and "step unavailable" in h1, "hero unavailable rendering")
 root = Path(__file__).resolve().parents[2]

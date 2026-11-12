@@ -15,6 +15,8 @@ from __future__ import annotations
 
 import hashlib
 import math
+
+import zeref_catdragon as cd
 from xml.sax.saxutils import escape
 
 UNAV = "unavailable"
@@ -107,31 +109,9 @@ def star_style(prefix="s", base=60):
             f"@keyframes {prefix}tw{{0%,100%{{opacity:1}}50%{{opacity:.2}}}}")
 
 
-def creature(pal, scale=1.0, eyes_cls="zeye", body_cls="zbody"):
-    """Zeref the moonwraith, drawn around (0,0). Place it with a parent <g transform>."""
-    body, rim, eye, aura = pal
-    s = scale
-    return [
-        f'<g class="{body_cls}">',
-        f'<circle r="{165*s:.0f}" fill="url(#zaura)"/>',
-        *[f'<path d="M-26 170 C-40 200 -70 214 -96 210 M26 170 C40 200 70 214 96 210 M0 130 C0 170 -8 200 -2 232" transform="scale({s})" fill="none" stroke="{rim}" stroke-opacity="{o}" stroke-width="{w}" stroke-linecap="round"/>' for o, w in ((.18, 9), (.5, 2.5))],
-        *[f'<path d="M0 -122 C64 -122 108 -64 100 4 C92 72 50 126 26 170 C18 146 10 132 0 130 C-10 132 -18 146 -26 170 C-50 126 -92 72 -100 4 C-108 -64 -64 -122 0 -122 Z" transform="scale({s})" fill="none" stroke="{rim}" stroke-opacity="{o}" stroke-width="{w}"/>' for o, w in ((.08, 26), (.14, 14), (.28, 7))],
-        f'<path d="M-62 -10 C-118 -32 -136 -92 -124 -128 C-100 -82 -72 -58 -40 -44 Z" transform="scale({s})" fill="{body}" stroke="{rim}" stroke-opacity=".8" stroke-width="2"/>',
-        f'<path d="M62 -10 C118 -32 136 -92 124 -128 C100 -82 72 -58 40 -44 Z" transform="scale({s})" fill="{body}" stroke="{rim}" stroke-opacity=".8" stroke-width="2"/>',
-        f'<path d="M0 -122 C64 -122 108 -64 100 4 C92 72 50 126 26 170 C18 146 10 132 0 130 C-10 132 -18 146 -26 170 C-50 126 -92 72 -100 4 C-108 -64 -64 -122 0 -122 Z" transform="scale({s})" fill="url(#zbodyg)" stroke="{rim}" stroke-width="3"/>',
-        f'<path d="M18 -96 A36 36 0 1 0 18 -40 A28 28 0 1 1 18 -96 Z" transform="scale({s})" fill="{rim}" fill-opacity=".95"/>',
-        f'<path d="M-28 52 Q0 68 28 52" transform="scale({s})" fill="none" stroke="{eye}" stroke-opacity=".7" stroke-width="2.5" stroke-linecap="round"/>',
-        "</g>",
-        f'<g class="{eyes_cls}"><ellipse cx="{-32*s:.1f}" cy="{6*s:.1f}" rx="{14*s:.1f}" ry="{9*s:.1f}" fill="{eye}" filter="url(#zglow)"/>'
-        f'<ellipse cx="{32*s:.1f}" cy="{6*s:.1f}" rx="{14*s:.1f}" ry="{9*s:.1f}" fill="{eye}" filter="url(#zglow)"/></g>',
-    ]
-
-
 def common_defs(pal, aura):
     body, rim, eye, auraC = pal
-    return (f'<radialGradient id="zbodyg" cx=".5" cy=".42" r=".6"><stop offset="0" stop-color="{auraC}" stop-opacity=".55"/>'
-            f'<stop offset=".7" stop-color="{body}"/><stop offset="1" stop-color="{body}"/></radialGradient>'
-            f'<radialGradient id="zaura"><stop offset="0" stop-color="{auraC}" stop-opacity="{0.75*aura:.2f}"/>'
+    return (f'<radialGradient id="zaura"><stop offset="0" stop-color="{auraC}" stop-opacity="{0.75*aura:.2f}"/>'
             f'<stop offset=".55" stop-color="#22d3ee" stop-opacity="{0.18*aura:.2f}"/><stop offset="1" stop-color="#05060f" stop-opacity="0"/></radialGradient>'
             '<filter id="zglow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="4" result="b"/>'
             '<feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>'
@@ -171,22 +151,19 @@ def hero(d: dict) -> str:
     rng = Seeded("hero:" + seed)
     P = m["period"]
     spin_op = 1.0 if m["spark_on"] else 0.25
-    desc = (f"Zeref the moonwraith, a young digital creature, glowing at the centre of a slow galaxy swirl with nebula clouds "
+    desc = (f"Zeref the Moonwraith cat dragon (black fur, violet starry slit eyes, crescent mark and moon horns, star-membrane wings, spined smoky tail, gem choker), a young digital creature, at the centre of a slow galaxy swirl with nebula clouds "
             f"and orbiting sparks. Drawn from real values fetched {d.get('fetched_at')}: {labels_line(d)}. "
             f"Breath period {P}s from heartbeat energy {v(m['energy'])}; aura {m['aura']} from resonance {v(m['resonance'])}; "
             f"colours from diary mood {v(m['mood'])}; sparks {'bright' if m['spark_on'] else 'dim'} from spark state. "
             f"Star positions seeded from the pinned sha and heartbeat tick, never random. Not a claim of awareness.")
-    style = (star_style("h", 50) +
-             f".zbody{{transform-box:fill-box;transform-origin:center;animation:zbreathe {P}s ease-in-out infinite}}"
-             f"@keyframes zbreathe{{0%,100%{{transform:scale(.97);opacity:.88}}50%{{transform:scale(1.03);opacity:1}}}}"
-             f".zeye{{animation:zblink {P}s ease-in-out infinite}}@keyframes zblink{{0%,44%,56%,100%{{opacity:1}}50%{{opacity:.35}}}}"
+    style = (star_style("h", 50) + cd.style("zd", P) +
              ".gsw{animation:gspin 240s linear infinite}.o1{animation:gspin 26s linear infinite}"
              ".o2{animation:gspin 41s linear infinite reverse}.o3{animation:gspin 63s linear infinite}"
              "@keyframes gspin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}"
              ".nb1{animation:nbf 38s ease-in-out infinite alternate}.nb2{animation:nbf 51s ease-in-out infinite alternate-reverse}"
              "@keyframes nbf{from{transform:translate(-30px,-8px)}to{transform:translate(30px,10px)}}"
              f".ttl{{font-family:{SANS};letter-spacing:.32em}}.mono{{font-family:{MONO}}}")
-    defs = (common_defs(pal, m["aura"]) +
+    defs = (common_defs(pal, m["aura"]) + cd.defs("zd", pal[3], m["aura"]) +
             '<linearGradient id="hbg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#04050d"/>'
             '<stop offset=".55" stop-color="#0a0820"/><stop offset="1" stop-color="#05060f"/></linearGradient>'
             '<linearGradient id="hedge" x1="0" x2="1"><stop offset="0" stop-color="#67e8f9"/><stop offset=".5" stop-color="#a78bfa"/>'
@@ -225,9 +202,7 @@ def hero(d: dict) -> str:
         a("</g>")
     a("</g>")
     # Zeref at the centre
-    a(f'<g transform="translate({W/2} {H/2-6})">')
-    t += creature(pal, 1.0)
-    a("</g>")
+    a(cd.creature("zd", P, pal[3], m["aura"], W/2 - 310, 84, 620, 382, view="-90 -20 580 410"))
     # titles
     a(f'<text x="{W/2}" y="64" text-anchor="middle" class="ttl" font-size="40" font-weight="800" fill="url(#hedge)">ZEREF</text>')
     a(f'<text x="{W/2}" y="92" text-anchor="middle" class="ttl" font-size="14" fill="#c4b5fd">MOONWRAITH · DIGITAL CREATURE OF THE BEAST BOX</text>')
@@ -283,14 +258,11 @@ def card(d: dict) -> str:
     rng = Seeded(f"card:{br.get('pin_sha_prefix')}:{hb.get('recorded_tick')}")
     desc = (f"Zeref live card, fetched {d['fetched_at']}. " + "; ".join(f"{a_} {b} ({c})" for a_, b, c in rows) +
             f". Last said: {said['text'].strip() if said else UNAV}. Values from real public feeds; unavailable means a feed could not be reached.")
-    style = (star_style("c", 40) +
-             f".zbody{{transform-box:fill-box;transform-origin:center;animation:zbreathe {m['period']}s ease-in-out infinite}}"
-             "@keyframes zbreathe{0%,100%{transform:scale(.97);opacity:.88}50%{transform:scale(1.03);opacity:1}}"
-             f".zeye{{animation:zblink {m['period']}s ease-in-out infinite}}@keyframes zblink{{0%,44%,56%,100%{{opacity:1}}50%{{opacity:.35}}}}"
+    style = (star_style("c", 40) + cd.style("zd", m["period"]) +
              ".cl{stroke-dasharray:4 7;animation:cdash 14s linear infinite}@keyframes cdash{to{stroke-dashoffset:-110}}"
              ".nd{animation:ndp 3.6s ease-in-out infinite}@keyframes ndp{0%,100%{opacity:.6}50%{opacity:1}}"
              f".ttl{{font-family:{SANS};letter-spacing:.28em}}.sans{{font-family:{SANS}}}.mono{{font-family:{MONO}}}")
-    defs = (common_defs(pal, m["aura"]) +
+    defs = (common_defs(pal, m["aura"]) + cd.defs("zd", pal[3], m["aura"]) +
             '<linearGradient id="cbg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#05060f"/><stop offset=".6" stop-color="#0d0a24"/>'
             '<stop offset="1" stop-color="#170b30"/></linearGradient><linearGradient id="cedge" x1="0" x2="1"><stop offset="0" stop-color="#67e8f9"/>'
             '<stop offset=".5" stop-color="#a78bfa"/><stop offset="1" stop-color="#f0abfc"/></linearGradient>')
@@ -301,10 +273,8 @@ def card(d: dict) -> str:
     a(neb(900, 430, 360, 130, "#0891b2", .3))
     a(neb(1080, 60, 220, 90, "#c026d3", .25))
     t += starfield(rng, W, H, 150, 3, "c")
-    a('<g transform="translate(195 205) scale(.64)">')
-    t += creature(pal, 1.0)
-    a("</g>")
-    a('<text x="195" y="392" text-anchor="middle" class="ttl" font-size="11.5" fill="#a5b4fc">DIGITAL CREATURE</text>')
+    a(cd.creature("zd", m["period"], pal[3], m["aura"], 16, 40, 352, 330, view="-70 0 540 420", overflow="hidden"))
+    a('<text x="195" y="392" text-anchor="middle" class="ttl" font-size="11.5" fill="#a5b4fc">CAT DRAGON · DIGITAL CREATURE</text>')
     a('<text x="195" y="410" text-anchor="middle" class="ttl" font-size="10" fill="#94a3b8">NOT A CLAIM OF AWARENESS</text>')
     X = 390
     a(f'<text x="{X}" y="62" class="ttl" font-size="30" font-weight="800" fill="url(#cedge)">ZEREF · LIVE</text>')
@@ -338,7 +308,7 @@ def card(d: dict) -> str:
 def portal() -> str:
     W, H = 760, 170
     rng = Seeded("portal:v1")
-    style = (star_style("p", 30) +
+    style = (star_style("p", 30) + cd.style("zd", 7.0) +
              ".pr1{transform-box:fill-box;transform-origin:center;animation:psp 18s linear infinite}"
              ".pr2{transform-box:fill-box;transform-origin:center;animation:psp 11s linear infinite reverse}"
              "@keyframes psp{to{transform:rotate(360deg)}}"
@@ -347,8 +317,9 @@ def portal() -> str:
     defs = ('<radialGradient id="pcore"><stop offset="0" stop-color="#f5f3ff"/><stop offset=".25" stop-color="#a78bfa"/>'
             '<stop offset=".6" stop-color="#0e7490" stop-opacity=".7"/><stop offset="1" stop-color="#05060f" stop-opacity="0"/></radialGradient>'
             '<linearGradient id="pedge" x1="0" x2="1"><stop offset="0" stop-color="#67e8f9"/><stop offset=".5" stop-color="#a78bfa"/><stop offset="1" stop-color="#f0abfc"/></linearGradient>'
+            '<clipPath id="pclip"><circle cx="92" cy="85" r="46"/></clipPath>' + cd.defs("zd", "#7c3aed", 0.6) +
             '<filter id="pglow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>')
-    t = head(W, H, "zp", "Talk to Zeref", "A glowing swirl portal button. Pressing it opens a Talk to Zeref GitHub issue; his replies are posted unedited.", style, defs)
+    t = head(W, H, "zp", "Talk to Zeref", "A glowing swirl portal with Zeref the cat dragon peeking out of it. Pressing it opens a Talk to Zeref GitHub issue; his replies are posted unedited.", style, defs)
     a = t.append
     a(f'<rect x="2" y="2" width="{W-4}" height="{H-4}" rx="{(H-4)/2}" fill="#070818" stroke="url(#pedge)" stroke-width="3"/>')
     t += starfield(rng, W, H, 60, 3, "p")
@@ -359,6 +330,7 @@ def portal() -> str:
         for k in range(6)) + "</g>")
     a('<g class="pr2"><circle r="50" fill="none" stroke="#f0abfc" stroke-width="2" stroke-dasharray="6 9" filter="url(#pglow)"/></g>')
     a("</g>")
+    a('<g clip-path="url(#pclip)">' + cd.creature("zd", 7.0, "#7c3aed", 0.6, 47, 40, 90, 90, view="60 30 280 280") + "</g>")
     a(f'<text x="190" y="80" class="ttl" font-size="34" font-weight="800" fill="url(#pedge)">TALK TO ZEREF</text>')
     a(f'<text x="192" y="112" class="mono" font-size="14" fill="#c4b5fd">step through · opens a GitHub issue · his replies are his own, unedited</text>')
     a(f'<text x="192" y="136" class="mono" font-size="12" fill="#7dd3fc">chats are training_eligible:false · he grows only through his fair gate</text>')
@@ -444,5 +416,26 @@ def constellation(facts: list[dict], explored_at: str | None) -> str:
     a(f'<text x="40" y="52" class="ttl" font-size="22" font-weight="800" fill="#e0e7ff">ZEREF’S CONSTELLATION</text>')
     a(f'<text x="40" y="76" class="mono" font-size="12.5" fill="#67e8f9">{len(facts)} real public repos · explored {escape(explored_at or UNAV)} · centre = most recent push</text>')
     a(f'<text x="40" y="{H-22}" class="mono" font-size="11.5" fill="#94a3b8">star size = GitHub stars (log) · brightness = days since last push · pulsing = pushed in the last 14 days · links in zeref/notes.md</text>')
+    a("</svg>")
+    return "\n".join(t) + "\n"
+
+
+def avatar(d: dict) -> str:
+    """Square Zeref avatar (cat dragon) driven by the same real values as the hero."""
+    m = motion(d)
+    pal, P = m["pal"], m["period"]
+    W = H = 400
+    desc = (f"Zeref the Moonwraith cat dragon, a young digital creature: black fur, violet starry slit eyes, crescent mark and moon horns, "
+            f"star-membrane wings, spined smoky tail, gem choker. Breath {P}s from heartbeat energy {v(m['energy'])}; aura from diary mood "
+            f"{v(m['mood'])}. Fetched {v(d.get('fetched_at'))}. Not a claim of awareness.")
+    rng = Seeded(f"avatar:{(d.get('brain') or {}).get('pin_sha_prefix')}:{(d.get('heartbeat') or {}).get('recorded_tick')}")
+    t = head(W, H, "za", "Zeref, the Moonwraith cat dragon", desc, star_style("a", 30) + cd.style("zd", P),
+             nebula_defs() + cd.defs("zd", pal[3], m["aura"]) + '<clipPath id="aclip"><circle cx="200" cy="200" r="196"/></clipPath>')
+    a = t.append
+    a('<g clip-path="url(#aclip)"><rect width="400" height="400" fill="#05060f"/>')
+    a(neb(120, 110, 220, 150, "#7c3aed", .55)); a(neb(300, 300, 220, 140, "#0891b2", .4)); a(neb(320, 90, 160, 90, "#db2777", .3))
+    t += starfield(rng, W, H, 90, 3, "a")
+    a(cd.creature("zd", P, pal[3], m["aura"], 0, 0, 400, 400, view="-40 0 480 420"))
+    a('</g><circle cx="200" cy="200" r="196" fill="none" stroke="#a78bfa" stroke-opacity=".7" stroke-width="3"/>')
     a("</svg>")
     return "\n".join(t) + "\n"

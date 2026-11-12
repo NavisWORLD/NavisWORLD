@@ -34,6 +34,7 @@ required_files = [
     "assets/lost-cosmos-atlas.png",
     "assets/zeref-live.svg",
     "assets/zeref-hero.svg",
+    "assets/zeref-avatar.svg",
     "assets/zeref-portal.svg",
     "assets/zeref-divider.svg",
     "assets/zeref-constellation.svg",
