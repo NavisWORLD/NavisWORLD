@@ -83,3 +83,26 @@
   the same beat pulse and hue. The recorded-mood expression from the live
   card is still the base. Readout: "live audio signal · beat · harmonics"
   plus BPM, confidence, and pitch class.
+
+- **Entire motion follows the live song**: while Cory's song is playing,
+  every animated bone and morph on the Moonwraith is driven by the live
+  AnalyserNode / FFT (RMS, bands, flux, chroma, beat phase, and a music
+  clock whose rate is that same signal — not a wall-clock idle and not a
+  fake metronome). Breathing follows tempo or that music clock; blinks
+  and squints fire on snares, phrase boundaries and downbeats; gaze darts
+  with melody (centroid) and pitch class; iris and crescent brightness
+  pulse with bass / RMS on top of the recorded mood tint (the tint stays
+  the base color; mood only scales style and amplitude, never timing);
+  mouth morphs follow mid / vocal energy; brows and ear bases bounce with
+  mids; the head nods on the beat; root drift comes from low-band energy;
+  a spine wave from kicks travels down the tail with follow-through;
+  wings follow harmonic energy plus onsets; paws step on the beat phase
+  (or the music clock when confidence is low); fur / particle sparkle
+  follows highs; the camera does a small bob on downbeats. Quiet passages
+  scale the amplitude down but do not stop him. When the song pauses or
+  ends, the seeded idle plan takes over again. The 2D portrait fallback
+  is fully audio-driven too (no CSS breathe loop while dancing). The
+  sculpt has no eye, jaw, or whisker bones and no baked animation clips —
+  lids use blink / sleepy / happy morphs, the mouth uses mouth_o / smile
+  / grin, gaze is head + neck, iris pulse is emissive intensity, sparkle
+  is the fur shader and particles.

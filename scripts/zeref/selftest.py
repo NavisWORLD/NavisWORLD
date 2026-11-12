@@ -488,6 +488,7 @@ check("live audio signal · beat · harmonics" in (mw / "particles.mjs").read_te
 check("--dance-hue" in css and "--dance-beat" in css and "--dance-kick" in css, "2D fallback gets beat pulse and chroma hue")
 check("wing.2.L" in s3m and "ear.1.L" in s3m and "leg.L" in s3m and "tailTip" in s3m, "3D viewer drives wing tips, ear tips, legs, tail tip")
 check("beat · harmonics" in credits, "credits document the rhythm mapping")
+check("Entire motion follows the live song" in credits or "every animated bone" in credits, "credits document full-body song-driven motion")
 rhy_probe = r"""
 import { chromaVector, dominantPitchClass, chromaDistance, chromaHue, estimateTempo, tempoFromOnsets, spectralFlatness, spectralFlux, PITCH_CLASSES, RHYTHM_BANDS, hslToHex, makeRhythmState, tickRhythm } from './docs/moonwraith/rhythm.mjs';
 import { bandMean, normalizePeak, smoothToward, detectOnset, dancePose } from './docs/moonwraith/dance.mjs';
@@ -533,9 +534,16 @@ const p2 = dancePose({}, { bass: 0.8, mid: 0.2, high: 0.1, loud: 0.5, hop: 1, ea
 if (JSON.stringify(p1) !== JSON.stringify(p2)) throw new Error('rhythm dancePose must be deterministic');
 if (!(p1.hop > 0.10) || !(p1.wingSpread > 0) || !('tailTip' in p1) || !('legL' in p1)) throw new Error('structure pose channels missing');
 // Without a confident grid, step legs stay quiet (no invented metronome)
-const loose = dancePose({}, { bass: 0.2, mid: 0.1, high: 0.1, loud: 0.2, hop: 0, earFlick: 0, earSide: 1, beatConf: 0.1, useGrid: false, beatPhase: 0.3, hatHit: 1, hatFollow: 0.8 });
-if (Math.abs(loose.legL) > 0.001 || Math.abs(loose.legR) > 0.001) throw new Error('low-confidence grid must not invent a step cycle');
+const loose = dancePose({}, { bass: 0.2, mid: 0.1, high: 0.1, loud: 0.2, hop: 0, earFlick: 0, earSide: 1, beatConf: 0.1, useGrid: false, beatPhase: 0.3, musicPhase: 0, hatHit: 1, hatFollow: 0.8 });
+if (Math.abs(loose.legL) > 0.001 || Math.abs(loose.legR) > 0.001) throw new Error('beatPhase must not invent a step cycle when the grid is off and the music clock is 0');
 if (!(loose.tailTip !== 0) && !(loose.wingTip > 0)) throw new Error('hat hits should still move tail/wing tips without a grid');
+const stepped = dancePose({}, { bass: 0.2, mid: 0.1, high: 0.1, loud: 0.2, hop: 0, earFlick: 0, earSide: 1, playing: true, beatConf: 0.1, useGrid: false, musicPhase: 1.2 });
+if (!(Math.abs(stepped.legL) > 0.01 || Math.abs(stepped.legR) > 0.01)) throw new Error('music clock should still step the paws when the beat grid is not confident');
+const quiet = dancePose({}, { playing: true, loud: 0.05, bass: 0.04, mid: 0.03, high: 0.02, hop: 0, earFlick: 0, earSide: 1, musicPhase: 2.4, beatConf: 0.1, useGrid: false });
+if (!(Math.abs(quiet.breath - 0.5) > 0.01) && !(Math.abs(quiet.hop) > 0.001) && !(Math.abs(quiet.wing) > 0)) throw new Error('quiet playing should still move');
+if (!('blink' in quiet) || !('mouthO' in quiet) || !('spinePitch' in quiet) || !('camBob' in quiet) || !('pulse' in quiet) || !('driftX' in quiet)) throw new Error('face, spine, camera and pulse channels missing');
+const faced = dancePose({}, { playing: true, loud: 0.5, mid: 0.7, bass: 0.4, high: 0.2, hop: 0, earFlick: 0, earSide: 1, blinkEnv: 1, squint: 1, downbeat: 1, snareHit: 0, musicPhase: 0.4 });
+if (!(faced.blink > 0.5) || !(faced.mouthO > 0.2) || !(faced.happy > 0.3)) throw new Error('snare-less blink env, mid mouth and downbeat squint should show on the face');
 if (!RHYTHM_BANDS.kick || RHYTHM_BANDS.kick[0] !== 40) throw new Error('kick band');
 console.log(['ok', d1.name, tempo.bpm.toFixed(1), tempo.conf.toFixed(2), p1.hop.toFixed(3)].join(' '));
 """

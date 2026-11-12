@@ -61,6 +61,7 @@ uniform float uCap;
 uniform float uSize;
 uniform float uPixelRatio;
 uniform float uReduced;
+uniform float uMusic;
 uniform vec3 uHue;
 uniform float uHueMix;
 varying vec3 vColor;
@@ -75,8 +76,9 @@ void main() {
     p = vec3(0.0, 0.18, 0.0) + aVel * age + vec3(0.0, -0.28 * age * age, 0.0);
   } else {
     float spd = mix(0.12, 0.12 + uSwirl * 1.65, 1.0 - uReduced);
-    float ang = aPhase + uTime * spd;
-    float r = aRadius * (0.92 + 0.12 * sin(uTime * 0.55 + aPhase));
+    float clock = uMusic;
+    float ang = aPhase + clock * spd;
+    float r = aRadius * (0.92 + 0.12 * sin(clock * 0.55 + aPhase));
     p = vec3(cos(ang) * r, aY0 + 0.04 * sin(ang * 1.25 + aPhase), sin(ang * 0.92) * r);
     float slot = aIndex / max(uCap, 1.0);
     life = 1.0 - smoothstep(uDensity, uDensity + 0.08, slot);
@@ -166,6 +168,7 @@ export function makeCosmicParticles(THREE, parent, { seedHex = 'zeref', quality 
     uSize: { value: 22 },
     uPixelRatio: { value: Math.min(2, (typeof window !== 'undefined' && window.devicePixelRatio) || 1) },
     uReduced: { value: 0 },
+    uMusic: { value: 0 },
     uHue: { value: [0.62, 0.16, 1.0] },
     uHueMix: { value: 0 },
     uMap: { value: softSprite(THREE) },
@@ -217,15 +220,17 @@ export function makeCosmicParticles(THREE, parent, { seedHex = 'zeref', quality 
     pts.visible = next !== 'low';
   }
 
-  function update(t, sig, { reducedMotion = false } = {}) {
+  function update(t, sig, { reducedMotion = false, wallTime = null } = {}) {
     const playing = !!(sig && sig.playing);
     const loud = (sig && sig.loud) || 0;
     const mid = (sig && sig.mid) || 0;
     const high = (sig && (sig.flare != null ? sig.flare : sig.high)) || 0;
-    uniforms.uTime.value = t;
+    const wall = wallTime == null ? t : wallTime;
+    uniforms.uTime.value = wall;
+    uniforms.uMusic.value = t;
     uniforms.uReduced.value = reducedMotion ? 1 : 0;
-    uniforms.uSwirl.value = reducedMotion ? 0 : (playing ? mid : 0.12);
-    uniforms.uTwinkle.value = reducedMotion ? 0 : (playing ? high : 0.15 + 0.1 * Math.sin(t * 0.9));
+    uniforms.uSwirl.value = reducedMotion ? 0 : (playing ? Math.max(0.18, mid + (sig.loud || 0) * 0.35) : 0.12);
+    uniforms.uTwinkle.value = reducedMotion ? 0 : (playing ? Math.max(0.12, high + (sig.hat || 0) * 0.4 + (sig.loud || 0) * 0.15) : 0.15 + 0.1 * Math.sin(wall * 0.9));
     uniforms.uDensity.value = reducedMotion
       ? 0.12
       : (playing ? 0.28 + loud * 0.72 : 0.32);
@@ -239,11 +244,11 @@ export function makeCosmicParticles(THREE, parent, { seedHex = 'zeref', quality 
     } else {
       uniforms.uHueMix.value = playing ? uniforms.uHueMix.value * 0.92 : 0;
     }
-    if (!reducedMotion && playing && sig && ((sig.hop || 0) > 0.85 || (sig.kickHit || 0) > 0.85) && (t - lastBurstAt) > 0.12) {
+    if (!reducedMotion && playing && sig && ((sig.hop || 0) > 0.85 || (sig.kickHit || 0) > 0.85) && (wall - lastBurstAt) > 0.12) {
       // A bass-onset hop is ~1 at the trigger frame; fire a radial burst from that real onset.
-      lastBurstAt = t;
+      lastBurstAt = wall;
       const n = q === 'high' ? 14 : 8;
-      spawnBurst(t, n);
+      spawnBurst(wall, n);
     }
   }
 
