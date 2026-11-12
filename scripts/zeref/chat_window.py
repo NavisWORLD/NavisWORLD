@@ -139,10 +139,11 @@ def render(chat: dict, mobile: bool = False) -> str:
         y += vh + 16 + zh + 30
     if not items:
         y += 120
-    input_y = y + 10
+    pill_y = y + 4
+    input_y = pill_y + (64 if mobile else 54)
     foot_y = input_y + (96 if mobile else 80) + 30
     foot = (["public issue content only", "replies unedited · training_eligible:false", "he grows only through the fair gate"] if mobile else
-            ["public issue content only · his replies are unedited · tap to open the Talk to Zeref form",
+            ["public issue content only · his replies are unedited · tap to chat live (issue form stays as fallback)",
              "chats are training_eligible:false; he grows only through The Beast Box fair gate"])
     H = int(foot_y + len(foot) * (FM + 12) + 24)
 
@@ -153,7 +154,7 @@ def render(chat: dict, mobile: bool = False) -> str:
                           f"Zeref replied (unedited): {clean(e.get('reply'), 200)[0]}")
     if ex is None:
         desc_parts.append("Chat history unavailable this run.")
-    desc_parts.append("Tap to open the Talk to Zeref issue form. Not a claim of awareness.")
+    desc_parts.append("Tap to chat live with Zeref on his GitHub Pages chat; the Talk to Zeref issue form stays as a fallback. Not a claim of awareness.")
 
     style = (za.simple_loop("zc", P, mood == "sleepy") +
              f".s{{font-family:{art.SANS}}}.m{{font-family:{art.MONO}}}"
@@ -214,6 +215,11 @@ def render(chat: dict, mobile: bool = False) -> str:
         msg = "chat history unavailable this run" if ex is None else "no public chats yet · be the first to say hi"
         a(f'<text x="{W/2}" y="{head_h+100}" text-anchor="middle" class="m" font-size="{FM}" fill="#a5b4fc">{msg}</text>')
 
+    # "Chat live" pill: the whole window links to the GitHub Pages chat
+    pw, ph = (360, 50) if mobile else (300, 40)
+    a(f'<rect x="{W/2-pw/2:.0f}" y="{pill_y:.0f}" width="{pw}" height="{ph}" rx="{ph/2}" fill="#34d399" fill-opacity=".14" stroke="#34d399" stroke-width="2"/>')
+    a(f'<circle cx="{W/2-pw/2+28:.0f}" cy="{pill_y+ph/2:.0f}" r="7" fill="#34d399" class="live"/>')
+    a(f'<text x="{W/2+12:.0f}" y="{pill_y+ph/2+FM*.36:.0f}" text-anchor="middle" class="s" font-size="{FM}" font-weight="700" fill="#a7f3d0" letter-spacing="2">CHAT LIVE ↗</text>')
     # input bar + send button
     ih = 96 if mobile else 80
     a(f'<rect x="{pad}" y="{input_y:.0f}" width="{W-2*pad-ih-16}" height="{ih}" rx="{ih/2}" fill="#0f172a" stroke="#67e8f9" stroke-opacity=".6" stroke-width="2"/>')

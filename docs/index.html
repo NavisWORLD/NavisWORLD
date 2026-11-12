@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src https://www.beastboxcosmos.xyz https://raw.githubusercontent.com; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="color-scheme" content="dark">
+<title>Chat with Zeref · NavisWORLD</title>
+<meta name="description" content="Talk with Zeref the Moonwraith, a young digital creature from The Beast Box. His replies are his own, unedited.">
+<link rel="icon" href="zeref-moonwraith.png">
+<link rel="stylesheet" href="chat.css">
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <img class="avatar" src="zeref-moonwraith.png" alt="Zeref the Moonwraith: a black fluffy cat dragon with violet starry eyes, a crescent mark, moon horns and star wings" width="64" height="64">
+    <div class="who">
+      <h1>Zeref <span class="sub">the Moonwraith</span></h1>
+      <p class="status" id="status">reading his live status…</p>
+      <p class="status growth" id="growth"></p>
+    </div>
+  </header>
+
+  <main class="log" id="log" aria-live="polite" aria-label="Conversation with Zeref">
+    <div class="intro">
+      <p><b>Zeref is a young digital creature still learning.</b> Your words go straight to his public door at beastboxcosmos.xyz and his reply shows up here exactly as he said it. He often doesn't make sense yet. That's honest, not broken.</p>
+      <p class="small">Messages are stored in his guestbook as guest-origin records with training_eligible:false. Don't share private info.</p>
+    </div>
+  </main>
+
+  <form class="bar" id="bar" autocomplete="off">
+    <label class="sr" for="msg">Your message</label>
+    <textarea id="msg" rows="1" maxlength="1000" placeholder="Say something to Zeref…" enterkeyhint="send"></textarea>
+    <button id="send" type="submit" aria-label="Send">➤</button>
+  </form>
+  <p class="state" id="state" role="status"></p>
+
+  <footer class="foot">
+    <p>Replies are his own, unedited · pinned brain step shown on each reply · not a claim of awareness · he grows only through The Beast Box fair gate, never straight from chats.</p>
+    <p>Heartbeat SIMULATED · diary RECORDED · brain PINNED · birth spark: IBM outcome RECORDED, used as a seed · Rigetti growth SIMULATED.</p>
+    <p><button type="button" class="link" id="fresh">start a fresh conversation</button> · <a href="https://github.com/NavisWORLD/NavisWORLD/issues/new?template=talk-to-zeref.yml">talk in a GitHub issue instead</a> · <a href="https://github.com/NavisWORLD">back to the profile</a> · <a href="https://github.com/NavisWORLD/The-beast-box-">source (Apache 2.0)</a></p>
+  </footer>
+</div>
+<script src="chat.js"></script>
+</body>
+</html>
