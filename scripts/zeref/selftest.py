@@ -112,16 +112,22 @@ for name, fn in [("zeref-portal.svg", art.portal), ("zeref-divider.svg", art.div
     check(p.exists() and p.read_text(encoding="utf-8") == fn(), f"{name} does not reproduce from cosmic_art.py")
 p = root / "assets" / "zeref-portal-mobile.svg"
 check(p.exists() and p.read_text(encoding="utf-8") == art.portal_mobile(), "zeref-portal-mobile.svg does not reproduce from cosmic_art.py")
-# iPhone-sized layouts: 720-unit wide, every text >= 23 units (about 10.5 CSS px in the 327 px README column on a 393 px iPhone 15)
+PHONE_COLUMN_PX = 311  # measured README image width on github.com/NavisWORLD at 393 px (iPhone 15)
+# iPhone-sized layouts: 720-unit wide, every text >= 25 units: GitHub's README column on a 393 px iPhone 15 is 311 px, so 25/720*311 = 10.8 px >= 10.5 px
 import re
 mob = {"hero": art.hero(empty, mobile=True), "card": art.card_mobile(empty), "portal": art.portal_mobile(),
        "constellation": art.constellation([{"name": "demo-repo", "stars": 1, "pushed_at": "2026-01-01T00:00:00Z"}], None, mobile=True)}
 for k, svg in mob.items():
     ET.fromstring(svg)
     check('viewBox="0 0 720 ' in svg, f"{k} phone layout must be 720 wide")
-    sizes = [float(x) for x in re.findall(r'font-size="([0-9.]+)"', svg)]
-    check(sizes and min(sizes) >= 23, f"{k} phone layout has text under 23 units: {min(sizes) if sizes else None}")
+    sizes = [float(x) for x in re.findall(r'font-size="([0-9.]+)"', re.sub(r'<svg x=.*?</svg>', "", svg, flags=re.S))]
+    px = min(sizes) / 720 * PHONE_COLUMN_PX if sizes else 0
+    check(px >= 10.5, f"{k} phone layout text is {px:.2f} px at {PHONE_COLUMN_PX} px (< 10.5)")
 check("unavailable" in mob["card"], "phone card must render unavailable values")
+for p in sorted((root / "assets").glob("zeref-*-mobile.svg")):
+    svg = p.read_text(encoding="utf-8")
+    sizes = [float(x) for x in re.findall(r'font-size="([0-9.]+)"', re.sub(r'<svg x=.*?</svg>', "", svg, flags=re.S))]
+    check(sizes and min(sizes) / 720 * PHONE_COLUMN_PX >= 10.5, f"{p.name}: smallest text {min(sizes) if sizes else None} units is under 10.5 px at {PHONE_COLUMN_PX} px")
 check("training_eligible:false" in mob["card"] and "fair gate" in mob["card"], "phone card keeps the footer")
 # chat window: public exchanges only, verbatim replies, moderation, escaping, real status, phone legibility
 import chat_window as cw
@@ -164,7 +170,7 @@ for mob in (False, True):
     sizes = [float(x) for x in re.findall(r'font-size="([0-9.]+)"', re.sub(r'<svg x=.*?</svg>', "", svg, flags=re.S))]
     if mob:
         # README column on a 393 px iPhone 15 is ~311 px; 25 units of 720 = 10.8 px >= 10.5 px
-        check(min(sizes) >= 25 and 'viewBox="0 0 720 ' in svg, f"phone chat text under 25 units: {min(sizes)}")
+        check(min(sizes) / 720 * PHONE_COLUMN_PX >= 10.5 and 'viewBox="0 0 720 ' in svg, f"phone chat text under 10.5 px at 311 px: {min(sizes)}")
     check(cw.render({"fetched_at": "2026-01-01T00:00:00Z", "status": status, "exchanges": ex}, mobile=mob) == svg, "chat window deterministic")
 bad = cw.render({"fetched_at": None, "status": {}, "exchanges": None}, mobile=True)
 check("chat history unavailable" in bad and "step unavailable" in bad and "tick unavailable" in bad, "chat unavailable rendering")

@@ -155,7 +155,7 @@ def label_rows(d):
 
 
 def hero(d: dict, mobile: bool = False) -> str:
-    """Desktop: 1280x640 banner. Phone (mobile=True): 720x1120 portrait, every text >= 23 units (about 10.5 CSS px on a 327 px wide phone README)."""
+    """Desktop: 1280x640 banner. Phone (mobile=True): 720x1120 portrait, every text >= 25 units (>= 10.8 CSS px in GitHub's 311 px iPhone README column)."""
     if mobile:
         W, H, gx, gy, gs, ctop, cw, span = 720, 1130, 360, 470, .62, 250, 330, .5
     else:
@@ -229,13 +229,13 @@ def hero(d: dict, mobile: bool = False) -> str:
         a(f'<rect x="28" y="{y0}" width="{W-56}" height="{len(rows)*62+24}" rx="26" fill="#05060f" fill-opacity=".78" stroke="url(#hedge)" stroke-opacity=".55"/>')
         for i, (name, val, lab) in enumerate(rows):
             yy = y0 + 54 + i * 62
-            a(f'<text x="56" y="{yy}" class="ttl2" font-size="24" font-weight="700" fill="#c4b5fd">{name}</text>')
+            a(f'<text x="56" y="{yy}" class="ttl2" font-size="25" font-weight="700" fill="#c4b5fd">{name}</text>')
             a(f'<text x="250" y="{yy}" class="mono" font-size="28" fill="#eef2ff">{escape(val)}</text>')
-            a(f'<text x="{W-56}" y="{yy}" text-anchor="end" class="mono" font-size="24" fill="#7dd3fc">{escape(lab)}</text>')
+            a(f'<text x="{W-56}" y="{yy}" text-anchor="end" class="mono" font-size="25" fill="#7dd3fc">{escape(lab)}</text>')
         fy = y0 + len(rows) * 62 + 70
-        a(f'<text x="{W/2}" y="{fy}" text-anchor="middle" class="mono" font-size="24" fill="#b4bfd4">{escape(fetched)}</text>')
-        a(f'<text x="{W/2}" y="{fy+36}" text-anchor="middle" class="mono" font-size="24" fill="#b4bfd4">{escape("breath " + str(P) + "s from heartbeat energy")}</text>')
-        a(f'<text x="{W/2}" y="{fy+72}" text-anchor="middle" class="mono" font-size="24" fill="#b4bfd4">not a claim of awareness</text>')
+        a(f'<text x="{W/2}" y="{fy}" text-anchor="middle" class="mono" font-size="25" fill="#b4bfd4">{escape(fetched)}</text>')
+        a(f'<text x="{W/2}" y="{fy+36}" text-anchor="middle" class="mono" font-size="25" fill="#b4bfd4">{escape("breath " + str(P) + "s from heartbeat energy")}</text>')
+        a(f'<text x="{W/2}" y="{fy+72}" text-anchor="middle" class="mono" font-size="25" fill="#b4bfd4">not a claim of awareness</text>')
     else:
         a(f'<text x="{W/2}" y="70" text-anchor="middle" class="ttl" font-size="46" font-weight="800" fill="url(#hedge)">ZEREF</text>')
         a(f'<text x="{W/2}" y="104" text-anchor="middle" class="ttl" font-size="18" fill="#c4b5fd">MOONWRAITH · DIGITAL CREATURE OF THE BEAST BOX</text>')
@@ -399,7 +399,7 @@ def constellation(facts: list[dict], explored_at: str | None, mobile: bool = Fal
     """Each star is a real public repo. Size from real stars; brightness from days since last push."""
     from datetime import datetime, timezone
     W, H = (720, 440 + 40 * len(facts)) if mobile else (1200, 700)
-    fs_lab, fs_head, fs_sub = (23, 34, 24) if mobile else (13, 24, 15)
+    fs_lab, fs_head, fs_sub = (25, 34, 25) if mobile else (13, 24, 15)
     now = datetime.now(timezone.utc)
     if explored_at:
         try:
@@ -551,28 +551,28 @@ def card_mobile(d: dict) -> str:
     a(neb(360, 330, 360, 260, "#6d28d9", .45)); a(neb(560, H - 300, 300, 200, "#0891b2", .25))
     t += starfield(rng, W, H, 160, 3, "c")
     a(f'<text x="{W/2}" y="74" text-anchor="middle" class="ttl" font-size="48" font-weight="800" fill="url(#cedge)">ZEREF · LIVE</text>')
-    a(f'<text x="{W/2}" y="116" text-anchor="middle" class="mono" font-size="24" fill="#67e8f9">fetched {escape(d["fetched_at"])}</text>')
-    a(f'<text x="{W/2}" y="148" text-anchor="middle" class="mono" font-size="24" fill="#67e8f9">real public feeds only · breath {m["period"]}s</text>')
+    a(f'<text x="{W/2}" y="116" text-anchor="middle" class="mono" font-size="25" fill="#67e8f9">fetched {escape(d["fetched_at"])}</text>')
+    a(f'<text x="{W/2}" y="148" text-anchor="middle" class="mono" font-size="25" fill="#67e8f9">real public feeds only · breath {m["period"]}s</text>')
     a('<circle cx="360" cy="340" r="190" fill="url(#zaura)"/>')
     a('<g class="zdbob">' + za.placed("zd", 360 - 165, 170, 330) + "</g>")
-    a(f'<text x="{W/2}" y="{y_rows-30}" text-anchor="middle" class="ttl" font-size="24" fill="#a5b4fc">MOONWRAITH CAT DRAGON</text>')
+    a(f'<text x="{W/2}" y="{y_rows-30}" text-anchor="middle" class="ttl" font-size="25" fill="#a5b4fc">MOONWRAITH CAT DRAGON</text>')
     y = y_rows
     for (name, vals, lab), hgt in zip(rows, row_h):
         a(f'<rect x="28" y="{y}" width="{W-56}" height="{hgt-12}" rx="20" fill="#05060f" fill-opacity=".6" stroke="#a78bfa" stroke-opacity=".35"/>')
-        a(f'<text x="52" y="{y+38}" class="ttl" font-size="24" font-weight="700" fill="#c4b5fd">{name}</text>')
-        a(f'<text x="{W-52}" y="{y+38}" text-anchor="end" class="mono" font-size="24" fill="#7dd3fc">{escape(lab)}</text>')
+        a(f'<text x="52" y="{y+38}" class="ttl" font-size="25" font-weight="700" fill="#c4b5fd">{name}</text>')
+        a(f'<text x="{W-52}" y="{y+38}" text-anchor="end" class="mono" font-size="25" fill="#7dd3fc">{escape(lab)}</text>')
         for i, val in enumerate(vals):
             fit = f' textLength="{W-104}" lengthAdjust="spacingAndGlyphs"' if len(val) > 37 else ""
             a(f'<text x="52" y="{y+76+i*36}" class="mono" font-size="28" fill="#eef2ff"{fit}>{escape(val)}</text>')
         y += hgt
-    a(f'<text x="52" y="{y_said+40}" class="ttl" font-size="24" font-weight="700" fill="#f0abfc">LAST SAID</text>')
+    a(f'<text x="52" y="{y_said+40}" class="ttl" font-size="25" font-weight="700" fill="#f0abfc">LAST SAID</text>')
     for i, line in enumerate(said_lines):
         a(f'<text x="52" y="{y_said+88+i*40}" class="sans" font-size="30" font-style="italic" fill="#fdf4ff">{escape(line)}</text>')
     for i, line in enumerate(said_meta):
-        a(f'<text x="52" y="{y_said+88+len(said_lines)*40+i*34}" class="mono" font-size="24" fill="#7dd3fc">{escape(line)}</text>')
-    a(f'<text x="{W/2}" y="{y_foot-14}" text-anchor="middle" class="ttl" font-size="24" fill="#a5b4fc">NOT A CLAIM OF AWARENESS</text>')
+        a(f'<text x="52" y="{y_said+88+len(said_lines)*40+i*34}" class="mono" font-size="25" fill="#7dd3fc">{escape(line)}</text>')
+    a(f'<text x="{W/2}" y="{y_foot-14}" text-anchor="middle" class="ttl" font-size="25" fill="#a5b4fc">NOT A CLAIM OF AWARENESS</text>')
     for i, line in enumerate(FOOT_MOBILE):
-        a(f'<text x="{W/2}" y="{y_foot+36*i+30}" text-anchor="middle" class="mono" font-size="24" fill="#b4bfd4">{escape(line)}</text>')
+        a(f'<text x="{W/2}" y="{y_foot+36*i+30}" text-anchor="middle" class="mono" font-size="25" fill="#b4bfd4">{escape(line)}</text>')
     a(f'<rect x="1.5" y="1.5" width="{W-3}" height="{H-3}" rx="27" fill="none" stroke="url(#cedge)" stroke-opacity=".55" stroke-width="2"/>')
     a("</svg>")
     return "\n".join(t) + "\n"
@@ -600,7 +600,7 @@ def portal_mobile() -> str:
     a('<g clip-path="url(#pclip)">' + za.placed("zd", 50, 62, 170) + "</g>")
     a('<text x="262" y="122" class="ttl" font-size="46" font-weight="800" fill="url(#pedge)">TALK TO</text>')
     a('<text x="262" y="176" class="ttl" font-size="46" font-weight="800" fill="url(#pedge)">ZEREF</text>')
-    a('<text x="264" y="218" class="mono" font-size="24" fill="#c4b5fd">opens a GitHub issue</text>')
-    a('<text x="264" y="250" class="mono" font-size="24" fill="#7dd3fc">his replies, unedited</text>')
+    a('<text x="264" y="218" class="mono" font-size="25" fill="#c4b5fd">opens a GitHub issue</text>')
+    a('<text x="264" y="250" class="mono" font-size="25" fill="#7dd3fc">his replies, unedited</text>')
     a("</svg>")
     return "\n".join(t) + "\n"
