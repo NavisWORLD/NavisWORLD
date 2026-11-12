@@ -402,11 +402,13 @@ export function ensureExpressionLegend(host, expr) {
 export function applyEyes(model, expr, { flare = 0, cosmic = null, pulse = 0 } = {}) {
   if (!model || !expr) return;
   const rgb = expr.irisRgb || hexToRgb(expr.iris);
-  // Mood tint stays the base color; bass / RMS only pulse the brightness.
-  const glow = (expr.glow || 0.5) * (1 + Math.max(0, flare) * 0.7 + Math.max(0, pulse) * 0.85);
+  // Mood tint stays the base color. The song may lift brightness a little,
+  // but must not wash the iris and pupil out to a white blob.
+  const react = 1 + Math.max(0, flare) * 0.22 + Math.max(0, pulse) * 0.28;
+  const glow = (expr.glow || 0.5) * react;
   const sleepy = expr.sleepy || 0;
-  const eyeI = 0.45 + glow * 0.40 - sleepy * 0.15;
-  if (cosmic && typeof cosmic.setIris === 'function') cosmic.setIris(rgb, glow);
+  const eyeI = Math.min(0.68, 0.38 + Math.min(1, glow) * 0.26 - sleepy * 0.15);
+  if (cosmic && typeof cosmic.setIris === 'function') cosmic.setIris(rgb, Math.min(1, glow));
   model.traverse((o) => {
     if (!o.isMesh) return;
     const mats = Array.isArray(o.material) ? o.material : [o.material];
