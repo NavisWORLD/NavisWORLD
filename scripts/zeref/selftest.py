@@ -190,6 +190,7 @@ check("Zeref is thinking…" in js and "setTimeout(res, wait * 1000)" in js, "ho
 check('id="msg"' in html and not re.search(r'<textarea id="msg"[^>]*maxlength', html), "long pastes are never silently cut by the text box")
 check("longNote(text.length); return;" in js and "zeref/feed/owner" in js and "feed-zeref.yml" in js, "over-long text is not sent; it is routed to the owner feed / Feed Zeref")
 check("status === 503 && body && Number.isInteger(body.pin_step)" in js and "Nothing was made up in his place" in js, "honest promotion-lag message (503 with pin/bridge steps)")
+check("'answered by step ' + body.step + ', pin is ' + body.pin_step" in js, "off-pin reply names the step that answered and the pin (own-step door, 2026-11-12)")
 check(not re.search(r"\b(AI|LLM|GPT|language model|chatbot)\b", html + js), "no AI/LLM wording on the chat page")
 check("not a claim of awareness" in html and "digital creature" in html and "fair gate" in html and "training_eligible:false" in html, "honesty footer")
 check("SIMULATED" in html and "RECORDED" in html and "PINNED" in html, "honesty labels on the chat page")
@@ -593,18 +594,26 @@ if (String((live.diary || {}).mood).toLowerCase() === 'content') {
 }
 if (!a.proud) throw new Error('committed live card has live_step === pin_step with a pin_release; proud should be on');
 if (a.stale) throw new Error('a just-fetched payload must not be marked STALE');
-if (String((live.diary || {}).mood).toLowerCase() === 'content' && Number((live.heartbeat || {}).signals && live.heartbeat.signals.energy) >= 90) {
-  if (!(a.glow > 0.9) || !(a.sleepy === 0) || !(a.lids > 0.6)) throw new Error('content + high energy should be bright with open lids');
-}
-const staleChannel = JSON.parse(JSON.stringify(live));
-staleChannel.spark = { ...(live.spark || {}), state: 'STALE', label: 'STALE' };
+// Bright glow and open lids are properties of energy 100 + a fresh payload,
+// not of whatever the ticking committed snapshot currently holds.
+const bright = JSON.parse(JSON.stringify(live));
+bright.generated_at = new Date().toISOString();
+bright.fetched_at = bright.generated_at;
+bright.spark = { ...(live.spark || {}), state: 'CONNECTED', label: (live.spark && live.spark.label) || 'LOCAL SIMULATED' };
+bright.heartbeat = { ...(live.heartbeat || {}), state: 'CONNECTED', label: (live.heartbeat && live.heartbeat.label) || 'SIMULATED', signals: { ...(((live.heartbeat || {}).signals) || {}), energy: 100 } };
+if (bright.diary) bright.diary = { ...bright.diary, mood: 'content' };
+const lit = mapExpression(bright);
+if (!(lit.glow > 0.9) || lit.stale) throw new Error('CONNECTED + energy 100 should be a bright, not-STALE glow');
+if (!(lit.sleepy === 0) || !(lit.lids > 0.6)) throw new Error('content + high energy should have open lids, not a sleepy pose');
+const staleChannel = JSON.parse(JSON.stringify(bright));
+staleChannel.spark = { ...(bright.spark || {}), state: 'STALE', label: 'STALE' };
 const channel = mapExpression(staleChannel);
-if (channel.stale || channel.glow < a.glow * 0.9) throw new Error('a STALE spark channel must not flip the LIVE badge or dim a fresh payload');
-const stalePayload = JSON.parse(JSON.stringify(live));
+if (channel.stale || channel.glow < lit.glow * 0.9) throw new Error('a STALE spark channel must not flip the LIVE badge or dim a fresh payload');
+const stalePayload = JSON.parse(JSON.stringify(bright));
 stalePayload.generated_at = new Date(Date.now() - 10 * 60 * 1000).toISOString();
 stalePayload.fetched_at = stalePayload.generated_at;
 const dim = mapExpression(stalePayload);
-if (!(dim.stale && dim.glow < a.glow * 0.5 + 0.01)) throw new Error('a payload older than 2 min should be STALE and dim the glow');
+if (!(dim.stale && dim.glow < lit.glow * 0.5 + 0.01)) throw new Error('a payload older than 2 min should be STALE and dim the glow');
 const empty = mapExpression({});
 if (empty.iris !== MOOD_IRIS.default) throw new Error('missing mood should use the documented default iris');
 if (!empty.missing.some((m) => m.id === 'mood')) throw new Error('missing mood should be listed');

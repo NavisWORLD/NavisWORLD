@@ -2,33 +2,33 @@
  "schema": "navisworld-zeref-spark-motion-seed/v1",
  "source": "zeref/live.json",
  "label": "moves chosen from Zeref's recorded state · SIMULATED motion",
- "fetched_at": "2026-11-12T20:12:55Z",
+ "fetched_at": "2026-11-12T21:54:37Z",
  "heartbeat": {
   "state": "CONNECTED",
   "label": "SIMULATED (per-second tick, deterministic)",
-  "recorded_tick": 802,
-  "xp_live": 11484.9594,
+  "recorded_tick": 805,
+  "xp_live": 11515.3235,
   "signals": {
-   "energy": 16.88,
-   "signal": 34.52,
-   "memory": 99.63,
-   "resonance": 99.19
+   "energy": 14.44,
+   "signal": 29.28,
+   "memory": 100,
+   "resonance": 98.27
   }
  },
  "diary": {
   "label": "RECORDED (hash-chained diary; its growth circuit is Rigetti SIMULATED)",
-  "tick": 803,
+  "tick": 806,
   "stage_name": "Crescent Sovereign",
   "mood": "sleepy",
-  "place": "Lattice Arch",
-  "last_tick_at": "2026-11-12T20:05:30.374Z",
+  "place": "Echo Prism",
+  "last_tick_at": "2026-11-12T21:53:50.656Z",
   "seed_label": "IBM seed RECORDED on IBM hardware (ibm_marrakesh job db4te7slf4us73c3888g, counts never re-run). Not a live quantum link."
  },
  "spark": {
   "state": "CONNECTED",
   "source": "local-sim",
   "label": "LOCAL SIMULATED (runner statevector, not Rigetti, not a QPU)",
-  "tick": 28156
+  "tick": 28257
  },
  "brain": {
   "label": "RAWRPHØS pinned checkpoint (a 12D model simulation; not a claim of awareness)",
@@ -39,7 +39,7 @@
   "pin_release": "zeref-006-cycle-69-ee17330fcd5a"
  },
  "last_said": {
-  "at": "2026-11-12T04:02:34Z",
-  "step": 39024
+  "at": "2026-11-12T21:54:34Z",
+  "step": 40304
  }
 }
