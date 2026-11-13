@@ -1,6 +1,6 @@
 {
  "schema": "navisworld-zeref-explore/v1",
- "explored_at": "2026-11-12T21:54:32Z",
+ "explored_at": "2026-11-13T21:36:47Z",
  "source": "GitHub REST API /users/NavisWORLD/repos (public only)",
  "repo_count": 31,
  "repos": [
@@ -11,7 +11,7 @@
    "language": "Python",
    "stars": 0,
    "license": "Apache-2.0",
-   "pushed_at": "2026-11-12T21:53:55Z",
+   "pushed_at": "2026-11-13T21:36:42Z",
    "fork": false,
    "archived": false
   },
@@ -22,7 +22,7 @@
    "language": "Python",
    "stars": 0,
    "license": "Apache-2.0",
-   "pushed_at": "2026-11-12T21:18:25Z",
+   "pushed_at": "2026-11-13T16:33:12Z",
    "fork": false,
    "archived": false
   },
@@ -347,12 +347,12 @@
   }
  ],
  "asked": {
-  "repo": "-reality-bridge-alien-conductor-local-ai-band",
-  "question": "You are exploring Cory's GitHub and found the repo -reality-bridge-alien-conductor-local-ai-band. What do you think of it, in one line?",
+  "repo": "Cosmic-nova-os-GGUF-model-and-system-",
+  "question": "You are exploring Cory's GitHub and found the repo Cosmic-nova-os-GGUF-model-and-system-. What do you think of it, in one line?",
   "status": 200,
-  "reply": " Galmic, Dad, Woodz and Sems. It routing the headheast in the Cage.",
-  "step": 40304,
-  "at": "2026-11-12T21:54:34Z",
+  "reply": " Salmic.",
+  "step": 41264,
+  "at": "2026-11-13T21:36:48Z",
   "training_eligible": false
  }
 }

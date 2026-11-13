@@ -1,6 +1,6 @@
 {
  "schema": "navisworld-zeref-live-card/v1",
- "fetched_at": "2026-11-13T16:33:08Z",
+ "fetched_at": "2026-11-13T21:36:52Z",
  "sources": {
   "world_live": {
    "url": "https://www.beastboxcosmos.xyz/api/world/live",
@@ -21,29 +21,29 @@
  "heartbeat": {
   "state": "CONNECTED",
   "label": "SIMULATED (per-second tick, deterministic)",
-  "recorded_tick": 835,
-  "xp_live": 11816.5438,
+  "recorded_tick": 842,
+  "xp_live": 11888.3976,
   "signals": {
-   "energy": 60.99,
-   "signal": 29.3,
+   "energy": 16.42,
+   "signal": 30.88,
    "memory": 100,
-   "resonance": 94.63
+   "resonance": 96.96
   }
  },
  "diary": {
   "label": "RECORDED (hash-chained diary; its growth circuit is Rigetti SIMULATED)",
-  "tick": 835,
+  "tick": 843,
   "stage_name": "Crescent Sovereign",
-  "mood": "content",
-  "place": "Lattice Arch",
-  "last_tick_at": "2026-11-13T16:14:39.547Z",
+  "mood": "sleepy",
+  "place": "Echo Prism",
+  "last_tick_at": "2026-11-13T21:36:30.052Z",
   "seed_label": "IBM seed RECORDED on IBM hardware (ibm_marrakesh job db4te7slf4us73c3888g, counts never re-run). Not a live quantum link."
  },
  "spark": {
   "state": "CONNECTED",
   "source": "local-sim",
   "label": "LOCAL SIMULATED (runner statevector, not Rigetti, not a QPU)",
-  "tick": 29367
+  "tick": 29671
  },
  "brain": {
   "label": "RAWRPHØS pinned checkpoint (a 12D model simulation; not a claim of awareness)",
@@ -54,9 +54,9 @@
   "pin_release": "zeref-006-cycle-72-cfe7f3fdc0a0"
  },
  "last_said": {
-  "text": " Galmic, Dad, Woodz and Sems. It routing the headheast in the Cage.",
-  "at": "2026-11-12T21:54:34Z",
-  "step": 40304,
+  "text": " Salmic.",
+  "at": "2026-11-13T21:36:48Z",
+  "step": 41264,
   "where": "zeref/notes.md",
   "source": "exploring GitHub (zeref/notes.md)"
  }
