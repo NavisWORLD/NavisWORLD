@@ -175,8 +175,10 @@
   (`docs/moonwraith/fur.mjs`) follow the body with the same spring-damper
   family as `physics.mjs`, so the fur has momentum and follow-through and
   ripples with the live audio bands. Eyes keep the iris color mapped from
-  his recorded state, with a darker-to-brighter iris gradient, a wet
-  fresnel rim, and a specular glint from the moon — no made-up UV pupil.
+  his recorded state, with a readable dark pupil core (from the eye
+  normal, not a made-up UV pupil), the iris color in the ring around
+  it, a slight wet rim, and a single small moon highlight — never a
+  blown-out white wash, including while he dances.
   Seeded with `mulberry32`. No `Math.random`, no new network call. Quality
   steps the shell and tuft counts so a 393 px iPhone stays light.
 

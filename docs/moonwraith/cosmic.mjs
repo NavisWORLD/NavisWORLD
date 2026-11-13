@@ -148,24 +148,28 @@ function patchGlow(shader, kind) {
   injectUniforms(shader, { seed: 0 });
   patchWorld(shader);
   const extra = kind === 'eye'
-    ? `// Iris depth from the recorded uIris: a darker rim, a brighter wet
-       // center, a specular glint from the moon. No made-up UV pupil —
-       // both eyes share one material and there is no pupil morph.
+    ? `// Iris color stays the recorded uIris. A tight dark core (from the
+       // eye normal, not a made-up UV — both eyes share one material and
+       // there is no pupil morph) keeps the pupil readable. One small
+       // moon highlight only; glow and the song must not blow the eye
+       // out to a white blob.
        vec3 eN = normalize(vCwNrm);
        vec3 eV = normalize(-vViewPosition);
        float ndv = clamp(dot(eN, eV), 0.0, 1.0);
-       float wet = pow(1.0 - ndv, 3.2);
-       float fall = pow(ndv, 0.65);
-       vec3 irisDeep = uIris * 0.42;
-       vec3 irisLit = uIris * (0.95 + 0.55 * uIrisGlow);
-       totalEmissiveRadiance *= uIris * (0.16 + 0.18 * uIrisGlow);
-       totalEmissiveRadiance += mix(irisDeep, irisLit, fall) * (0.55 + 0.70 * uIrisGlow);
-       totalEmissiveRadiance += uIris * (0.08 + 0.16 * uCwPulse);
-       totalEmissiveRadiance += vec3(0.85, 0.95, 1.0) * wet * (0.22 + 0.20 * uIrisGlow);
+       float glow = clamp(uIrisGlow, 0.0, 1.0);
+       float pupil = smoothstep(0.58, 0.88, ndv);
+       float irisRing = smoothstep(0.10, 0.48, ndv) * (1.0 - pupil);
+       vec3 irisDeep = uIris * 0.28;
+       vec3 irisCol = uIris * (0.55 + 0.22 * glow);
+       vec3 pupilCol = uIris * 0.07;
+       totalEmissiveRadiance *= uIris * (0.08 + 0.06 * glow);
+       totalEmissiveRadiance += mix(irisDeep, irisCol, irisRing) * (0.42 + 0.18 * glow);
+       totalEmissiveRadiance += pupilCol * pupil * 0.20;
+       float wet = pow(1.0 - ndv, 4.5);
+       totalEmissiveRadiance += uIris * wet * 0.06;
        vec3 eH = normalize(normalize(uMoonDir) + eV);
-       float glint = pow(clamp(dot(eN, eH), 0.0, 1.0), 80.0);
-       totalEmissiveRadiance += vec3(1.0) * glint * (0.60 + 0.35 * uIrisGlow);
-       totalEmissiveRadiance += vec3(1.0) * 0.03;`
+       float glint = pow(clamp(dot(eN, eH), 0.0, 1.0), 260.0);
+       totalEmissiveRadiance += vec3(1.0) * glint * 0.18;`
     : `totalEmissiveRadiance += vec3(0.98, 0.86, 1.0) * (1.05 + 1.2 * uCwPulse) * uCwGlow;
        float stars = cwStars(vCwPos * 14.0, uCwTime);
        totalEmissiveRadiance += vec3(1.0, 0.92, 1.0) * stars * 1.35;`;
@@ -184,7 +188,7 @@ function hook(mat, kind, store) {
     else patchGlow(shader, kind);
     store.push(shader);
   };
-  mat.customProgramCacheKey = () => 'cw-' + kind + '-v4';
+  mat.customProgramCacheKey = () => 'cw-' + kind + '-v5';
   mat.needsUpdate = true;
 }
 
@@ -332,8 +336,16 @@ export function applyCosmic(THREE, model, { seedHex = 'zeref', quality = 'high',
     const glow = 1 + pulse * 0.95;
     for (const h of halos) {
       const b = h.userData.cwHalo.base;
-      h.scale.setScalar(b * glow);
-      h.material.opacity = 0.75 + pulse * 0.35;
+      const eye = h.userData && h.userData.cwHalo && h.userData.cwHalo.eye;
+      // Eye halos stay a soft tint. Scaling and opacity-pumping them with
+      // the song was blowing the iris out to a white blob.
+      if (eye) {
+        h.scale.setScalar(b * (1 + pulse * 0.12));
+        h.material.opacity = Math.min(h.material.opacity, 0.40);
+      } else {
+        h.scale.setScalar(b * glow);
+        h.material.opacity = 0.75 + pulse * 0.35;
+      }
     }
     auraLight.intensity = 0.24 + pulse * 0.4;
     frontFill.intensity = 0.14 + pulse * 0.22;
@@ -368,7 +380,7 @@ export function applyCosmic(THREE, model, { seedHex = 'zeref', quality = 'high',
     for (const h of halos) {
       if (h.userData && h.userData.cwHalo && h.userData.cwHalo.eye && h.material && h.material.color) {
         h.material.color.setRGB(r, g, b);
-        h.material.opacity = 0.55 + 0.4 * gl;
+        h.material.opacity = 0.28 + 0.10 * Math.min(gl, 1);
       }
     }
   }
