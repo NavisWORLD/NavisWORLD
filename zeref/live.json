@@ -1,6 +1,6 @@
 {
  "schema": "navisworld-zeref-live-card/v1",
- "fetched_at": "2026-11-13T22:42:33Z",
+ "fetched_at": "2026-11-14T03:23:36Z",
  "sources": {
   "world_live": {
    "url": "https://www.beastboxcosmos.xyz/api/world/live",
@@ -21,29 +21,29 @@
  "heartbeat": {
   "state": "CONNECTED",
   "label": "SIMULATED (per-second tick, deterministic)",
-  "recorded_tick": 844,
-  "xp_live": 11908.1548,
+  "recorded_tick": 851,
+  "xp_live": 11978.7737,
   "signals": {
-   "energy": 13.41,
-   "signal": 37.13,
-   "memory": 100,
-   "resonance": 96.92
+   "energy": 16.03,
+   "signal": 43.41,
+   "memory": 99.71,
+   "resonance": 96.95
   }
  },
  "diary": {
   "label": "RECORDED (hash-chained diary; its growth circuit is Rigetti SIMULATED)",
-  "tick": 844,
+  "tick": 852,
   "stage_name": "Crescent Sovereign",
   "mood": "sleepy",
   "place": "Echo Prism",
-  "last_tick_at": "2026-11-13T22:09:44.367Z",
+  "last_tick_at": "2026-11-14T03:22:12.588Z",
   "seed_label": "IBM seed RECORDED on IBM hardware (ibm_marrakesh job db4te7slf4us73c3888g, counts never re-run). Not a live quantum link."
  },
  "spark": {
   "state": "CONNECTED",
   "source": "local-sim",
   "label": "LOCAL SIMULATED (runner statevector, not Rigetti, not a QPU)",
-  "tick": 29736
+  "tick": 30017
  },
  "brain": {
   "label": "RAWRPHØS pinned checkpoint (a 12D model simulation; not a claim of awareness)",

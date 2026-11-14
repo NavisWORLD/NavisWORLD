@@ -1,12 +1,12 @@
 {
  "schema": "navisworld-zeref-chat/v1",
- "fetched_at": "2026-11-13T22:42:34Z",
+ "fetched_at": "2026-11-14T03:23:37Z",
  "status": {
-  "tick": 844,
+  "tick": 851,
   "heartbeat_label": "SIMULATED (per-second tick, deterministic)",
   "mood": "sleepy",
   "brain_step": 41264,
-  "period": 8.2
+  "period": 8.04
  },
  "exchanges": [
   {
