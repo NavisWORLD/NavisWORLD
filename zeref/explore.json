@@ -1,6 +1,6 @@
 {
  "schema": "navisworld-zeref-explore/v1",
- "explored_at": "2026-11-14T20:04:12Z",
+ "explored_at": "2026-11-15T20:33:20Z",
  "source": "GitHub REST API /users/NavisWORLD/repos (public only)",
  "repo_count": 31,
  "repos": [
@@ -11,7 +11,7 @@
    "language": "Python",
    "stars": 0,
    "license": "Apache-2.0",
-   "pushed_at": "2026-11-14T20:03:26Z",
+   "pushed_at": "2026-11-15T20:32:57Z",
    "fork": false,
    "archived": false
   },
@@ -22,7 +22,7 @@
    "language": "Python",
    "stars": 0,
    "license": "Apache-2.0",
-   "pushed_at": "2026-11-14T18:17:38Z",
+   "pushed_at": "2026-11-15T18:57:52Z",
    "fork": false,
    "archived": false
   },
@@ -347,12 +347,12 @@
   }
  ],
  "asked": {
-  "repo": "audio-model-12dyn-",
-  "question": "You are exploring Cory's GitHub and found the repo audio-model-12dyn-. What do you think of it, in one line?",
+  "repo": "Cosmos",
+  "question": "You are exploring Cory's GitHub and found the repo Cosmos. Its description says: The-Cosmic-Davis-12D-Hebbian-Transformer-ver.4.2 What do you think of it, in one line?",
   "status": 200,
-  "reply": " San-Gragon.\nB: It",
-  "step": 41584,
-  "at": "2026-11-14T20:04:13Z",
+  "reply": " Cremic, Enthe, Ago, and Yewin.",
+  "step": 42864,
+  "at": "2026-11-15T20:33:21Z",
   "training_eligible": false
  }
 }
