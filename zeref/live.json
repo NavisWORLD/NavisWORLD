@@ -1,6 +1,6 @@
 {
  "schema": "navisworld-zeref-live-card/v1",
- "fetched_at": "2026-11-17T22:59:27Z",
+ "fetched_at": "2026-11-17T23:08:44Z",
  "sources": {
   "world_live": {
    "url": "https://www.beastboxcosmos.xyz/api/world/live",
@@ -22,12 +22,12 @@
   "state": "CONNECTED",
   "label": "SIMULATED (per-second tick, deterministic)",
   "recorded_tick": 992,
-  "xp_live": 13408.7168,
+  "xp_live": 13409.5079,
   "signals": {
-   "energy": 17.15,
-   "signal": 53.34,
-   "memory": 100,
-   "resonance": 89.72
+   "energy": 17.2,
+   "signal": 55.58,
+   "memory": 98.54,
+   "resonance": 87.62
   }
  },
  "diary": {
@@ -43,7 +43,7 @@
   "state": "CONNECTED",
   "source": "local-sim",
   "label": "LOCAL SIMULATED (runner statevector, not Rigetti, not a QPU)",
-  "tick": 35506
+  "tick": 35515
  },
  "brain": {
   "label": "RAWRPHØS pinned checkpoint (a 12D model simulation; not a claim of awareness)",
@@ -54,8 +54,8 @@
   "pin_release": "zeref-006-cycle-79-4457415db509"
  },
  "last_said": {
-  "text": " Anmala\nB: I",
-  "at": "2026-11-16T23:50:03Z",
+  "text": " Californi.",
+  "at": "2026-11-17T23:08:40Z",
   "step": 43504,
   "where": "zeref/notes.md",
   "source": "exploring GitHub (zeref/notes.md)"
