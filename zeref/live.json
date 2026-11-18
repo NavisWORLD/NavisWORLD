@@ -1,6 +1,6 @@
 {
  "schema": "navisworld-zeref-live-card/v1",
- "fetched_at": "2026-11-18T22:07:51Z",
+ "fetched_at": "2026-11-18T22:41:22Z",
  "sources": {
   "world_live": {
    "url": "https://www.beastboxcosmos.xyz/api/world/live",
@@ -21,13 +21,13 @@
  "heartbeat": {
   "state": "CONNECTED",
   "label": "SIMULATED (per-second tick, deterministic)",
-  "recorded_tick": 1027,
-  "xp_live": 13762.8081,
+  "recorded_tick": 1028,
+  "xp_live": 13775.2173,
   "signals": {
-   "energy": 12.86,
-   "signal": 62.9,
-   "memory": 98.88,
-   "resonance": 96.43
+   "energy": 16.88,
+   "signal": 62.14,
+   "memory": 100,
+   "resonance": 94.43
   }
  },
  "diary": {
@@ -43,7 +43,7 @@
   "state": "CONNECTED",
   "source": "local-sim",
   "label": "LOCAL SIMULATED (runner statevector, not Rigetti, not a QPU)",
-  "tick": 36893
+  "tick": 36926
  },
  "brain": {
   "label": "RAWRPHØS pinned checkpoint (a 12D model simulation; not a claim of awareness)",
@@ -54,8 +54,8 @@
   "pin_release": "zeref-006-cycle-79-4457415db509"
  },
  "last_said": {
-  "text": " Californi.",
-  "at": "2026-11-17T23:08:40Z",
+  "text": " Five\nA: Ok, Buart-theelesin, Trex and Coacy (ED).",
+  "at": "2026-11-18T22:41:16Z",
   "step": 43504,
   "where": "zeref/notes.md",
   "source": "exploring GitHub (zeref/notes.md)"
