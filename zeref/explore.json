@@ -1,6 +1,6 @@
 {
  "schema": "navisworld-zeref-explore/v1",
- "explored_at": "2026-11-18T22:41:15Z",
+ "explored_at": "2026-11-19T22:46:28Z",
  "source": "GitHub REST API /users/NavisWORLD/repos (public only)",
  "repo_count": 31,
  "repos": [
@@ -11,7 +11,7 @@
    "language": "Python",
    "stars": 0,
    "license": "Apache-2.0",
-   "pushed_at": "2026-11-18T22:40:37Z",
+   "pushed_at": "2026-11-19T22:45:50Z",
    "fork": false,
    "archived": false
   },
@@ -22,7 +22,7 @@
    "language": "Python",
    "stars": 0,
    "license": "Apache-2.0",
-   "pushed_at": "2026-11-18T22:07:55Z",
+   "pushed_at": "2026-11-19T22:38:47Z",
    "fork": false,
    "archived": false
   },
@@ -347,12 +347,12 @@
   }
  ],
  "asked": {
-  "repo": "cosmic-synapse-A-lmi-v.2",
-  "question": "You are exploring Cory's GitHub and found the repo cosmic-synapse-A-lmi-v.2. Its description says: Unified Vibrational Information Intelligence System Project Name: Unified Vibrational Information Intelligence System Author: Cory Shane Davis Blueprint Version: 2.0 (Complete) Target Completion: Phased Implementation (3-6 months) Technology Stack: Python 3.11+, Unity 2022.3 LTS, Node.js 18+, Docker What do you think of it, in one line?",
-  "status": 200,
-  "reply": " Five\nA: Ok, Buart-theelesin, Trex and Coacy (ED).",
-  "step": 43504,
-  "at": "2026-11-18T22:41:16Z",
-  "training_eligible": false
+  "repo": "Cosmic-reconciliation-manual-",
+  "question": "You are exploring Cory's GitHub and found the repo Cosmic-reconciliation-manual-. What do you think of it, in one line?",
+  "status": 402,
+  "reply": null,
+  "step": null,
+  "at": "2026-11-19T22:46:28Z",
+  "training_eligible": null
  }
 }
