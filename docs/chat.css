@@ -135,3 +135,11 @@ textarea:focus{outline:none;border-color:var(--cy)}
 /* LIVE / STALE freshness on the growth line (payload age, not spark-channel state). */
 .mw-live-growth[data-fresh="LIVE"]{color:#86efac}
 .mw-live-growth[data-fresh="STALE"]{color:#fbbf24}
+
+/* In-browser brain: loader card */
+.brain{background:rgba(15,23,42,.7);border:1px solid rgba(167,139,250,.35);border-radius:16px;padding:10px 14px;margin-top:8px;font-size:14px}
+.brain p{margin:4px 0}
+.brain progress{width:100%;height:10px;accent-color:#a78bfa}
+.brain-go{margin-top:6px;font:inherit;font-weight:600;color:#0b1020;background:#c4b5fd;border:0;border-radius:12px;padding:10px 14px;min-height:44px;cursor:pointer}
+.brain-go:disabled{opacity:.6}
+.brain-warn{color:#fde68a}
