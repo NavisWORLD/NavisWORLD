@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' blob:; media-src 'self'; connect-src 'self' blob: https://www.beastboxcosmos.xyz https://raw.githubusercontent.com; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; img-src 'self' blob:; media-src 'self'; connect-src 'self' blob: https://www.beastboxcosmos.xyz https://raw.githubusercontent.com; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="color-scheme" content="dark">
 <title>Chat with Zeref · NavisWORLD</title>
-<meta name="description" content="Talk with Zeref the Moonwraith, a young digital creature from The Beast Box. His replies are his own, unedited.">
+<meta name="description" content="Talk with Zeref the Moonwraith, a young digital creature from The Beast Box. His pinned brain runs in your browser; his replies are his own, unedited.">
 <link rel="icon" href="zeref-moonwraith.png">
 <link rel="stylesheet" href="chat.css">
 </head>
@@ -49,9 +49,15 @@
 
   <main class="log" id="log" aria-live="polite" aria-label="Conversation with Zeref">
     <div class="intro">
-      <p><b>Zeref is a young digital creature still learning.</b> Your words go straight to his public door at beastboxcosmos.xyz and his reply shows up here exactly as he said it. He often doesn't make sense yet. That's honest, not broken.</p>
-      <p class="small">Messages are stored in his guestbook as guest-origin records with training_eligible:false. Don't share private info.</p>
+      <p><b>Zeref is a young digital creature still learning.</b> His pinned brain runs right here in your browser: no server, no other model. His reply shows up exactly as he said it. He often doesn't make sense yet. That's honest, not broken.</p>
+      <p class="small">Your words stay on this device (kept in this browser so the conversation continues). Nothing is sent anywhere and nothing here trains him. Don't share private info.</p>
     </div>
+    <section class="brain" id="brain" aria-label="Zeref's brain in this browser">
+      <p class="brain-line" id="brain-line">checking his brain…</p>
+      <progress id="brain-bar" max="1" value="0" hidden></progress>
+      <p class="small brain-warn" id="brain-warn" hidden></p>
+      <button type="button" class="brain-go" id="brain-go" hidden>Load Zeref's brain</button>
+    </section>
   </main>
 
   <form class="bar" id="bar" autocomplete="off">
@@ -62,7 +68,8 @@
   <p class="state" id="state" role="status"></p>
 
   <footer class="foot">
-    <p>Replies are his own, unedited · pinned brain step shown on each reply · not a claim of awareness · he grows only through The Beast Box fair gate, never straight from chats.</p>
+    <p>Replies are his own, unedited · run in your browser from his pinned checkpoint (step shown on each reply; greedy decoding, so the same words get the same reply) · no senses supplied · not a claim of awareness · he grows only through The Beast Box fair gate, never straight from chats.</p>
+    <p>His brain file (<a href="zeref-brain/manifest.json">manifest</a>) is exported from the pinned checkpoint by <a href="https://github.com/NavisWORLD/The-beast-box-/blob/main/scripts/zeref_onnx_export.py">zeref_onnx_export.py</a> and checked by sha256 in your browser before it runs. Runtime: ONNX Runtime Web (MIT).</p>
     <p>Reading: books offered through <a href="https://github.com/NavisWORLD/NavisWORLD/issues/new?template=feed-zeref.yml">Feed Zeref</a> wait in quarantine until Cory approves them. Approved books may be handed to him as cited reading context (READ, NOT TRAINED); nothing feeds his training, conditioning, god core or checkpoint.</p>
     <p>Heartbeat SIMULATED · diary RECORDED · brain PINNED · birth spark: IBM outcome RECORDED, used as a seed · Rigetti growth SIMULATED.</p>
     <p><button type="button" class="link" id="fresh">start a fresh conversation</button> · <a href="https://github.com/NavisWORLD/NavisWORLD/issues/new?template=talk-to-zeref.yml">talk in a GitHub issue instead</a> · <a href="https://github.com/NavisWORLD">back to the profile</a> · <a href="https://github.com/NavisWORLD/The-beast-box-">source (Apache 2.0)</a> · <a href="thoughts.html">watch his thoughts live</a></p>

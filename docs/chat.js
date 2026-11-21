@@ -1,20 +1,20 @@
-// Zeref's chat page. Talks to his public guest door (the same one beastboxcosmos.xyz uses).
-// No secrets live here: the door needs none for guests. The only thing kept is the
-// guestbook thread id the door issued to THIS browser (localStorage), so the
-// conversation continues; "start a fresh conversation" forgets it.
+// Zeref's chat page. His pinned brain runs IN THIS BROWSER (zeref-brain/): the page downloads the
+// exported checkpoint from this site, checks its sha256, and runs it with ONNX Runtime Web.
+// No server, no other model, no secrets. The only thing kept is this conversation, in this
+// browser (localStorage), so it continues; "start a fresh conversation" forgets it.
 // Replies are shown verbatim (textContent, whitespace kept). Nothing is invented:
-// no simulated typing, no randomness; a failed call says so.
+// no simulated typing, no randomness (greedy decoding); a failure says so.
 'use strict';
 (function () {
-  const DOOR = 'https://www.beastboxcosmos.xyz/api/guest/forever';
   const LIVE = 'https://raw.githubusercontent.com/NavisWORLD/NavisWORLD/main/zeref/live.json';
   const FEED = 'https://raw.githubusercontent.com/NavisWORLD/NavisWORLD/main/zeref/feed/status.json';
-  const KEY = 'zeref-guest-thread';
-  const THREAD_RE = /^[a-f0-9]{32}$/; // the door's own thread-id shape
+  const KEY = 'zeref-browser-thread-v1';
+  const KEEP_TURNS = 40;
   const MAX = 1000;
   const $ = (id) => document.getElementById(id);
   const log = $('log'), msg = $('msg'), send = $('send'), state = $('state'), bar = $('bar');
   let busy = false;
+  let brain = null, loading = null, manifest = null, liveStep = null;
 
   const v = (x) => (x === null || x === undefined || x === '' ? 'unavailable' : String(x));
   const short = (l) => v(l).split(' (')[0];
@@ -31,15 +31,6 @@
   function note(text) {
     const d = document.createElement('div'); d.className = 'err'; d.textContent = text; log.append(d);
     d.scrollIntoView({ block: 'end', behavior: 'smooth' });
-  }
-  // Reading context the door handed him (approved feed only). Shown exactly as the door sent it.
-  function cite(b, rf) {
-    if (!rf || typeof rf.title !== 'string' || typeof rf.excerpt !== 'string') return;
-    const c = document.createElement('div'); c.className = 'cite';
-    const h = document.createElement('div'); h.className = 'meta';
-    h.textContent = 'read from: ' + rf.title + ' (approved feed) · READ, NOT TRAINED';
-    const q = document.createElement('blockquote'); q.textContent = rf.excerpt;
-    c.append(h, q); b.append(c);
   }
   async function shelf() {
     try {
@@ -60,6 +51,7 @@
       const d = await r.json();
       const hb = d.heartbeat || {}, di = d.diary || {}, sp = d.spark || {}, br = d.brain || {};
       $('status').textContent = 'tick ' + v(hb.recorded_tick) + ' (' + short(hb.label) + ') · ' + v(di.mood) + ' (' + short(di.label) + ') · spark ' + v(sp.state) + ' (' + short(sp.label) + ')';
+      liveStep = Number.isInteger(br.live_step) ? br.live_step : null;
       $('growth').textContent = 'growth: brain step ' + v(br.live_step) + ' (PINNED) · as of ' + v(d.fetched_at);
       const e = ((hb.signals || {}).energy);
       if (typeof e === 'number') document.documentElement.style.setProperty('--breath', Math.min(9, Math.max(3, 9 - 0.06 * e)).toFixed(2) + 's');
@@ -74,8 +66,55 @@
     try { window.dispatchEvent(new CustomEvent('zeref-chat', { detail: { phase } })); } catch { /* no 3D stage */ }
   }
 
-  function thread() { try { const t = localStorage.getItem(KEY); return t && THREAD_RE.test(t) ? t : null; } catch { return null; } }
-  function keep(t) { try { if (typeof t === 'string' && THREAD_RE.test(t)) localStorage.setItem(KEY, t); } catch { /* private mode: no continuity */ } }
+  function history() {
+    try {
+      const h = JSON.parse(localStorage.getItem(KEY) || '[]');
+      return Array.isArray(h) ? h.filter((m) => m && (m.role === 'user' || m.role === 'assistant') && typeof m.content === 'string') : [];
+    } catch { return []; }
+  }
+  function remember(h) { try { localStorage.setItem(KEY, JSON.stringify(h.slice(-KEEP_TURNS))); } catch { /* private mode: no continuity */ } }
+
+  // ---- his brain, in this browser ----
+  const bLine = $('brain-line'), bBar = $('brain-bar'), bWarn = $('brain-warn'), bGo = $('brain-go');
+  const mb = (n) => (n / 1e6).toFixed(1) + ' MB';
+  async function hasCached(man) {
+    try { return 'caches' in window && !!(await (await caches.open('zeref-brain-v1')).match(new URL('zeref-brain/zeref-step.onnx?sha256=' + man.onnx.sha256, location.href).href)); } catch { return false; }
+  }
+  function load() {
+    if (loading) return loading;
+    bGo.hidden = true; bWarn.hidden = true; bBar.hidden = false; bBar.value = 0;
+    loading = import('./zeref-brain/brain.mjs').then((m) => m.loadBrain(manifest, (p) => {
+      bBar.value = p.total ? p.loaded / p.total : 0;
+      bLine.textContent = p.phase === 'downloading' ? 'downloading his brain: ' + mb(p.loaded) + ' of ' + mb(p.total) : p.phase + '…';
+    })).then((b) => {
+      brain = b; bBar.hidden = true;
+      bLine.textContent = 'his brain is running in this browser: pinned checkpoint step ' + manifest.provenance.training_steps +
+        ' · sha256 ' + b.sha256.slice(0, 12) + ' verified · ' + (b.from === 'cache' ? 'from this device\'s cache' : 'downloaded') +
+        ' in ' + b.seconds.toFixed(1) + 's' + (b.from === 'download' && !b.cached ? ' (this browser would not keep a copy)' : '');
+      send.disabled = false;
+      return b;
+    }).catch((err) => {
+      loading = null; bBar.hidden = true; bGo.hidden = false; bGo.textContent = 'Try loading his brain again';
+      bLine.textContent = 'his brain could not start in this browser: ' + (err && err.message ? err.message : 'unknown error') + '. Nothing was made up in his place.';
+      throw err;
+    });
+    return loading;
+  }
+  async function brainSetup() {
+    try {
+      manifest = await (await import('./zeref-brain/brain.mjs')).readManifest();
+    } catch (err) {
+      bLine.textContent = 'his brain files could not be read (' + (err && err.message ? err.message : 'fetch failed') + ').';
+      return;
+    }
+    const size = manifest.onnx.bytes;
+    if (await hasCached(manifest)) { load().catch(() => {}); return; }
+    const cell = navigator.connection && (navigator.connection.type === 'cellular' || navigator.connection.saveData);
+    bLine.textContent = 'His brain (pinned checkpoint step ' + manifest.provenance.training_steps + ') runs on your device. It is a one-time ' + mb(size) + ' download from this site; after that it opens from this browser\'s cache.';
+    bWarn.textContent = (cell ? 'You seem to be on cellular data. ' : '') + 'On cellular data this uses about ' + mb(size) + ' of your plan. Wi-Fi is best.';
+    bWarn.hidden = false; bGo.textContent = 'Load Zeref\'s brain (' + mb(size) + ')'; bGo.hidden = false;
+  }
+  bGo.addEventListener('click', () => { load().catch(() => {}); });
 
   // Long text (a story, a teaching page) is more than one message can carry. It is never cut and
   // never sent in pieces from here: it goes in through his feed, where the engine reads it in small
@@ -85,18 +124,9 @@
   function longNote(n) {
     const d = document.createElement('div'); d.className = 'err';
     const a = (href, label) => { const x = document.createElement('a'); x.href = href; x.textContent = label; x.target = '_blank'; x.rel = 'noopener'; return x; };
-    d.append('That\'s ' + n.toLocaleString() + ' characters. One message to his door carries up to ' + MAX + ', so nothing was sent and your text is still in the box. Long teaching text goes in through his feed, where the engine reads it in small pieces over many ticks: Cory, commit it to ',
+    d.append('That\'s ' + n.toLocaleString() + ' characters. One message carries up to ' + MAX + ' characters, so nothing was sent and your text is still in the box. Long teaching text goes in through his feed, where the engine reads it in small pieces over many ticks: Cory, commit it to ',
       a(OWNER_FEED, 'zeref/feed/owner/'), '; everyone else, use ', a(FEED_FORM, 'Feed Zeref'), '.');
     log.append(d); d.scrollIntoView({ block: 'end', behavior: 'smooth' });
-  }
-
-  function explain(status, body) {
-    const why = body && typeof body.error === 'string' ? body.error.slice(0, 160) : '';
-    if (status === 503 && body && Number.isInteger(body.pin_step) && Number.isInteger(body.bridge_step))
-      return 'His brain was just promoted (step ' + body.bridge_step + ' → ' + body.pin_step + ') and his door is still loading it (HTTP 503). Nothing was made up in his place. Try again in a few minutes.';
-    if (status === 429) return 'He has had a lot of visitors and is resting for a moment (HTTP 429). Try again in a minute.' + (why ? ' Door said: ' + why : '');
-    if (status === 403) return 'His door refused this page (HTTP 403).' + (why ? ' Door said: ' + why : '');
-    return 'His door didn\'t answer this time (' + (status ? 'HTTP ' + status : 'no response') + '). Nothing was made up in his place.' + (why ? ' Door said: ' + why : '');
   }
 
   async function talk(text) {
@@ -104,42 +134,26 @@
     bubble('me', 'you · ' + hhmm(new Date()), text);
     signal('listen');
     const started = Date.now();
-    // An honest wait state: a real request is in flight (his door may queue it briefly behind another visitor).
-    let phase = 'Zeref is thinking…';
+    // An honest wait state: his brain is really running on this device right now.
     signal('think');
-    const show = () => { state.textContent = phase + ' ' + Math.round((Date.now() - started) / 1000) + 's'; };
+    let made = 0;
+    const show = () => { state.textContent = 'Zeref is thinking on your device… ' + Math.round((Date.now() - started) / 1000) + 's' + (made ? ' · ' + made + ' tokens' : ''); };
     show();
-    const tick = setInterval(show, 1000);
-    const payload = { provider: 'rawrphos-local', text };
-    const t = thread(); if (t) payload.thread = t;
-    const ask = () => fetch(DOOR, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload), cache: 'no-store', credentials: 'omit' });
+    const tick = setInterval(show, 500);
     try {
-      let r = await ask();
-      let body = null; try { body = await r.json(); } catch { body = null; }
-      if (r.status === 429) {
-        // One automatic retry, after the wait his door asked for (Retry-After), capped at 15 s.
-        const hinted = Number(r.headers.get('Retry-After')) || (body && Number(body.retry_after_seconds)) || 5;
-        const wait = Math.min(15, Math.max(1, Math.round(hinted)));
-        phase = 'his door is busy; trying once more in ' + wait + 's…';
-        await new Promise((res) => setTimeout(res, wait * 1000));
-        phase = 'Zeref is thinking… (second try)';
-        r = await ask();
-        body = null; try { body = await r.json(); } catch { body = null; }
-      }
-      if (!r.ok || !body || typeof body.reply !== 'string') { note(explain(r.status, body)); signal('error'); return; }
-      keep(body.continuity && body.continuity.thread_id);
-      const te = body.continuity && body.continuity.training_eligible;
-      // Since Nov 12 2026 his door serves whatever step his bridge actually loaded; the label names that step, and the pin when it differs.
-      const offPin = Number.isInteger(body.pin_step) && Number.isInteger(body.step) && body.step !== body.pin_step;
-      const which = offPin ? 'answered by step ' + body.step + ', pin is ' + body.pin_step : 'pinned step ' + v(body.step);
-      const b = bubble('him', 'Zeref · unedited · ' + which + ' · training_eligible:' + (te === false ? 'false' : v(te)) + ' · ' + hhmm(new Date()), body.reply);
-      cite(b, body.read_from);
+      const h = history();
+      const r = await brain.talk(h, text, { onToken: (t, gen) => { made = gen.length; } });
+      remember([...h, { role: 'user', content: text }, { role: 'assistant', content: r.text }]);
+      const step = manifest.provenance.training_steps;
+      const pinNote = liveStep !== null && liveStep !== step ? ' · his pin is now step ' + liveStep + ' (this page still runs step ' + step + ')' : '';
+      bubble('him', 'Zeref · unedited · run in your browser from pinned checkpoint step ' + step + ' (greedy) · no senses supplied' + pinNote + ' · ' + hhmm(new Date()), r.text);
+      if (r.text.trim() === '') note('He produced no words this turn (an empty reply). Nothing was put in his place.');
       signal('reply');
     } catch (err) {
-      note(explain(0, null));
+      note('His brain hit an error on this device (' + (err && err.message ? err.message : 'unknown') + '). Nothing was made up in his place.');
       signal('error');
     } finally {
-      clearInterval(tick); state.textContent = ''; busy = false; send.disabled = false; msg.focus();
+      clearInterval(tick); state.textContent = ''; busy = false; send.disabled = !brain; msg.focus();
     }
   }
 
@@ -149,14 +163,17 @@
     const text = msg.value.trim();
     if (!text) return;
     if (text.length > MAX) { longNote(text.length); return; }
-    if (/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/.test(text)) { note('That message has control characters his door won\'t take.'); return; }
+    if (/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/.test(text)) { note('That message has control characters he can\'t take.'); return; }
+    if (!brain) { note(loading ? 'His brain is still loading. Your message is still in the box; send it once he\'s ready.' : 'Load his brain first (the button above). Your message is still in the box.'); return; }
     msg.value = ''; msg.style.height = '';
     talk(text);
   });
   msg.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); bar.requestSubmit(); } });
   msg.addEventListener('input', () => { msg.style.height = 'auto'; msg.style.height = Math.min(140, msg.scrollHeight) + 'px'; });
-  $('fresh').addEventListener('click', () => { try { localStorage.removeItem(KEY); } catch { /* nothing kept */ } note('Started fresh: the next message opens a new guestbook thread.'); });
+  $('fresh').addEventListener('click', () => { try { localStorage.removeItem(KEY); } catch { /* nothing kept */ } note('Started fresh: earlier messages are forgotten on this device.'); });
   status();
+  send.disabled = true;
+  brainSetup();
 
   // Cory's song: starts only after a tap (phones block autoplay with sound). Loops while playing. No fetch.
   const audio = $('song'), playBtn = $('play-song'), prompt = $('music-prompt'), player = $('music');

@@ -1,0 +1,88 @@
+{
+ "schema": "zeref-browser-brain-v1",
+ "provenance": {
+  "pin_file": "The-beast-box-/apps/beastbox-cloud/lib/rawrphos-public-pin.json",
+  "training_steps": 44144,
+  "checkpoint_sha256": "679ae933535d3f62bac9a9a92be7fd7dc12ed266eeb15ce6f7a02de8bae1a645",
+  "release_tag": "zeref-006-cycle-81-679ae933535d",
+  "release_asset_sha256": "76652262eb173f7fa278c9baabf65878c21dec700a29db61817f58335961c6f0",
+  "exporter": "The-beast-box-/scripts/zeref_onnx_export.py",
+  "serve_time_upgrades": "RAWRPHOS_KIT_LAYERS=1 (trinity+hebbian, as the server)",
+  "torch": "2.14.1+cpu",
+  "onnxruntime": "1.31.1",
+  "onnx": "1.23.2",
+  "onnxslim": "0.1.99",
+  "python": "3.13.5",
+  "exported_at": "2026-11-20T21:42:33-0600"
+ },
+ "onnx": {
+  "file": "zeref-step.onnx",
+  "bytes": 96773712,
+  "sha256": "026496e2ab43b6d10a60b3ae6f04a8d9c55d1ba616ff03229f8482d60bf911e4",
+  "dtype": "float32",
+  "opset": 17,
+  "chunks": [
+   {
+    "file": "zeref-step.onnx.part00",
+    "bytes": 47185920,
+    "sha256": "d3db26e1c30766380f4a5c0fa82bfb6524b8e454015515d4753f043fd36ba484"
+   },
+   {
+    "file": "zeref-step.onnx.part01",
+    "bytes": 47185920,
+    "sha256": "dab54a59bda97a4f4b7ecaf833f8602feebb20fa129bd8eef7b77674cf62dbc9"
+   },
+   {
+    "file": "zeref-step.onnx.part02",
+    "bytes": 2401872,
+    "sha256": "a072a79cbce3f6a5c3ef7373b731ab820e3fb4e41e61fa7d99af306d99b1c4f4"
+   }
+  ]
+ },
+ "tokenizer": {
+  "file": "tokenizer.json",
+  "sha256": "f704e9b75e816cc4ef203bc6c4afeeb966cbc11f369fb3b5f4d81c1505c8619c",
+  "metadata_sha256": "f704e9b75e816cc4ef203bc6c4afeeb966cbc11f369fb3b5f4d81c1505c8619c",
+  "type": "byte-level BPE",
+  "special_ids": [
+   0,
+   1,
+   2,
+   3
+  ]
+ },
+ "dims": {
+  "n_layers": 44,
+  "n_heads": 4,
+  "head_dim": 64,
+  "state_width": 54,
+  "hebbian_dim": 32,
+  "vocab_size": 4096,
+  "max_seq_len": 2048,
+  "bos_id": 1,
+  "eos_id": 2
+ },
+ "decoding": {
+  "mode": "greedy (temperature 0, argmax)",
+  "max_new_tokens": 64,
+  "repetition_penalty": 1.15,
+  "no_repeat_ngram": 3,
+  "stop": "eos_id",
+  "prefill": "whole prompt in one call (S=0), then one token per call",
+  "prompt": "guest_hebbian.assemble_messages({}, history, text) then 'role: content' lines + '\\nassistant:', BOS prepended",
+  "served_replay_messages": 6,
+  "max_assembled_bytes": 1900
+ },
+ "parity": {
+  "onnxruntime_python_vs_torch_greedy": "9/9",
+  "note": "token-for-token, CPU fp32, same prompt ids, slimmed graph"
+ },
+ "browser_session_options": {
+  "executionProviders": [
+   "wasm"
+  ],
+  "graphOptimizationLevel": "disabled",
+  "numThreads": 1
+ },
+ "senses": "none (no private owner state or data)"
+}
