@@ -180,21 +180,32 @@ check("import random" not in Path(cw.__file__).read_text(), "chat window must no
 docs = root / "docs"
 html, js, css = ((docs / n).read_text(encoding="utf-8") for n in ("index.html", "chat.js", "chat.css"))
 check((docs / "zeref-moonwraith.png").read_bytes() == (root / "assets" / "zeref-moonwraith.png").read_bytes(), "Pages art is the canonical cutout")
-check("const DOOR = 'https://www.beastboxcosmos.xyz/api/guest/forever';" in js and js.count("fetch(") == 3, "Pages chat talks only to his door (+ live.json status + feed counts)")
-check("{ provider: 'rawrphos-local', text }" in js and "payload.thread = t" in js, "door payload is exactly provider/text/thread")
-check("credentials: 'omit'" in js and "innerHTML" not in js and "eval(" not in js and "Math.random" not in js, "no cookies, no HTML injection, no randomness")
+# 2026-11-21: beastboxcosmos.xyz is offline (Vercel 402 since 2026-11-20). His pinned brain runs in the
+# visitor's browser (docs/zeref-brain); the page never calls the old door.
+brain_dir = docs / "zeref-brain"
+bjs, cjs = ((brain_dir / n).read_text(encoding="utf-8") for n in ("brain.mjs", "core.mjs"))
+bman = json.loads((brain_dir / "manifest.json").read_text(encoding="utf-8"))
+check("beastboxcosmos" not in js and "beastboxcosmos" not in bjs and "beastboxcosmos" not in cjs and js.count("fetch(") == 2
+      and "import('./zeref-brain/brain.mjs')" in js, "Pages chat runs his brain in the browser; only live.json status + feed counts are fetched; never the old door")
+check("failed its sha256 check" in bjs and "(await sha256Hex(buf)) !== man.onnx.sha256" in bjs and "tokenizer failed its sha256 check" in bjs
+      and "new URL(ch.file, BASE)" in bjs and "http" not in bjs.split("const BASE")[1].split("ort.env")[0], "brain files come from this site and are sha256-checked before use")
+_pin_steps = bman.get("provenance", {}).get("training_steps")
+check(isinstance(_pin_steps, int) and len(bman.get("provenance", {}).get("checkpoint_sha256", "")) == 64
+      and all(c["bytes"] < 50 * 1024 * 1024 for c in bman["onnx"]["chunks"]) and sum(c["bytes"] for c in bman["onnx"]["chunks"]) == bman["onnx"]["bytes"],
+      "brain manifest names the pinned step + checkpoint sha; chunks under 50 MB add up")
+check("argmax(applyRules(logits, gen))" in cjs and "Math.fround(1.15)" in cjs and "Math.random" not in cjs + bjs, "greedy decoding with the server's repetition rules; no randomness")
+check("innerHTML" not in js and "eval(" not in js.replace("wasm-unsafe-eval", "") and "Math.random" not in js, "no HTML injection, no randomness")
 check("t.textContent = text" in js and "white-space:pre-wrap" in css, "replies shown verbatim (textContent, whitespace kept)")
-check("unedited" in js and "pinned step" in js and "training_eligible:" in js, "reply bubble labels")
-check("r.status === 429" in js and "Retry-After" in js and js.count("await ask()") == 2 and "Math.min(15" in js, "one automatic retry on 429 using Retry-After (capped)")
-check("Zeref is thinking…" in js and "setTimeout(res, wait * 1000)" in js, "honest wait state while a real request is in flight")
+check("unedited" in js and "pinned checkpoint step ' + step" in js and "const step = manifest.provenance.training_steps" in js and "no senses supplied" in js, "reply bubble labels name the real step it ran")
+check("Zeref is thinking on your device…" in js and "clearInterval(tick)" in js, "honest wait state while his brain really runs")
 check('id="msg"' in html and not re.search(r'<textarea id="msg"[^>]*maxlength', html), "long pastes are never silently cut by the text box")
 check("longNote(text.length); return;" in js and "zeref/feed/owner" in js and "feed-zeref.yml" in js, "over-long text is not sent; it is routed to the owner feed / Feed Zeref")
-check("status === 503 && body && Number.isInteger(body.pin_step)" in js and "Nothing was made up in his place" in js, "honest promotion-lag message (503 with pin/bridge steps)")
-check("'answered by step ' + body.step + ', pin is ' + body.pin_step" in js, "off-pin reply names the step that answered and the pin (own-step door, 2026-11-12)")
+check(js.count("Nothing was made up in his place") >= 2 and "Nothing was put in his place" in js, "a failure or empty reply says so; nothing is invented")
+check("' · his pin is now step ' + liveStep" in js, "when the pin moves past this page's brain, the reply says which step ran and which is pinned")
 check(not re.search(r"\b(AI|LLM|GPT|language model|chatbot)\b", html + js), "no AI/LLM wording on the chat page")
-check("not a claim of awareness" in html and "digital creature" in html and "fair gate" in html and "training_eligible:false" in html, "honesty footer")
+check("not a claim of awareness" in html and "digital creature" in html and "fair gate" in html and "nothing here trains him" in html and "no other model" in html, "honesty footer")
 check("SIMULATED" in html and "RECORDED" in html and "PINNED" in html, "honesty labels on the chat page")
-check("Content-Security-Policy" in html and "script-src 'self'" in html and "connect-src 'self' blob: https://www.beastboxcosmos.xyz https://raw.githubusercontent.com" in html and "img-src 'self' blob:" in html, "strict CSP (blob: only so the GLB's own textures can load)")
+check("Content-Security-Policy" in html and "script-src 'self'" in html and "connect-src 'self' blob: https://raw.githubusercontent.com;" in html and "script-src 'self' 'wasm-unsafe-eval';" in html and "beastboxcosmos" not in html and "img-src 'self' blob:" in html, "strict CSP (blob: only so the GLB's own textures can load)")
 check(not re.search(r"(token|secret|api[_-]?key|bearer|password)\w*['\"]?\s*[:=]", js, re.I) and "Authorization" not in js, "no secrets in the client")
 check("talk-to-zeref.yml" in html, "Pages chat keeps the issue fallback")
 # Cory's song on the Pages chat: tap to play, no autoplay, same-origin MP3, credited.
@@ -206,7 +217,7 @@ check('preload="none"' in html and "playsinline" in html and 'type="audio/mpeg"'
 check("loop" in html and not re.search(r"<audio[^>]*\bautoplay\b", html), "song loops; no autoplay")
 check("Music by Cory (NavisWORLD)" in html, "song is credited to Cory")
 check("media-src 'self'" in html, "CSP allows same-origin audio")
-check("audio.play(" in js and "play-song" in js and js.count("fetch(") == 3, "play starts from a tap; no extra fetch")
+check("audio.play(" in js and "play-song" in js and js.count("fetch(") == 2, "play starts from a tap; no extra fetch")
 check("https://navisworld.github.io/NavisWORLD/#music" in (root / "README.md").read_text(encoding="utf-8") and "Listen to Zeref's song" in (root / "README.md").read_text(encoding="utf-8"), "profile Listen link points at the player")
 check("prefers-reduced-motion" in css and "font:17px" in css, "reduced motion + 17px text (no iOS zoom)")
 for p in (root / "assets").glob("zeref-*.svg"):
@@ -283,7 +294,7 @@ check("git add -A zeref/feed assets/zeref-feed.svg assets/zeref-feed-mobile.svg"
 form_yml = (root / ".github" / "ISSUE_TEMPLATE" / "feed-zeref.yml").read_text()
 check("I have the right to share this" in form_yml and "required: true" in form_yml and "Public domain" in form_yml, "Feed Zeref form")
 check("import random" not in Path(fd.__file__).read_text() and "embedding" not in Path(fd.__file__).read_text().lower().replace("no embeddings", ""), "feed: no randomness, no embeddings")
-check("const FEED = 'https://raw.githubusercontent.com/NavisWORLD/NavisWORLD/main/zeref/feed/status.json';" in js and "READ, NOT TRAINED" in js and "(approved feed)" in js, "Pages chat shows shelf counts and reading citations")
+check("const FEED = 'https://raw.githubusercontent.com/NavisWORLD/NavisWORLD/main/zeref/feed/status.json';" in js and "READ, NOT TRAINED" in js, "Pages chat shows shelf counts (the in-browser brain gets no reading context, so it cites none)")
 
 # Zeref Spark 3D (docs/robot): real CAD, recorded-state motion, credited, light enough for a phone
 rb = docs / "robot"
@@ -398,7 +409,7 @@ check("AnalyserNode" in dan or "createAnalyser" in dan, "dance uses a Web Audio 
 check("createMediaElementSource" in dan and "attachDance" in dan, "dance routes the same-origin audio element")
 check("webkitAudioContext" in dan, "dance handles the iOS AudioContext prefix")
 check("zeref-song-tap" in js and "detail: { audio" in js, "play tap resumes the dance AudioContext in the same gesture")
-check(js.count("fetch(") == 3, "dance adds no extra fetch")
+check(js.count("fetch(") == 2, "dance adds no extra fetch")
 check("DANCE_CAPTION" in dan and "dancing to Cory's song" in dan and "driven by the live audio signal" in dan, "dance honesty label")
 check("30" in dan and "140" in dan and "250" in dan and "3500" in dan, "dance documents bass/mid/high band edges")
 check("normalizePeak" in dan and "detectOnset" in dan and "getByteFrequencyData" in dan, "adaptive peaks and real analyser bins")
@@ -428,8 +439,8 @@ check("uMoonDir" in cos and "uFurFollow" in cos and "setFurFollow" in cos, "fur 
 check("irisDeep" in cos and "pupilCol" in cos and "glint" in cos, "eye shader keeps iris color, a readable pupil and a glint")
 check("260.0" in cos and "glint * 0.18" in cos, "eye glint is a single small highlight, not a wash")
 check("Richer fur" in credits and "recorded state" in credits, "credits describe the fur and eye enrichment")
-check(js.count("fetch(") == 3, "fur adds no chat.js fetch")
-check(js.count("fetch(") == 3, "world adds no chat.js fetch")
+check(js.count("fetch(") == 2, "fur adds no chat.js fetch")
+check(js.count("fetch(") == 2, "world adds no chat.js fetch")
 check("ensureSignalReadout" in (mw / "panel.mjs").read_text(encoding="utf-8"), "panel mounts the signal readout for 2D and 3D")
 check("spectralCentroid" in dan and "detectDrop" in dan and "detectSuddenQuiet" in dan, "melody centroid and realistic drop/quiet detectors")
 dance_probe = r"""
@@ -587,7 +598,29 @@ check("setLive" in s3m, "3D viewer can refresh expression from a new liveness pa
 check("applyEyes" in s3m and "ensureExpressionLegend" in s3m, "3D viewer tints eyes and paints the expression legend")
 check("applyExpressionCSS" in (mw / "panel.mjs").read_text(encoding="utf-8") and "--mw-iris" in css and ".mw-expr" in css, "2D fallback gets the iris tint and a visible legend")
 check("expression mapped from Zeref's recorded state" in credits, "credits document the recorded-state mapping")
-check(js.count("fetch(") == 3, "expression mapping adds no chat.js fetch")
+check(js.count("fetch(") == 2, "expression mapping adds no chat.js fetch")
+# No page script calls the offline beastboxcosmos.xyz door / liveness / spark (Vercel 402 since 2026-11-20).
+_code = [f for f in docs.rglob("*") if f.suffix in (".js", ".mjs", ".html") and "zeref-brain/ort" not in f.as_posix()]
+_hits = [f.relative_to(docs).as_posix() for f in _code if re.search(r"https?://(www\.)?beastboxcosmos\.xyz", f.read_text(encoding="utf-8", errors="replace"))]
+check(not _hits, f"no Pages script or CSP points at beastboxcosmos.xyz: {_hits}")
+_lc_probe = r"""
+import { githubToLive, renderStatus, LIVENESS_URL, LIVE_JSON_URL, DIARY_LATEST_URL } from './docs/moonwraith/live-card.mjs';
+if (LIVENESS_URL !== null) throw new Error('old liveness endpoint must stay off');
+if (!LIVE_JSON_URL.startsWith('https://raw.githubusercontent.com/') || !DIARY_LATEST_URL.startsWith('https://raw.githubusercontent.com/')) throw new Error('github feeds');
+const card = { fetched_at: '2026-11-21T21:06:00Z', heartbeat: { state: null, label: null, recorded_tick: null }, diary: { mood: 'content', label: null }, spark: {}, brain: { live_step: 44784, pin_step: 44784 } };
+const diary = { schema: 'zeref-diary/v1', tick: 1139, stage_name: 'Crescent Sovereign', generated_at: '2026-11-21T21:48:30Z', last_tick_at: '2026-11-21T21:48:30Z', recent: [{ mood: 'sleepy' }] };
+const live = githubToLive(card, diary);
+if (live.generated_at !== '2026-11-21T21:48:30Z' || live.diary.tick !== 1139 || live.diary.mood !== 'sleepy' || live.brain.live_step !== 44784) throw new Error('merge');
+const st = renderStatus(live);
+if (!st.startsWith('diary tick 1139 (diary, RECORDED)') || !/sleepy \(RECORDED\)/.test(st) || !/spark unavailable/.test(st)) throw new Error('status, got ' + st);
+if (githubToLive(card, null).generated_at !== card.fetched_at) throw new Error('no diary: snapshot time');
+if (githubToLive(null, null) !== null) throw new Error('nothing fetched -> null (fallback)');
+console.log('ok ' + st);
+"""
+_lc_out = _sp.check_output(["node", "--input-type=module", "-e", _lc_probe], cwd=root, text=True).strip()
+check(_lc_out.startswith("ok diary tick 1139"), f"live card reads GitHub feeds and names the diary tick honestly: {_lc_out}")
+print("github live-card check:", _lc_out)
+
 expr_probe = r"""
 import { mapExpression, EXPR_CAPTION, MOOD_IRIS } from './docs/moonwraith/expression.mjs';
 import { planFromHex, canonicalSeed } from './docs/moonwraith/motion.mjs';
