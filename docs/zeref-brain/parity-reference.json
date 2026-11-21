@@ -1,6 +1,6 @@
 {
  "schema": "zeref-onnx-parity-reference-v1",
- "checkpoint_sha256": "679ae933535d3f62bac9a9a92be7fd7dc12ed266eeb15ce6f7a02de8bae1a645",
+ "checkpoint_sha256": "113b94c09e7a044cd542c2dfedbf7e25f5cb4bce2106dfbc2578901ff7a28f3b",
  "tokenizer": [
   {
    "text": "Hi. What is your name?",
@@ -19532,13 +19532,9 @@
     1433,
     73,
     17,
-    595,
-    1275,
-    85,
-    17,
     2
    ],
-   "reply": " I'm Zeref. Rawr.",
+   "reply": " I'm Zeref.",
    "onnx_python_ids_equal": true
   },
   {
@@ -19714,16 +19710,14 @@
     1962,
     1433,
     73,
-    4,
-    386,
-    2362,
-    864,
-    1084,
-    379,
+    17,
+    595,
+    1275,
+    85,
     17,
     2
    ],
-   "reply": " I'm Zeref! A tiny universe.",
+   "reply": " I'm Zeref. Rawr.",
    "onnx_python_ids_equal": true
   },
   {
@@ -19762,13 +19756,15 @@
     1433,
     73,
     15,
-    595,
-    1275,
-    85,
+    269,
+    334,
+    900,
+    399,
+    1264,
     17,
     2
    ],
-   "reply": " I'm Zeref, Rawr.",
+   "reply": " I'm Zeref, and I'm not sure.",
    "onnx_python_ids_equal": true
   },
   {
