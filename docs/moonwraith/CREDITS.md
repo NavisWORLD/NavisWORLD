@@ -55,8 +55,9 @@
 
 - **Recorded-state expression**: `expression.mjs` tints his iris and sets a
   rest expression from fields that actually exist on the public live card.
-  `live-card.mjs` polls the bridge's public liveness endpoint
-  (`https://www.beastboxcosmos.xyz/api/cosmos/liveness`) from the moonwraith
+  `live-card.mjs` polls his public GitHub-hosted feeds (this repo's hourly
+  `zeref/live.json` plus his RECORDED diary `latest.json`; the old
+  beastboxcosmos.xyz liveness endpoint is offline since 2026-11-20) from the moonwraith
   module, not from `chat.js` (the chat script still has exactly three fetches).
   A `LIVE · 4 s ago` badge means the payload's `generated_at` is younger than
   about two minutes; `STALE · Xm` is used only when that payload itself is

@@ -137,12 +137,12 @@
     // An honest wait state: his brain is really running on this device right now.
     signal('think');
     let made = 0;
-    const show = () => { state.textContent = 'Zeref is thinking on your device… ' + Math.round((Date.now() - started) / 1000) + 's' + (made ? ' · ' + made + ' tokens' : ''); };
+    const show = () => { state.textContent = 'Zeref is thinking on your device… ' + Math.round((Date.now() - started) / 1000) + 's' + (made ? ' · ' + made + ' word pieces' : ''); };
     show();
     const tick = setInterval(show, 500);
     try {
       const h = history();
-      const r = await brain.talk(h, text, { onToken: (t, gen) => { made = gen.length; } });
+      const r = await brain.talk(h, text, { onPiece: (t, gen) => { made = gen.length; } });
       remember([...h, { role: 'user', content: text }, { role: 'assistant', content: r.text }]);
       const step = manifest.provenance.training_steps;
       const pinNote = liveStep !== null && liveStep !== step ? ' · his pin is now step ' + liveStep + ' (this page still runs step ' + step + ')' : '';

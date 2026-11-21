@@ -47,7 +47,7 @@ export function applyRules(logits, gen) {
 export function argmax(a) { let m = 0; for (let j = 1; j < a.length; j++) if (a[j] > a[m]) m = j; return m; }
 
 // session: an onnxruntime InferenceSession of the step graph; dims: manifest.dims.
-export async function generate(ort, session, dims, promptIds, { maxNewTokens = MAX_NEW_TOKENS, onToken } = {}) {
+export async function generate(ort, session, dims, promptIds, { maxNewTokens = MAX_NEW_TOKENS, onPiece } = {}) {
   const { n_layers: L, n_heads: H, head_dim: Dh, state_width: W, hebbian_dim: n, eos_id } = dims;
   if (promptIds.length + maxNewTokens > dims.max_seq_len) throw new Error('context limit exceeded');
   let pk = new ort.Tensor('float32', new Float32Array(0), [L, 1, H, 0, Dh]);
@@ -65,7 +65,7 @@ export async function generate(ort, session, dims, promptIds, { maxNewTokens = M
   for (let i = 0; i < maxNewTokens; i++) {
     const t = argmax(applyRules(logits, gen));
     gen.push(t);
-    if (onToken) onToken(t, gen);
+    if (onPiece) onPiece(t, gen);
     if (t === eos_id) break;
     await step([t]);
   }

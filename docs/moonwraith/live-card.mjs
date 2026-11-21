@@ -1,12 +1,20 @@
-// Live profile card: poll the bridge's public liveness endpoint and paint
-// the status / growth / expression legend from that payload. chat.js keeps
-// its three fetches (live.json, feed status, guest door). This module owns
-// the liveness fetch. If the endpoint cannot be read (CORS, network, bad
-// schema), fall back to the committed zeref/ files. No Math.random.
-// LIVE describes payload freshness (generated_at); SIMULATED / RECORDED /
+// Live profile card: poll Zeref's public GitHub-hosted feeds and paint the
+// status / growth / expression legend. chat.js keeps its own fetches; this
+// module owns the live-card poll. Sources (raw GitHub, CORS-readable):
+//   - zeref/live.json on this repo: the hourly bot snapshot (brain step the
+//     owner bridge serves, pin, last words; heartbeat/spark when published)
+//   - The-beast-box- zeref-diary branch zeref/latest.json: his RECORDED
+//     hash-chained diary (tick, mood, stage), newer than the hourly snapshot
+// The old public liveness endpoint on beastboxcosmos.xyz is offline since
+// 2026-11-20 (Vercel 402), so it is no longer called (LIVENESS_URL = null).
+// livenessToLive() still maps that schema if a future source publishes it.
+// No Math.random. LIVE describes payload freshness; SIMULATED / RECORDED /
 // PINNED describe origin and are never dropped.
 
-export const LIVENESS_URL = 'https://www.beastboxcosmos.xyz/api/cosmos/liveness';
+export const LIVENESS_URL = null;
+export const LIVE_JSON_URL = 'https://raw.githubusercontent.com/NavisWORLD/NavisWORLD/main/zeref/live.json';
+export const DIARY_LATEST_URL = 'https://raw.githubusercontent.com/NavisWORLD/The-beast-box-/zeref-diary/zeref/latest.json';
+export const DIARY_LABEL = 'RECORDED (hash-chained diary, zeref-diary branch)';
 export const FRESH_MS = 2 * 60 * 1000;
 export const POLL_MS = 15 * 1000;
 
@@ -142,13 +150,16 @@ export function renderStatus(live) {
   const hb = (live && live.heartbeat) || {};
   const dy = (live && live.diary) || {};
   const sp = (live && live.spark) || {};
-  const tick = hb.recorded_tick != null ? hb.recorded_tick : 'unavailable';
-  const tickLab = shortProvenance(hb.label) || 'unavailable';
+  // Heartbeat tick when published; otherwise his RECORDED diary tick, named as such (never relabelled).
+  const hbTick = hb.recorded_tick != null;
+  const diaryTick = !hbTick && dy.tick != null;
+  const tick = hbTick ? hb.recorded_tick : (diaryTick ? dy.tick : 'unavailable');
+  const tickLab = hbTick ? (shortProvenance(hb.label) || 'unavailable') : (diaryTick ? 'diary, ' + (shortProvenance(dy.label) || 'RECORDED') : 'unavailable');
   const mood = dy.mood ? dy.mood : 'mood unpublished';
   const moodLab = shortProvenance(dy.label) || (dy.mood ? 'RECORDED' : 'unavailable');
   const sparkState = sp.state || 'unavailable';
   const sparkLab = shortProvenance(sp.label) || sparkState;
-  return 'tick ' + tick + ' (' + tickLab + ') · ' + mood + ' (' + moodLab + ') · spark ' + sparkState + ' (' + sparkLab + ')';
+  return (diaryTick ? 'diary tick ' : 'tick ') + tick + ' (' + tickLab + ') · ' + mood + ' (' + moodLab + ') · spark ' + sparkState + ' (' + sparkLab + ')';
 }
 
 export function renderGrowth(live, badge) {
@@ -187,7 +198,7 @@ export function applyLiveCardDom(doc, live, badge, source) {
   const grow = renderGrowth(live, badge);
   if (status) {
     status.textContent = line;
-    status.title = (source === 'liveness' ? 'from public liveness' : 'fallback: committed zeref/ files') + ' — ' + line;
+    status.title = (source === 'github' ? 'from public GitHub feeds (live.json + RECORDED diary)' : source === 'liveness' ? 'from public liveness' : 'fallback: committed zeref/ files') + ' — ' + line;
   }
   if (growth) {
     growth.textContent = grow;
@@ -197,13 +208,48 @@ export function applyLiveCardDom(doc, live, badge, source) {
   }
 }
 
+/**
+ * Merge the hourly zeref/live.json snapshot with his RECORDED diary latest.json.
+ * Freshness (generated_at) is the newest real timestamp actually used.
+ */
+export function githubToLive(card, diary) {
+  const live = card && typeof card === 'object' ? JSON.parse(JSON.stringify(card)) : {};
+  live.source = 'github';
+  let stamp = live.fetched_at || null;
+  if (diary && diary.schema === 'zeref-diary/v1' && diary.tick != null) {
+    const recent = (Array.isArray(diary.recent) && diary.recent[0]) || {};
+    live.diary = {
+      ...(live.diary || {}),
+      tick: diary.tick,
+      xp: diary.xp != null ? diary.xp : null,
+      bond: diary.bond != null ? diary.bond : null,
+      stage: diary.stage != null ? diary.stage : null,
+      stage_name: diary.stage_name || null,
+      mood: recent.mood || (live.diary || {}).mood || null,
+      place: recent.place || (live.diary || {}).place || null,
+      last_tick_at: diary.last_tick_at || null,
+      learning: diary.learning || null,
+      label: DIARY_LABEL,
+    };
+    const d = diary.generated_at || diary.last_tick_at;
+    if (d && (!stamp || Date.parse(d) > Date.parse(stamp))) stamp = d;
+  }
+  if (!live.brain && !live.diary) return null;
+  live.generated_at = stamp;
+  live.fetched_at = stamp;
+  return live;
+}
+
 export async function fetchLiveness(fetchImpl = fetch) {
-  const r = await fetchImpl(LIVENESS_URL, { cache: 'no-store', credentials: 'omit' });
-  if (!r.ok) throw new Error('HTTP ' + r.status);
-  const doc = await r.json();
-  const live = livenessToLive(doc);
-  if (!live) throw new Error('unexpected liveness schema');
-  return { live, source: 'liveness', doc };
+  const get = async (u) => {
+    const r = await fetchImpl(u, { cache: 'no-store', credentials: 'omit' });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return r.json();
+  };
+  const [card, diary] = await Promise.all([get(LIVE_JSON_URL).catch(() => null), get(DIARY_LATEST_URL).catch(() => null)]);
+  const live = githubToLive(card, diary);
+  if (!live) throw new Error('public feeds unavailable');
+  return { live, source: 'github', doc: null };
 }
 
 /**
@@ -235,14 +281,14 @@ export function startLiveCard({
     if (stopped) return;
     try {
       const got = await fetchLiveness(fetchImpl);
-      emit(got.live, 'liveness');
+      emit(got.live, got.source);
     } catch {
       if (typeof loadFallback === 'function') {
         try {
           const fb = await loadFallback();
           emit((fb && fb.live) || {}, 'fallback');
         } catch {
-          emit(lastLive || {}, lastSource === 'liveness' ? 'liveness' : 'fallback');
+          emit(lastLive || {}, lastSource);
         }
       } else {
         emit(lastLive || {}, lastSource);
