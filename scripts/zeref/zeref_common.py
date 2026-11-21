@@ -19,6 +19,9 @@ SITE = "https://www.beastboxcosmos.xyz"
 WORLD_LIVE = SITE + "/api/world/live"
 TALK = SITE + "/api/guest/forever"
 DIARY_LATEST = "https://raw.githubusercontent.com/NavisWORLD/The-beast-box-/zeref-diary/zeref/latest.json"
+# Public bridge health (no token): the step/sha the owner bridge actually serves. Read server-side by the
+# Action; it sends no CORS header, so browsers cannot read it directly.
+BRIDGE_HEALTH = "https://cosmos-owner-bridge-production.up.railway.app/healthz"
 PIN_JSON = "https://raw.githubusercontent.com/NavisWORLD/The-beast-box-/main/apps/beastbox-cloud/lib/rawrphos-public-pin.json"
 BEAST_BOX_REPO = "https://github.com/NavisWORLD/The-beast-box-"
 PROFILE_REPO = "NavisWORLD/NavisWORLD"

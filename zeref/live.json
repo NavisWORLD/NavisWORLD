@@ -1,6 +1,6 @@
 {
  "schema": "navisworld-zeref-live-card/v1",
- "fetched_at": "2026-11-21T21:07:29Z",
+ "fetched_at": "2026-11-21T22:29:40Z",
  "sources": {
   "world_live": {
    "url": "https://www.beastboxcosmos.xyz/api/world/live",
@@ -12,6 +12,10 @@
   },
   "pin": {
    "url": "https://raw.githubusercontent.com/NavisWORLD/The-beast-box-/main/apps/beastbox-cloud/lib/rawrphos-public-pin.json",
+   "error": null
+  },
+  "bridge_health": {
+   "url": "https://cosmos-owner-bridge-production.up.railway.app/healthz",
    "error": null
   },
   "last_said": {
@@ -26,12 +30,12 @@
   "signals": null
  },
  "diary": {
-  "label": null,
-  "tick": 1138,
+  "label": "RECORDED (zeref-diary branch, hash-chained)",
+  "tick": 1139,
   "stage_name": "Crescent Sovereign",
   "mood": "sleepy",
-  "place": "Echo Prism",
-  "last_tick_at": "2026-11-21T21:06:34.361Z",
+  "place": "Lattice Arch",
+  "last_tick_at": "2026-11-21T21:48:30.049Z",
   "seed_label": "IBM seed RECORDED on IBM hardware (ibm_marrakesh job db4te7slf4us73c3888g, counts never re-run). Not a live quantum link."
  },
  "spark": {
@@ -41,9 +45,9 @@
   "tick": null
  },
  "brain": {
-  "label": null,
-  "live_step": null,
-  "live_sha_prefix": null,
+  "label": "PINNED (served step from the owner bridge /healthz)",
+  "live_step": 44784,
+  "live_sha_prefix": "113b94c09e7a",
   "pin_step": 44784,
   "pin_sha_prefix": "113b94c09e7a",
   "pin_release": "zeref-006-cycle-83-113b94c09e7a"
