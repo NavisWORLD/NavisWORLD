@@ -7,7 +7,9 @@ dry run). Every value comes from a fetch made in this run; a failed fetch
 shows "unavailable". No randomness, no invented numbers.
 
 Sources:
-  - https://www.beastboxcosmos.xyz/api/world/live   (heartbeat, spark, brain)
+  - https://www.beastboxcosmos.xyz/api/world/live   (heartbeat, spark, brain) -- offline since
+    2026-11-20 (Vercel 402); its fields then stay "unavailable"
+  - the owner bridge's public /healthz               (served step + sha, when world/live has none)
   - The-beast-box- zeref-diary branch zeref/latest.json (diary tick, mood)
   - The-beast-box- main rawrphos-public-pin.json      (pinned step)
   - Zeref's last reply: newest of his talk-door comments on this repo's
@@ -78,12 +80,27 @@ def collect(token: str | None) -> dict:
     live, live_err = z.get_json(z.WORLD_LIVE)
     diary, diary_err = z.get_json(z.DIARY_LATEST)
     pin, pin_err = z.get_json(z.PIN_JSON)
+    health, health_err = z.get_json(z.BRIDGE_HEALTH)
+    if health_err is None and not (isinstance(health, dict) and health.get("ready") is True
+                                   and isinstance(health.get("served_step"), int)):
+        health, health_err = None, "bridge not ready or no served_step"
     said_issue, said_err = last_said_from_issues(token)
     said_explore = last_said_from_explore()
     said = max([s for s in (said_issue, said_explore) if s and s.get("at")], key=lambda s: s["at"], default=None)
 
     links = dig(live, "links") or {}
     recent = (dig(diary, "recent") or [None])[0] or {}
+    # Brain step: world/live first; else what the bridge reports it serves (real, fetched this run).
+    live_step = dig(links, "brain", "step")
+    live_sha = dig(links, "brain", "checkpoint_sha256_prefix")
+    brain_label = dig(links, "brain", "label")
+    if live_step is None and health:
+        live_step = health["served_step"]
+        live_sha = (health.get("served_checkpoint_sha256") or "")[:12] or None
+        brain_label = "PINNED (served step from the owner bridge /healthz)"
+    diary_label = dig(links, "diary", "label")
+    if diary_label is None and diary_err is None and isinstance(diary, dict) and diary.get("tick") is not None:
+        diary_label = "RECORDED (zeref-diary branch, hash-chained)"
     out = {
         "schema": "navisworld-zeref-live-card/v1",
         "fetched_at": now,
@@ -91,6 +108,7 @@ def collect(token: str | None) -> dict:
             "world_live": {"url": z.WORLD_LIVE, "error": live_err},
             "diary": {"url": z.DIARY_LATEST, "error": diary_err},
             "pin": {"url": z.PIN_JSON, "error": pin_err},
+            "bridge_health": {"url": z.BRIDGE_HEALTH, "error": health_err},
             "last_said": {"error": said_err},
         },
         "heartbeat": {
@@ -101,7 +119,7 @@ def collect(token: str | None) -> dict:
             "signals": dig(links, "liveTick", "signals"),
         },
         "diary": {
-            "label": dig(links, "diary", "label"),
+            "label": diary_label,
             "tick": dig(diary, "tick"),
             "stage_name": dig(diary, "stage_name"),
             "mood": recent.get("mood"),
@@ -116,9 +134,9 @@ def collect(token: str | None) -> dict:
             "tick": dig(links, "spark", "tick"),
         },
         "brain": {
-            "label": dig(links, "brain", "label"),
-            "live_step": dig(links, "brain", "step"),
-            "live_sha_prefix": dig(links, "brain", "checkpoint_sha256_prefix"),
+            "label": brain_label,
+            "live_step": live_step,
+            "live_sha_prefix": live_sha,
             "pin_step": dig(pin, "training_steps"),
             "pin_sha_prefix": (dig(pin, "checkpoint_sha256") or "")[:12] or None,
             "pin_release": dig(pin, "promotion", "release_tag"),
