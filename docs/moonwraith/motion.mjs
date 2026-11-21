@@ -260,8 +260,7 @@ export function planFromHex(hex, live = {}) {
       ? ['look', 'ear', 'perk', 'hop', 'stretch', 'curl', 'look', 'hop', 'ear']
       : ['look', 'ear', 'hop', 'look', 'stretch', 'curl', 'perk', 'ear', 'look'];
   const n = sleepy ? 7 + Math.floor(rnd() * 4) : 10 + Math.floor(rnd() * 6);
-  for (let i = 0; i < n; i++) {
-    const typ = bag[Math.floor(rnd() * bag.length)];
+  function act(typ) {
     const next = copyPose(pose);
     if (typ === 'pause') {
       Object.assign(next, rest);
@@ -334,6 +333,15 @@ export function planFromHex(hex, live = {}) {
       back.tail = 0;
       push('curl-back', back, 0.45 + rnd() * 0.3);
     }
+  }
+  for (let i = 0; i < n; i++) act(bag[Math.floor(rnd() * bag.length)]);
+  // Every idle loop carries at least one whole-body move (hop, stretch or tail curl). The draws above
+  // can miss all three (a sleepy bag has one curl in seven), so when they do, one more is drawn from the
+  // same seed: sleepy -> curl, otherwise a seeded pick from the body moves in this mood's bag. Plans that
+  // already have one are unchanged.
+  if (!acts.some((a) => a.type === 'hop-up' || a.type === 'stretch' || a.type === 'curl')) {
+    const body = bag.filter((b) => b === 'hop' || b === 'stretch' || b === 'curl');
+    act(body[Math.floor(rnd() * body.length)]);
   }
 
   Object.assign(pose, rest);
