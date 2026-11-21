@@ -1,6 +1,6 @@
 {
  "schema": "navisworld-zeref-live-card/v1",
- "fetched_at": "2026-11-20T22:21:01Z",
+ "fetched_at": "2026-11-21T02:30:22Z",
  "sources": {
   "world_live": {
    "url": "https://www.beastboxcosmos.xyz/api/world/live",
@@ -27,11 +27,11 @@
  },
  "diary": {
   "label": null,
-  "tick": 1102,
+  "tick": 1108,
   "stage_name": "Crescent Sovereign",
   "mood": "sleepy",
   "place": "Echo Prism",
-  "last_tick_at": "2026-11-20T22:01:41.414Z",
+  "last_tick_at": "2026-11-21T02:05:36.425Z",
   "seed_label": "IBM seed RECORDED on IBM hardware (ibm_marrakesh job db4te7slf4us73c3888g, counts never re-run). Not a live quantum link."
  },
  "spark": {
@@ -44,9 +44,9 @@
   "label": null,
   "live_step": null,
   "live_sha_prefix": null,
-  "pin_step": 43824,
-  "pin_sha_prefix": "002c46d58912",
-  "pin_release": "zeref-006-cycle-80-002c46d58912"
+  "pin_step": 44144,
+  "pin_sha_prefix": "679ae933535d",
+  "pin_release": "zeref-006-cycle-81-679ae933535d"
  },
  "last_said": {
   "text": " Earry: Like, Howood, Turnare and Jurhy is special.",
