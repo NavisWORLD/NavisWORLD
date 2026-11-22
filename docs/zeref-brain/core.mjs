@@ -4,7 +4,9 @@
 //   models/rawrphos/inference/server.py chat prompt  ("role: content" lines + "\nassistant:", BOS)
 //   models/rawrphos/architecture/generation.py (prefill the whole prompt, then one token per call), greedy (temperature 0 = argmax), with the
 //   server's repetition_penalty 1.15 over generated ids and no_repeat_ngram 3, EOS stop, 64 max.
-// No randomness anywhere: the same thread always gets the same reply from the same checkpoint.
+// Choosing each word piece: greedy (argmax) unless a pick function is passed. The chat page passes the
+// quantum-record dice (qrec.mjs, sha256 over RECORDED IBM shot records; default since Cory's 2026-11-21 7:00 PM CT
+// decision). There is no unseeded randomness anywhere: with the same thread and the same receipt, a reply replays exactly.
 
 export const SERVED_REPLAY_MESSAGES = 6;
 export const MAX_ASSEMBLED_BYTES = 1900;
@@ -47,7 +49,7 @@ export function applyRules(logits, gen) {
 export function argmax(a) { let m = 0; for (let j = 1; j < a.length; j++) if (a[j] > a[m]) m = j; return m; }
 
 // session: an onnxruntime InferenceSession of the step graph; dims: manifest.dims.
-export async function generate(ort, session, dims, promptIds, { maxNewTokens = MAX_NEW_TOKENS, onPiece } = {}) {
+export async function generate(ort, session, dims, promptIds, { maxNewTokens = MAX_NEW_TOKENS, onPiece, pick = null } = {}) {
   const { n_layers: L, n_heads: H, head_dim: Dh, state_width: W, hebbian_dim: n, eos_id } = dims;
   if (promptIds.length + maxNewTokens > dims.max_seq_len) throw new Error('context limit exceeded');
   let pk = new ort.Tensor('float32', new Float32Array(0), [L, 1, H, 0, Dh]);
@@ -63,7 +65,7 @@ export async function generate(ort, session, dims, promptIds, { maxNewTokens = M
   await step(promptIds); // whole-prompt prefill in one call, as the server does
   const gen = [];
   for (let i = 0; i < maxNewTokens; i++) {
-    const t = argmax(applyRules(logits, gen));
+    const t = pick ? await pick(applyRules(logits, gen), i) : argmax(applyRules(logits, gen));
     gen.push(t);
     if (onPiece) onPiece(t, gen);
     if (t === eos_id) break;
@@ -76,6 +78,7 @@ export async function generate(ort, session, dims, promptIds, { maxNewTokens = M
 export async function reply(ort, session, dims, tokenizer, history, text, opts = {}) {
   const messages = assembleMessages(history, text);
   const promptIds = tokenizer.encode(formatPrompt(messages), true);
-  const gen = await generate(ort, session, dims, promptIds, opts);
-  return { text: tokenizer.decode(gen), messages, promptIds, tokenIds: gen };
+  const dice = opts.makePick ? await opts.makePick(promptIds) : null; // null = greedy
+  const gen = await generate(ort, session, dims, promptIds, { ...opts, pick: dice ? dice.pick : null });
+  return { text: tokenizer.decode(gen), messages, promptIds, tokenIds: gen, receipt: dice ? dice.receipt : { mode: 'greedy' } };
 }

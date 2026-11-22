@@ -6,6 +6,7 @@ import * as ort from './ort/ort.wasm.min.mjs';
 export { ort };
 import { ZerefTokenizer } from './tokenizer.mjs';
 import { reply } from './core.mjs';
+import { loadRecord } from './qrec.mjs';
 
 const BASE = new URL('./', import.meta.url);
 const CACHE = 'zeref-brain-v1';
@@ -92,13 +93,17 @@ export async function loadBrain(man, onProgress = () => {}) {
   const t0 = performance.now();
   let { buf, from } = await modelBytes(man, onProgress);
   const tokenizer = await verifiedTokenizer(man);
+  // The quantum-record dice (default reply mode). If the record can't be read or verified, the page says so
+  // and replies stay greedy; nothing is invented in its place.
+  let record = null, recordError = null;
+  try { record = await loadRecord(BASE); } catch (err) { recordError = err && err.message ? err.message : 'quantum record unavailable'; }
   onProgress({ phase: 'starting his brain', loaded: man.onnx.bytes, total: man.onnx.bytes });
   const session = await ort.InferenceSession.create(buf, { executionProviders: ['wasm'], graphOptimizationLevel: 'disabled' });
   const cached = from === 'download' ? await storeModel(man, buf) : true;
   buf = null;
   return {
     manifest: man, from, cached, seconds: (performance.now() - t0) / 1000,
-    sha256: man.onnx.sha256,
+    sha256: man.onnx.sha256, record, recordError,
     talk: (history, text, opts) => reply(ort, session, man.dims, tokenizer, history, text, opts),
   };
 }

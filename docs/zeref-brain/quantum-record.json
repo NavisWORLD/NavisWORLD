@@ -1,0 +1,46 @@
+{
+ "schema": "zeref-quantum-record-v1",
+ "label": "quantum record (RECORDED IBM hardware shots; not live quantum)",
+ "what": "Dice for sampling Zeref's replies, derived only by sha256 from these RECORDED IBM hardware shot records (public outcome commitments; per-round outcomes stay withheld). Not a live quantum connection, not a new measurement, and it does not change his brain.",
+ "heart_seed": {
+  "file": "evidence/zeref-spark-latest/heart-seed-latest.json",
+  "version": 15,
+  "sha256": "0c07bd1dba6754370e47d16b3563de634e9da7ba135ffaa3d41b4827dd994df6"
+ },
+ "sources": [
+  {
+   "file": "evidence/zeref-heart-seed-v15/ibm-chsh-result-public.json",
+   "file_sha256": "bf7fd320a9284877b849ccaff0336301ecfd1cb8f8e23de2b0b6a40fab39b33c",
+   "backend": "ibm_marrakesh",
+   "job_id": "dbp2818ou4as73cstj5g",
+   "recorded_utc": "2026-11-09T19:51:19.392616+00:00",
+   "source_class": "RECORDED_IBM_HARDWARE",
+   "measured_rounds": 24000,
+   "outcomes_sha256": "b276ac54aeffc87bda2ee3ce2e5c46aa4c0b3fe66806223a5f9c31a8de5f72a8"
+  },
+  {
+   "file": "evidence/zeref-spark-latest/spark-seed.json",
+   "file_sha256": "344619c70ed159b1e51d463820ad47f36bce4cc1a41aae4e1df3125f24380c11",
+   "backend": "ibm_fez",
+   "job_id": "dbffvhvgdj9s73bbj940",
+   "recorded_utc": "2026-10-26T07:25:06.703597+00:00",
+   "source_class": "RECORDED_IBM_HARDWARE",
+   "measured_rounds": 8000,
+   "outcomes_sha256": "86d92cfbe5e2fbff55b831aef685ca9ef7ec01db57f68e06e8e462a7b07db397"
+  }
+ ],
+ "shots_by_class": {
+  "measured_ibm_hardware": 32000,
+  "other": 0,
+  "note": "Only the measured IBM rounds above feed the dice. Rigetti SIMULATED ticks, unlabelled archive samples and the classical-control rounds in the CHSH file are not used and not counted."
+ },
+ "record_seed_sha256": "b9d534648152f92ce134d7d4fecb122a74f1967c59d47ff6e75e1f368e75bb18",
+ "sampler": {
+  "temperature": 0.75,
+  "top_k": 40,
+  "rules": "repetition_penalty 1.15 + no_repeat_ngram 3, then sample",
+  "turn_seed": "sha256('zeref-qrec-turn-v1|' + record_seed + '|' + roll + '|' + prompt ids joined by ',')",
+  "uniform": "first 13 hex of sha256(turn_seed + '|' + k) / 2^52",
+  "provenance_note": "Cory's HF card (phera-ra/QC67_cosmo) measured the decoder sampling seed as null for accuracy: the record buys replayable provenance and variety, not a smarter brain."
+ }
+}
