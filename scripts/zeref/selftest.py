@@ -193,6 +193,10 @@ _pin_steps = bman.get("provenance", {}).get("training_steps")
 check(isinstance(_pin_steps, int) and len(bman.get("provenance", {}).get("checkpoint_sha256", "")) == 64
       and all(c["bytes"] < 50 * 1024 * 1024 for c in bman["onnx"]["chunks"]) and sum(c["bytes"] for c in bman["onnx"]["chunks"]) == bman["onnx"]["bytes"],
       "brain manifest names the pinned step + checkpoint sha; chunks under 50 MB add up")
+_pp = (brain_dir / "parity-page.mjs").read_text(encoding="utf-8")
+check("useCache: false" in _pp and "reply(ort, session" in _pp and "parity-reference.json" in _pp and "Math.random" not in _pp
+      and "http" not in _pp and "export async function modelBytes" in bjs and "await modelBytes(man, onProgress)" in bjs,
+      "replay test page: measure-only, greedy, same-origin, never replaces the chat's cached brain")
 # Quantum-record dice (Cory 2026-11-21 7:00 PM CT: default ON, ?greedy=1 / toggle for the old reply).
 import hashlib as _hl, subprocess as _sp
 _qjs = (brain_dir / "qrec.mjs").read_text(encoding="utf-8")
