@@ -193,6 +193,23 @@ _pin_steps = bman.get("provenance", {}).get("training_steps")
 check(isinstance(_pin_steps, int) and len(bman.get("provenance", {}).get("checkpoint_sha256", "")) == 64
       and all(c["bytes"] < 50 * 1024 * 1024 for c in bman["onnx"]["chunks"]) and sum(c["bytes"] for c in bman["onnx"]["chunks"]) == bman["onnx"]["bytes"],
       "brain manifest names the pinned step + checkpoint sha; chunks under 50 MB add up")
+# Quantum-record dice (Cory 2026-11-21 7:00 PM CT: default ON, ?greedy=1 / toggle for the old reply).
+import hashlib as _hl, subprocess as _sp
+_qjs = (brain_dir / "qrec.mjs").read_text(encoding="utf-8")
+_qraw = (brain_dir / "quantum-record.json").read_bytes()
+_qrec = json.loads(_qraw)
+check(_hl.sha256(_qraw).hexdigest() in _qjs, "quantum-record.json matches the sha256 pinned in qrec.mjs")
+check(_qrec["schema"] == "zeref-quantum-record-v1" and all(x["source_class"] == "RECORDED_IBM_HARDWARE" for x in _qrec["sources"])
+      and _qrec["shots_by_class"]["measured_ibm_hardware"] == sum(x["measured_rounds"] for x in _qrec["sources"]) and _qrec["shots_by_class"]["other"] == 0
+      and _hl.sha256("|".join(["zeref-quantum-record-v1", _qrec["heart_seed"]["sha256"], *[x["outcomes_sha256"] for x in _qrec["sources"]]]).encode()).hexdigest() == _qrec["record_seed_sha256"],
+      "quantum record: RECORDED IBM sources only, shots counted by class, record seed recomputes")
+check("live quantum" not in _qrec["label"].replace("not live quantum", "") and "Math.random" not in _qjs + js and "crypto.subtle.digest('SHA-256'" in _qjs
+      and "not live quantum" in _qjs and "live_quantum: false" in _qjs, "dice are sha256 over the record, labelled not live quantum, no unseeded randomness")
+check("get('greedy') !== '1'" in js and "qm.modeLabel(brain.record)" in js and "receipt: " in js and "replayable, not live quantum" in js
+      and "greedy (the same thread always gets the same reply)" in js and "pick ? await pick(applyRules(logits, gen), i)" in cjs,
+      "dice are the default; ?greedy=1 and the toggle give greedy; every reply shows its mode and receipt")
+_qv = _sp.run(["node", "scripts/zeref/qrec_vectors.mjs"], cwd=root, text=True, capture_output=True)
+check(_qv.returncode == 0 and _qv.stdout.startswith("ok qrec vectors"), f"shared dice vectors reproduce in JS: {_qv.stdout.strip()} {_qv.stderr.strip()[:200]}")
 check("argmax(applyRules(logits, gen))" in cjs and "Math.fround(1.15)" in cjs and "Math.random" not in cjs + bjs, "greedy decoding with the server's repetition rules; no randomness")
 check("innerHTML" not in js and "eval(" not in js.replace("wasm-unsafe-eval", "") and "Math.random" not in js, "no HTML injection, no randomness")
 check("t.textContent = text" in js and "white-space:pre-wrap" in css, "replies shown verbatim (textContent, whitespace kept)")
