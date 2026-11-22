@@ -1,11 +1,11 @@
 {
  "schema": "navisworld-zeref-chat/v1",
- "fetched_at": "2026-11-22T16:25:38Z",
+ "fetched_at": "2026-11-22T22:33:29Z",
  "status": {
   "tick": null,
   "heartbeat_label": null,
-  "mood": "exploring",
-  "brain_step": 45424,
+  "mood": "sleepy",
+  "brain_step": 45744,
   "period": 7.0
  },
  "exchanges": [
