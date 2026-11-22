@@ -193,6 +193,10 @@ _pin_steps = bman.get("provenance", {}).get("training_steps")
 check(isinstance(_pin_steps, int) and len(bman.get("provenance", {}).get("checkpoint_sha256", "")) == 64
       and all(c["bytes"] < 50 * 1024 * 1024 for c in bman["onnx"]["chunks"]) and sum(c["bytes"] for c in bman["onnx"]["chunks"]) == bman["onnx"]["bytes"],
       "brain manifest names the pinned step + checkpoint sha; chunks under 50 MB add up")
+_pp = (brain_dir / "parity-page.mjs").read_text(encoding="utf-8")
+check("useCache: false" in _pp and "reply(ort, session" in _pp and "parity-reference.json" in _pp and "Math.random" not in _pp
+      and "http" not in _pp and "export async function modelBytes" in bjs and "await modelBytes(man, onProgress)" in bjs,
+      "replay test page: measure-only, greedy, same-origin, never replaces the chat's cached brain")
 check("argmax(applyRules(logits, gen))" in cjs and "Math.fround(1.15)" in cjs and "Math.random" not in cjs + bjs, "greedy decoding with the server's repetition rules; no randomness")
 check("innerHTML" not in js and "eval(" not in js.replace("wasm-unsafe-eval", "") and "Math.random" not in js, "no HTML injection, no randomness")
 check("t.textContent = text" in js and "white-space:pre-wrap" in css, "replies shown verbatim (textContent, whitespace kept)")

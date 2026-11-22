@@ -3,6 +3,7 @@
 // against the sha256 values in manifest.json before use; a mismatch stops everything (no fallback).
 // The verified file is kept in Cache Storage, keyed by its sha256, so the next visit skips the download.
 import * as ort from './ort/ort.wasm.min.mjs';
+export { ort };
 import { ZerefTokenizer } from './tokenizer.mjs';
 import { reply } from './core.mjs';
 
@@ -18,8 +19,8 @@ async function sha256Hex(buf) {
   return Array.from(d, (b) => b.toString(16).padStart(2, '0')).join('');
 }
 
-export async function readManifest() {
-  const r = await fetch(new URL('manifest.json', BASE), { cache: 'no-cache' });
+export async function readManifest(name = 'manifest.json') {
+  const r = await fetch(new URL(name, BASE), { cache: 'no-cache' });
   if (!r.ok) throw new Error('manifest HTTP ' + r.status);
   return r.json();
 }
@@ -48,10 +49,11 @@ async function storeModel(man, buf) {
   } catch { return false; }
 }
 
-// onProgress({phase, loaded, total})
-export async function loadBrain(man, onProgress = () => {}) {
-  const t0 = performance.now();
-  let buf = await cachedModel(man), from = 'cache';
+// The verified ONNX bytes for a manifest (cache first when useCache, else download + sha256 checks).
+// Shared by loadBrain and the replay test page (parity.html), which passes useCache:false so a test
+// build never replaces the page's cached brain. onProgress({phase, loaded, total})
+export async function modelBytes(man, onProgress = () => {}, { useCache = true } = {}) {
+  let buf = useCache ? await cachedModel(man) : null, from = 'cache';
   if (buf) onProgress({ phase: 'verified from this device\'s cache', loaded: man.onnx.bytes, total: man.onnx.bytes });
   else {
     from = 'download';
@@ -74,11 +76,22 @@ export async function loadBrain(man, onProgress = () => {}) {
     onProgress({ phase: 'checking sha256', loaded: off, total: man.onnx.bytes });
     if (off !== man.onnx.bytes || (await sha256Hex(buf)) !== man.onnx.sha256) throw new Error('rebuilt brain failed its sha256 check');
   }
+  return { buf, from };
+}
+
+export async function verifiedTokenizer(man) {
   const tr = await fetch(new URL(man.tokenizer.file, BASE), { cache: 'no-cache' });
   if (!tr.ok) throw new Error('tokenizer HTTP ' + tr.status);
   const tbuf = new Uint8Array(await tr.arrayBuffer());
   if ((await sha256Hex(tbuf)) !== man.tokenizer.sha256) throw new Error('tokenizer failed its sha256 check');
-  const tokenizer = new ZerefTokenizer(new TextDecoder().decode(tbuf));
+  return new ZerefTokenizer(new TextDecoder().decode(tbuf));
+}
+
+// onProgress({phase, loaded, total})
+export async function loadBrain(man, onProgress = () => {}) {
+  const t0 = performance.now();
+  let { buf, from } = await modelBytes(man, onProgress);
+  const tokenizer = await verifiedTokenizer(man);
   onProgress({ phase: 'starting his brain', loaded: man.onnx.bytes, total: man.onnx.bytes });
   const session = await ort.InferenceSession.create(buf, { executionProviders: ['wasm'], graphOptimizationLevel: 'disabled' });
   const cached = from === 'download' ? await storeModel(man, buf) : true;

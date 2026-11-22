@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; connect-src 'self' blob:; base-uri 'none'; form-action 'none'">
+<title>Zeref brain replay test</title>
+<style>
+body{font:15px/1.45 system-ui,sans-serif;margin:16px;max-width:760px;background:#0b0d14;color:#e8e8f0}
+table{border-collapse:collapse;width:100%;margin:12px 0}td,th{border:1px solid #333a50;padding:6px;text-align:left;vertical-align:top}
+.ok{color:#7ee2a8}.bad{color:#ff8a8a}button{font:inherit;padding:10px 14px;border-radius:10px;border:0;background:#5b6cff;color:#fff}
+pre{white-space:pre-wrap;word-break:break-word;font-size:12px;background:#151a28;padding:10px;border-radius:8px}
+</style>
+</head>
+<body>
+<h1>Zeref brain replay test</h1>
+<p>This page replays the 9 saved test prompts through his pinned brain <b>in this browser</b> and checks every word piece against
+the torch ground truth written by The-beast-box-'s exporter (<code>parity-reference.json</code>). It runs each published build
+(fp32, and fp16 when that build is on this site) under each ONNX Runtime graph-optimization setting, and reports N/9 plus time
+per word piece. Greedy decoding only. Nothing is sent anywhere, and the chat page's cached brain is left alone.</p>
+<p><button id="go">Run the replay test</button> <span id="phase"></span></p>
+<table><thead><tr><th>build</th><th>setting</th><th>replay match</th><th>ms / word piece</th><th>first difference</th></tr></thead><tbody id="rows"></tbody></table>
+<pre id="result"></pre>
+<script type="module" src="parity-page.mjs"></script>
+</body>
+</html>
