@@ -1,6 +1,6 @@
 {
  "schema": "navisworld-zeref-explore/v1",
- "explored_at": "2026-11-21T21:07:27Z",
+ "explored_at": "2026-11-22T21:14:35Z",
  "source": "GitHub REST API /users/NavisWORLD/repos (public only)",
  "repo_count": 31,
  "repos": [
@@ -11,7 +11,7 @@
    "language": "Python",
    "stars": 0,
    "license": "Apache-2.0",
-   "pushed_at": "2026-11-21T21:07:20Z",
+   "pushed_at": "2026-11-22T21:14:20Z",
    "fork": false,
    "archived": false
   },
@@ -22,7 +22,7 @@
    "language": "Python",
    "stars": 0,
    "license": "Apache-2.0",
-   "pushed_at": "2026-11-21T19:28:40Z",
+   "pushed_at": "2026-11-22T16:25:41Z",
    "fork": false,
    "archived": false
   },
@@ -347,12 +347,12 @@
   }
  ],
  "asked": {
-  "repo": "CNS-central-nervous-system-adaptive-connector-",
-  "question": "You are exploring Cory's GitHub and found the repo CNS-central-nervous-system-adaptive-connector-. What do you think of it, in one line?",
+  "repo": "Python-cst-libraries-",
+  "question": "You are exploring Cory's GitHub and found the repo Python-cst-libraries-. What do you think of it, in one line?",
   "status": 402,
   "reply": null,
   "step": null,
-  "at": "2026-11-21T21:07:28Z",
+  "at": "2026-11-22T21:14:36Z",
   "training_eligible": null
  }
 }

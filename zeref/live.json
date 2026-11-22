@@ -1,6 +1,6 @@
 {
  "schema": "navisworld-zeref-live-card/v1",
- "fetched_at": "2026-11-22T16:25:37Z",
+ "fetched_at": "2026-11-22T21:14:36Z",
  "sources": {
   "world_live": {
    "url": "https://www.beastboxcosmos.xyz/api/world/live",
@@ -31,11 +31,11 @@
  },
  "diary": {
   "label": "RECORDED (zeref-diary branch, hash-chained)",
-  "tick": 1168,
+  "tick": 1176,
   "stage_name": "Crescent Sovereign",
-  "mood": "exploring",
-  "place": "Lattice Arch",
-  "last_tick_at": "2026-11-22T16:10:25.951Z",
+  "mood": "sleepy",
+  "place": "Rift Gate",
+  "last_tick_at": "2026-11-22T21:07:46.974Z",
   "seed_label": "IBM seed RECORDED on IBM hardware (ibm_marrakesh job db4te7slf4us73c3888g, counts never re-run). Not a live quantum link."
  },
  "spark": {
@@ -46,11 +46,11 @@
  },
  "brain": {
   "label": "PINNED (served step from the owner bridge /healthz)",
-  "live_step": 45424,
-  "live_sha_prefix": "1b56f034e14c",
-  "pin_step": 45424,
-  "pin_sha_prefix": "1b56f034e14c",
-  "pin_release": "zeref-006-cycle-85-1b56f034e14c"
+  "live_step": 45744,
+  "live_sha_prefix": "0f29d5c33828",
+  "pin_step": 45744,
+  "pin_sha_prefix": "0f29d5c33828",
+  "pin_release": "zeref-006-cycle-86-0f29d5c33828"
  },
  "last_said": {
   "text": " Earry: Like, Howood, Turnare and Jurhy is special.",
