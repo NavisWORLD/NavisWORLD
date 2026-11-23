@@ -1,5 +1,5 @@
 // Zeref's mouth, run on this device. Shared by the page (brain.mjs) and the parity tool.
-// Ports, line for line, of The-beast-box-:
+// The prompt format and the generation loop are ports, line for line, of The-beast-box-:
 //   beastbox/guest_hebbian.py assemble_messages({}, history, text)  (no context fields: no senses)
 //   models/rawrphos/inference/server.py chat prompt  ("role: content" lines + "\nassistant:", BOS)
 //   models/rawrphos/architecture/generation.py (prefill the whole prompt, then one token per call), greedy (temperature 0 = argmax), with the
@@ -7,25 +7,36 @@
 // Choosing each word piece: greedy (argmax) unless a pick function is passed. The chat page passes the
 // quantum-record dice (qrec.mjs, sha256 over RECORDED IBM shot records; default since Cory's 2026-11-21 7:00 PM CT
 // decision). There is no unseeded randomness anywhere: with the same thread and the same receipt, a reply replays exactly.
+//
+// The history window is the one deliberate divergence from the server. The server caps the replay at
+// 6 messages / 1900 bytes. This page counts the assembled prompt in TOKENS against the whole window
+// (dims.max_seq_len minus room for the reply), so a real conversation stays in view until the brain
+// genuinely runs out of room. Byte counts are a bad proxy for BPE tokens, so the trim is measured
+// with the real tokenizer, never estimated. The manifest's decoding block still documents the old
+// 6 / 1900 until the next export refresh re-documents the new window; the page never reads those
+// values from the manifest.
 
-export const SERVED_REPLAY_MESSAGES = 6;
-export const MAX_ASSEMBLED_BYTES = 1900;
 export const MAX_NEW_TOKENS = 64;
 export const REPETITION_PENALTY = Math.fround(1.15); // float32, as torch applies it to float32 logits
 export const NO_REPEAT_NGRAM = 3;
 
-const utf8 = new TextEncoder();
 export function formatPrompt(messages) {
   return messages.map((m) => `${m.role}: ${m.content}`).join('\n') + '\nassistant:';
 }
-const formattedBytes = (messages) => utf8.encode(formatPrompt(messages)).length;
 
-export function assembleMessages(history, text) {
-  let hist = history.slice(-SERVED_REPLAY_MESSAGES);
+// The assembled prompt, oldest first, trimmed from the front until it fits the token budget.
+// countTokens is (text) => tokenizer.encode(text, true).length, the exact count the reply will
+// use; maxPromptTokens is dims.max_seq_len - MAX_NEW_TOKENS (1984 for this brain). The current
+// turn is never trimmed: only earlier history goes, oldest first, and the window always starts
+// on a user turn. A thread of short messages fits whole (a 40-turn thread of short messages is
+// about 1125 tokens); only a thread of very long messages is trimmed, and it is trimmed to the
+// most recent turns that fit.
+export function assembleMessages(history, text, countTokens, maxPromptTokens) {
+  let hist = history.slice();
   while (hist.length && hist[0].role !== 'user') hist = hist.slice(1);
-  const build = () => [...hist.slice(-SERVED_REPLAY_MESSAGES), { role: 'user', content: text }];
+  const build = () => [...hist, { role: 'user', content: text }];
   let msgs = build();
-  while (formattedBytes(msgs) > MAX_ASSEMBLED_BYTES && hist.length) {
+  while (msgs.length > 1 && countTokens(formatPrompt(msgs)) > maxPromptTokens) {
     hist = hist.slice(1);
     while (hist.length && hist[0].role !== 'user') hist = hist.slice(1);
     msgs = build();
@@ -76,7 +87,8 @@ export async function generate(ort, session, dims, promptIds, { maxNewTokens = M
 
 // One turn: history is [{role:'user'|'assistant', content}], text is the visitor's words.
 export async function reply(ort, session, dims, tokenizer, history, text, opts = {}) {
-  const messages = assembleMessages(history, text);
+  const maxPromptTokens = dims.max_seq_len - MAX_NEW_TOKENS;
+  const messages = assembleMessages(history, text, (s) => tokenizer.encode(s, true).length, maxPromptTokens);
   const promptIds = tokenizer.encode(formatPrompt(messages), true);
   const dice = opts.makePick ? await opts.makePick(promptIds) : null; // null = greedy
   const gen = await generate(ort, session, dims, promptIds, { ...opts, pick: dice ? dice.pick : null });
