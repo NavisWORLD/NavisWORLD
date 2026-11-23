@@ -11,7 +11,12 @@
   const LIVE = 'https://raw.githubusercontent.com/NavisWORLD/NavisWORLD/main/zeref/live.json';
   const FEED = 'https://raw.githubusercontent.com/NavisWORLD/NavisWORLD/main/zeref/feed/status.json';
   const KEY = 'zeref-browser-thread-v1';
-  const KEEP_TURNS = 40;
+  // The thread kept on this device is his archive behind the live window. The assembly is
+  // token-budgeted now (core.mjs), so the turn count is no longer the limit: 400 turns is about
+  // 800 messages, well inside localStorage, and the token budget still trims the assembly to
+  // what fits. Was 40, the bridge's live window; the page keeps more because it has no server
+  // archive to fall back on.
+  const KEEP_TURNS = 400;
   const MAX = 1000;
   const $ = (id) => document.getElementById(id);
   const log = $('log'), msg = $('msg'), send = $('send'), state = $('state'), bar = $('bar');
