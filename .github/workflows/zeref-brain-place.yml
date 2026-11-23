@@ -1,9 +1,9 @@
-# Zeref brain place (one-shot, manual dispatch only).
+# Zeref brain place (automated, on a 6-hour schedule).
 #
-# Places the refreshed in-browser brain (pin step 45744) into
-# docs/zeref-brain/ so navisworld.github.io serves the new brain. It runs
-# on a GitHub runner with git, because the Git Data API 422s on the two
-# 47 MB chunks and no clone may run on the local box.
+# Places the refreshed in-browser brain into docs/zeref-brain/ so
+# navisworld.github.io serves the new brain. It runs on a GitHub runner with
+# git, because the Git Data API 422s on the two 47 MB chunks and no clone may
+# run on the local box.
 #
 # Why the files come from a release, not the export artifact: a runner's
 # GITHUB_TOKEN is scoped to its own repo, so this workflow cannot download
@@ -12,26 +12,38 @@
 # same verified files as public release assets instead, and this workflow
 # downloads them over plain HTTPS with no credential at all.
 #
-# What it does, in order, failing closed at every step:
-#   1. Download the 6 brain files from release zeref-browser-brain-45744
-#      and the manifest from The-beast-box- main (raw URL).
-#   2. Verify every file's sha256 against that manifest: the 3 chunks
+# The chain (NEW BRAIN ALWAYS): the refresh PR merges (the gate) -> the
+# release workflow publishes zeref-browser-brain-<step> -> this workflow's
+# next scheduled run sees the pin is newer than the served brain and places
+# it. Nothing is placed until the release exists, and nothing is placed
+# unless every sha verifies against the manifest on main.
+#
+# What each run does, in order, failing closed at every step:
+#   1. Compare the live pin (The-beast-box- main, raw) with the served
+#      brain (docs/zeref-brain/manifest.json). If the served step is
+#      already the pin step, exit 0 quietly: already placed. If the pin is
+#      newer but the matching release does not exist yet, exit 0 quietly:
+#      the release is still pending, do not fail, do not place a partial
+#      brain. Only when the pin is newer AND the release exists does the
+#      run continue.
+#   2. Download the 6 brain files from release zeref-browser-brain-<pin
+#      step> and the manifest from The-beast-box- main (raw URL).
+#   3. Verify every file's sha256 against that manifest: the 3 chunks
 #      (size + sha, concatenated hash = manifest ONNX sha256),
 #      tokenizer.json by manifest sha, manifest.json byte-identical to
 #      main's copy, parity-reference.json by valid JSON + schema +
-#      checkpoint field (the manifest lists no sha for it). Any mismatch
-#      stops the run before docs/zeref-brain/ is touched.
-#   3. Copy exactly those 6 files into docs/zeref-brain/, commit (bot
+#      checkpoint field (the manifest lists no sha for it). The manifest
+#      itself must match the pin step and checkpoint. Any mismatch stops
+#      the run before docs/zeref-brain/ is touched.
+#   4. Copy exactly those 6 files into docs/zeref-brain/, commit (bot
 #      identity) and push to main. Nothing else in this repo is touched.
 #
-# No schedule: dispatched by hand after the release lands, and triggered
-# once by the push that lands this file on main. (workflow_dispatch alone
-# cannot run a workflow that exists only on a feature branch: GitHub's
+# Triggers: every 6 hours (matching the 006 round cadence), manual
+# workflow_dispatch, or push touching this file itself. (workflow_dispatch
+# alone cannot run a workflow that exists only on a feature branch: GitHub's
 # workflow index is built from the default branch, so dispatch by filename
-# 404s until this file reaches main. The push trigger is the runner-side
-# entry point now; dispatch works from main after it lands.
-# NOTE: do not put [skip ci] on the push that lands this file, or the push
-# trigger is skipped too and nothing runs.)
+# 404s until this file reaches main. NOTE: do not put [skip ci] on the push
+# that lands this file, or the push trigger is skipped too and nothing runs.)
 name: Zeref brain place
 
 on:
@@ -39,6 +51,8 @@ on:
   push:
     branches: [main]
     paths: [.github/workflows/zeref-brain-place.yml]
+  schedule:
+    - cron: '0 */6 * * *'
 
 permissions:
   contents: write
@@ -55,27 +69,59 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: main
+      - name: Compare the live pin with the served brain
+        id: compare
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -Eeuo pipefail
+          mkdir -p build
+          curl -fSL --retry 3 -o build/pin.json "https://raw.githubusercontent.com/NavisWORLD/The-beast-box-/main/apps/beastbox-cloud/lib/rawrphos-public-pin.json"
+          PIN_STEP=$(python -c "import json; print(json.load(open('build/pin.json'))['training_steps'])")
+          PIN_CKPT=$(python -c "import json; print(json.load(open('build/pin.json'))['checkpoint_sha256'])")
+          SERVED_STEP=$(python -c "import json; print(json.load(open('docs/zeref-brain/manifest.json'))['provenance']['training_steps'])")
+          echo "pin step: $PIN_STEP, served step: $SERVED_STEP"
+          echo "PIN_STEP=$PIN_STEP" >> "$GITHUB_ENV"
+          echo "PIN_CKPT=$PIN_CKPT" >> "$GITHUB_ENV"
+          if [ "$SERVED_STEP" -ge "$PIN_STEP" ]; then
+            echo "action=already" >> "$GITHUB_OUTPUT"
+            echo "served brain is current (step $SERVED_STEP); nothing to place"
+            exit 0
+          fi
+          TAG="zeref-browser-brain-$PIN_STEP"
+          if gh release view "$TAG" --repo NavisWORLD/The-beast-box- >/dev/null 2>&1; then
+            echo "action=place" >> "$GITHUB_OUTPUT"
+            echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+            echo "pin is newer and release $TAG exists; placing"
+          else
+            echo "action=pending" >> "$GITHUB_OUTPUT"
+            echo "pin is newer (step $PIN_STEP) but release $TAG does not exist yet; waiting for the release"
+            exit 0
+          fi
       - name: Download the brain release + the manifest from main (fail closed)
+        if: steps.compare.outputs.action == 'place'
         run: |
           set -Eeuo pipefail
           mkdir -p build/brain
-          BASE="https://github.com/NavisWORLD/The-beast-box-/releases/download/zeref-browser-brain-45744"
+          BASE="https://github.com/NavisWORLD/The-beast-box-/releases/download/${{ steps.compare.outputs.tag }}"
           for f in manifest.json parity-reference.json tokenizer.json zeref-step.onnx.part00 zeref-step.onnx.part01 zeref-step.onnx.part02; do
             curl -fSL --retry 3 -o "build/brain/$f" "$BASE/$f"
           done
           curl -fSL --retry 3 -o build/brain/manifest-main.json "https://raw.githubusercontent.com/NavisWORLD/The-beast-box-/main/evidence/zeref-browser-brain-001/manifest.json"
           ls -l build/brain/
       - name: Verify every file against the manifest (fail closed)
+        if: steps.compare.outputs.action == 'place'
         run: |
           set -Eeuo pipefail
           python - <<'PY'
-          import hashlib, json
+          import hashlib, json, os
           from pathlib import Path
           man = json.loads(Path("build/brain/manifest-main.json").read_text())
           p, o = man["provenance"], man["onnx"]
           steps, ckpt = p["training_steps"], p["checkpoint_sha256"]
           print(f"manifest on main: step {steps}, checkpoint {ckpt[:12]}, release {p['release_tag']}")
-          assert steps == 45744 and ckpt.startswith("0f29d5c33828"), "manifest is not the 45,744 refresh"
+          assert steps == int(os.environ["PIN_STEP"]), f"manifest step {steps} != pin step {os.environ['PIN_STEP']}"
+          assert ckpt == os.environ["PIN_CKPT"], "manifest checkpoint != pin checkpoint"
           def sha(path):
               return hashlib.sha256(Path(path).read_bytes()).hexdigest()
           assert sha("build/brain/manifest.json") == sha("build/brain/manifest-main.json"), "downloaded manifest differs from main"
@@ -95,10 +141,11 @@ jobs:
           print(f"tokenizer.json OK: {tok.stat().st_size} bytes sha {sha(tok)[:12]}")
           pr = json.loads(Path("build/brain/parity-reference.json").read_text())
           assert pr.get("schema") == "zeref-onnx-parity-reference-v1", f"parity schema unexpected: {pr.get('schema')}"
-          assert str(pr.get("checkpoint_sha256", "")).startswith("0f29d5c33828"), "parity checkpoint field is not the 45,744 checkpoint"
+          assert str(pr.get("checkpoint_sha256", "")).startswith(ckpt[:12]), "parity checkpoint field does not match the manifest checkpoint"
           print("parity-reference.json OK: valid JSON, schema + checkpoint match")
           PY
       - name: Place the 6 files into docs/zeref-brain and push
+        if: steps.compare.outputs.action == 'place'
         run: |
           set -Eeuo pipefail
           cp build/brain/manifest.json build/brain/parity-reference.json build/brain/tokenizer.json \
@@ -108,9 +155,15 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add docs/zeref-brain/manifest.json docs/zeref-brain/parity-reference.json docs/zeref-brain/tokenizer.json \
                   docs/zeref-brain/zeref-step.onnx.part00 docs/zeref-brain/zeref-step.onnx.part01 docs/zeref-brain/zeref-step.onnx.part02
-          git status --porcelain
-          [ -n "$(git status --porcelain)" ] || { echo "nothing changed; the new brain is already placed"; exit 0; }
-          git commit -q -m "zeref brain: serve pin step 45744 (zeref-006-cycle-86-0f29d5c33828)"
+          # Staged diff only: a bare `git status --porcelain` also lists the
+          # untracked build/ dir and would defeat this check (the old
+          # workflow failed red on an already-placed brain for exactly that
+          # reason; the compare step above is the first no-op guard, this is
+          # the second).
+          git diff --cached --quiet -- docs/zeref-brain/ && { echo "nothing changed; the new brain is already placed"; exit 0; }
+          STEPS=$(python -c "import json; print(json.load(open('build/brain/manifest-main.json'))['provenance']['training_steps'])")
+          RELTAG=$(python -c "import json; print(json.load(open('build/brain/manifest-main.json'))['provenance']['release_tag'])")
+          git commit -q -m "zeref brain: serve pin step $STEPS ($RELTAG)"
           for i in 1 2 3; do git pull -q --rebase origin main && git push -q origin HEAD:main && exit 0; sleep 5; done
           exit 1
       - name: Summary
@@ -119,6 +172,7 @@ jobs:
           {
             echo "### Zeref brain place"
             echo
-            python -c "import json; m=json.load(open('docs/zeref-brain/manifest.json')); p=m['provenance']; print(f\"placed: pin step {p['training_steps']}, checkpoint {p['checkpoint_sha256'][:12]}, release {p['release_tag']}\"); print(f\"onnx {m['onnx']['sha256'][:12]}, {m['onnx']['bytes']} bytes, {len(m['onnx']['chunks'])} chunks\")" 2>/dev/null || echo "placement did not complete"
+            echo "decision: ${{ steps.compare.outputs.action }}"
+            python -c "import json; m=json.load(open('docs/zeref-brain/manifest.json')); p=m['provenance']; print(f\"served: pin step {p['training_steps']}, checkpoint {p['checkpoint_sha256'][:12]}, release {p['release_tag']}\"); print(f\"onnx {m['onnx']['sha256'][:12]}, {m['onnx']['bytes']} bytes, {len(m['onnx']['chunks'])} chunks\")" 2>/dev/null || echo "placement did not complete"
             ls -l docs/zeref-brain/ | awk '{print $5, $9}'
           } >> "$GITHUB_STEP_SUMMARY"
