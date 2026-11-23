@@ -1,0 +1,124 @@
+# Zeref brain place (one-shot, manual dispatch only).
+#
+# Places the refreshed in-browser brain (pin step 45744) into
+# docs/zeref-brain/ so navisworld.github.io serves the new brain. It runs
+# on a GitHub runner with git, because the Git Data API 422s on the two
+# 47 MB chunks and no clone may run on the local box.
+#
+# Why the files come from a release, not the export artifact: a runner's
+# GITHUB_TOKEN is scoped to its own repo, so this workflow cannot download
+# a cross-repo workflow artifact (the export artifact lives in
+# The-beast-box-). The release workflow in The-beast-box- publishes the
+# same verified files as public release assets instead, and this workflow
+# downloads them over plain HTTPS with no credential at all.
+#
+# What it does, in order, failing closed at every step:
+#   1. Download the 6 brain files from release zeref-browser-brain-45744
+#      and the manifest from The-beast-box- main (raw URL).
+#   2. Verify every file's sha256 against that manifest: the 3 chunks
+#      (size + sha, concatenated hash = manifest ONNX sha256),
+#      tokenizer.json by manifest sha, manifest.json byte-identical to
+#      main's copy, parity-reference.json by valid JSON + schema +
+#      checkpoint field (the manifest lists no sha for it). Any mismatch
+#      stops the run before docs/zeref-brain/ is touched.
+#   3. Copy exactly those 6 files into docs/zeref-brain/, commit (bot
+#      identity) and push to main. Nothing else in this repo is touched.
+#
+# No schedule: dispatched by hand after the release lands, and triggered
+# once by the push that lands this file on main. (workflow_dispatch alone
+# cannot run a workflow that exists only on a feature branch: GitHub's
+# workflow index is built from the default branch, so dispatch by filename
+# 404s until this file reaches main. The push trigger is the runner-side
+# entry point now; dispatch works from main after it lands.
+# NOTE: do not put [skip ci] on the push that lands this file, or the push
+# trigger is skipped too and nothing runs.)
+name: Zeref brain place
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: [.github/workflows/zeref-brain-place.yml]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: zeref-brain-place
+  cancel-in-progress: false
+
+jobs:
+  place:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Download the brain release + the manifest from main (fail closed)
+        run: |
+          set -Eeuo pipefail
+          mkdir -p build/brain
+          BASE="https://github.com/NavisWORLD/The-beast-box-/releases/download/zeref-browser-brain-45744"
+          for f in manifest.json parity-reference.json tokenizer.json zeref-step.onnx.part00 zeref-step.onnx.part01 zeref-step.onnx.part02; do
+            curl -fSL --retry 3 -o "build/brain/$f" "$BASE/$f"
+          done
+          curl -fSL --retry 3 -o build/brain/manifest-main.json "https://raw.githubusercontent.com/NavisWORLD/The-beast-box-/main/evidence/zeref-browser-brain-001/manifest.json"
+          ls -l build/brain/
+      - name: Verify every file against the manifest (fail closed)
+        run: |
+          set -Eeuo pipefail
+          python - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          man = json.loads(Path("build/brain/manifest-main.json").read_text())
+          p, o = man["provenance"], man["onnx"]
+          steps, ckpt = p["training_steps"], p["checkpoint_sha256"]
+          print(f"manifest on main: step {steps}, checkpoint {ckpt[:12]}, release {p['release_tag']}")
+          assert steps == 45744 and ckpt.startswith("0f29d5c33828"), "manifest is not the 45,744 refresh"
+          def sha(path):
+              return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+          assert sha("build/brain/manifest.json") == sha("build/brain/manifest-main.json"), "downloaded manifest differs from main"
+          total = 0
+          for c in o["chunks"]:
+              f = Path("build/brain") / c["file"]
+              assert f.stat().st_size == c["bytes"], f"{c['file']}: size {f.stat().st_size} != {c['bytes']}"
+              assert sha(f) == c["sha256"], f"{c['file']}: sha mismatch"
+              total += c["bytes"]
+              print(f"chunk OK: {c['file']} {c['bytes']} bytes sha {c['sha256'][:12]}")
+          assert total == o["bytes"], f"chunk total {total} != {o['bytes']}"
+          joined = hashlib.sha256(b"".join((Path('build/brain') / c["file"]).read_bytes() for c in o["chunks"])).hexdigest()
+          assert joined == o["sha256"], "concatenated chunks do not hash to the manifest ONNX sha256"
+          print(f"onnx OK: {o['sha256'][:12]}, {o['bytes']} bytes, {len(o['chunks'])} chunks")
+          tok = Path("build/brain/tokenizer.json")
+          assert sha(tok) == man["tokenizer"]["sha256"], "tokenizer.json sha mismatch"
+          print(f"tokenizer.json OK: {tok.stat().st_size} bytes sha {sha(tok)[:12]}")
+          pr = json.loads(Path("build/brain/parity-reference.json").read_text())
+          assert pr.get("schema") == "zeref-onnx-parity-reference-v1", f"parity schema unexpected: {pr.get('schema')}"
+          assert str(pr.get("checkpoint_sha256", "")).startswith("0f29d5c33828"), "parity checkpoint field is not the 45,744 checkpoint"
+          print("parity-reference.json OK: valid JSON, schema + checkpoint match")
+          PY
+      - name: Place the 6 files into docs/zeref-brain and push
+        run: |
+          set -Eeuo pipefail
+          cp build/brain/manifest.json build/brain/parity-reference.json build/brain/tokenizer.json \
+             build/brain/zeref-step.onnx.part00 build/brain/zeref-step.onnx.part01 build/brain/zeref-step.onnx.part02 \
+             docs/zeref-brain/
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/zeref-brain/manifest.json docs/zeref-brain/parity-reference.json docs/zeref-brain/tokenizer.json \
+                  docs/zeref-brain/zeref-step.onnx.part00 docs/zeref-brain/zeref-step.onnx.part01 docs/zeref-brain/zeref-step.onnx.part02
+          git status --porcelain
+          [ -n "$(git status --porcelain)" ] || { echo "nothing changed; the new brain is already placed"; exit 0; }
+          git commit -q -m "zeref brain: serve pin step 45744 (zeref-006-cycle-86-0f29d5c33828)"
+          for i in 1 2 3; do git pull -q --rebase origin main && git push -q origin HEAD:main && exit 0; sleep 5; done
+          exit 1
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "### Zeref brain place"
+            echo
+            python -c "import json; m=json.load(open('docs/zeref-brain/manifest.json')); p=m['provenance']; print(f\"placed: pin step {p['training_steps']}, checkpoint {p['checkpoint_sha256'][:12]}, release {p['release_tag']}\"); print(f\"onnx {m['onnx']['sha256'][:12]}, {m['onnx']['bytes']} bytes, {len(m['onnx']['chunks'])} chunks\")" 2>/dev/null || echo "placement did not complete"
+            ls -l docs/zeref-brain/ | awk '{print $5, $9}'
+          } >> "$GITHUB_STEP_SUMMARY"
