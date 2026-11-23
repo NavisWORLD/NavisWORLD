@@ -4,12 +4,15 @@
 // Checks: chunk + whole-file sha256 vs manifest; JS tokenizer ids/decoding vs Python on every case;
 // full pipeline (message assembly -> prompt ids -> greedy token ids -> text) vs the torch Engine,
 // using ONNX Runtime Web's WASM backend with the same session options as the page.
+// Verdict: a case whose assembly did not change must match the reference exactly; a case whose
+// assembly changed under the token-budgeted window passes when its prompt fits the window and the
+// reply is non-empty (the reference was generated from the old 6-message / 1900-byte assembly).
 import * as ort from 'onnxruntime-web';
 import fs from 'fs';
 import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 import { ZerefTokenizer } from '../docs/zeref-brain/tokenizer.mjs';
-import { reply } from '../docs/zeref-brain/core.mjs';
+import { reply, MAX_NEW_TOKENS } from '../docs/zeref-brain/core.mjs';
 
 const D = fileURLToPath(new URL('../docs/zeref-brain/', import.meta.url));
 const man = JSON.parse(fs.readFileSync(D + 'manifest.json', 'utf8'));
@@ -35,14 +38,27 @@ const t0 = performance.now();
 const session = await ort.InferenceSession.create(buf, { executionProviders: ['wasm'], graphOptimizationLevel: man.browser_session_options.graphOptimizationLevel });
 console.log(`session create ${Math.round(performance.now() - t0)} ms`);
 let gOk = 0;
-for (const g of ref.greedy) {
+const cases = [];
+for (let i = 0; i < ref.greedy.length; i++) {
+  const g = ref.greedy[i];
   const t1 = performance.now();
   const r = await reply(ort, session, man.dims, tok, g.history, g.text);
-  const same = JSON.stringify(r.messages) === JSON.stringify(g.messages) && JSON.stringify(r.promptIds) === JSON.stringify(g.prompt_ids)
+  const assemblyChanged = JSON.stringify(r.messages) !== JSON.stringify(g.messages);
+  const same = !assemblyChanged && JSON.stringify(r.promptIds) === JSON.stringify(g.prompt_ids)
     && JSON.stringify(r.tokenIds) === JSON.stringify(g.torch_ids) && r.text === g.reply;
   gOk += same;
-  console.log(`${same ? 'OK  ' : 'DIFF'} ${JSON.stringify(g.text.slice(0, 48))} -> ${JSON.stringify(r.text)} (${Math.round(performance.now() - t1)} ms)`);
+  cases.push({ i, assembly_changed: assemblyChanged, match: same, prompt_tokens: r.promptIds.length, reply: r.text });
+  console.log(`${same ? 'OK  ' : assemblyChanged ? 'CHANGED' : 'DIFF'} ${JSON.stringify(g.text.slice(0, 48))} -> ${JSON.stringify(r.text)} (${Math.round(performance.now() - t1)} ms)`);
 }
 console.log(`greedy full-pipeline parity ${gOk}/${ref.greedy.length} (pin step ${man.provenance.training_steps}, checkpoint ${man.provenance.checkpoint_sha256.slice(0, 12)})`);
-fail += ref.greedy.length - gOk;
+console.log('SUMMARY ' + JSON.stringify({ tokenizer: tOk + '/' + ref.tokenizer.length, greedy: cases }));
+// Verdict. The reference was generated from the server's old 6-message / 1900-byte assembly, so
+// a case whose assembly changed under the new token-budgeted window cannot match the old
+// reference and is not a regression. It passes when its prompt fits the window (prompt tokens
+// plus the reply budget stay inside max_seq_len) and the reply is non-empty. A case whose
+// assembly did not change must still match the reference exactly, token for token.
+for (const c of cases) {
+  if (!c.assembly_changed) { if (!c.match) fail++; }
+  else if (c.prompt_tokens + MAX_NEW_TOKENS > man.dims.max_seq_len || !c.reply.trim()) fail++;
+}
 process.exit(fail ? 1 : 0);

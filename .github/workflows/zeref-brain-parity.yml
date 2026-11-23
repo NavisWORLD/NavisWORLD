@@ -1,0 +1,36 @@
+name: Zeref brain parity
+
+# Runs the in-browser brain parity check (tools/zeref-brain-parity.mjs) on the
+# runner: chunk + whole-file sha256 vs the manifest, JS tokenizer vs Python on
+# all 316 cases, and the full pipeline (assembly -> prompt ids -> greedy token
+# ids -> text) on the 9 greedy cases. The verdict rule lives in the tool: a
+# case whose assembly did not change must match the reference exactly; a case
+# whose assembly changed under the token-budgeted window passes when its prompt
+# fits the window and the reply is non-empty.
+#
+# Runs on PRs that touch the page brain or the tool itself, and by hand.
+
+on:
+  pull_request:
+    paths:
+      - 'docs/zeref-brain/**'
+      - 'tools/zeref-brain-parity.mjs'
+      - '.github/workflows/zeref-brain-parity.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  parity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install ONNX Runtime Web (the page's session backend)
+        run: npm i --no-save onnxruntime-web@1.31.1
+      - name: Run the parity check
+        run: node tools/zeref-brain-parity.mjs
