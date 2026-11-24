@@ -218,6 +218,7 @@ check("argmax(applyRules(logits, gen))" in cjs and "Math.fround(1.15)" in cjs an
 check("innerHTML" not in js and "eval(" not in js.replace("wasm-unsafe-eval", "") and "Math.random" not in js, "no HTML injection, no randomness")
 check("t.textContent = text" in js and "white-space:pre-wrap" in css, "replies shown verbatim (textContent, whitespace kept)")
 check("unedited" in js and "pinned checkpoint step ' + step" in js and "const step = manifest.provenance.training_steps" in js and "no senses supplied" in js, "reply bubble labels name the real step it ran")
+check("dyn12_telemetry" in cjs and "condition54_sent: false" in cjs and "zeref-dyn12-telemetry-v1" in cjs and "12D not fed" in js, "page brain records the 12D drop honestly: no condition54 input, telemetry nulls")
 check("Zeref is thinking on your device…" in js and "clearInterval(tick)" in js, "honest wait state while his brain really runs")
 check('id="msg"' in html and not re.search(r'<textarea id="msg"[^>]*maxlength', html), "long pastes are never silently cut by the text box")
 check("longNote(text.length); return;" in js and "zeref/feed/owner" in js and "feed-zeref.yml" in js, "over-long text is not sent; it is routed to the owner feed / Feed Zeref")
