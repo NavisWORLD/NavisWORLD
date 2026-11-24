@@ -92,5 +92,10 @@ export async function reply(ort, session, dims, tokenizer, history, text, opts =
   const promptIds = tokenizer.encode(formatPrompt(messages), true);
   const dice = opts.makePick ? await opts.makePick(promptIds) : null; // null = greedy
   const gen = await generate(ort, session, dims, promptIds, { ...opts, pick: dice ? dice.pick : null });
-  return { text: tokenizer.decode(gen), messages, promptIds, tokenIds: gen, receipt: dice ? dice.receipt : { mode: 'greedy' } };
+  // dyn12 telemetry (REPORT-ONLY, 2026-11-23): the page brain has no condition54 input -- the
+  // ONNX export ships ids/pk/pv/ps/fast only, so the 12D state is never fed here. The reply
+  // records that drop honestly with the same schema the native server uses, nulls and all,
+  // so a reader never mistakes "no telemetry" for "12D measured zero".
+  return { text: tokenizer.decode(gen), messages, promptIds, tokenIds: gen, receipt: dice ? dice.receipt : { mode: 'greedy' },
+    dyn12_telemetry: { schema: 'zeref-dyn12-telemetry-v1', condition54_sent: false, prefill: null, last: null } };
 }
