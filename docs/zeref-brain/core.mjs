@@ -19,6 +19,8 @@
 export const MAX_NEW_TOKENS = 64;
 export const REPETITION_PENALTY = Math.fround(1.15); // float32, as torch applies it to float32 logits
 export const NO_REPEAT_NGRAM = 3;
+// tokenizer.json added_tokens: id 0 is <|pad|>, special, decodes to nothing (same as EOS).
+export const PAD_ID = 0;
 
 export function formatPrompt(messages) {
   return messages.map((m) => `${m.role}: ${m.content}`).join('\n') + '\nassistant:';
@@ -46,6 +48,9 @@ export function assembleMessages(history, text, countTokens, maxPromptTokens) {
 
 export function applyRules(logits, gen) {
   const lg = Float32Array.from(logits);
+  // A NaN logit carries no information: treat it as banned, never as a pick.
+  // (NaN would otherwise poison argmax comparisons, which can surface token 0.)
+  for (let i = 0; i < lg.length; i++) if (Number.isNaN(lg[i])) lg[i] = -Infinity;
   if (gen.length) {
     for (const t of new Set(gen)) { const v = lg[t]; lg[t] = v > 0 ? v / REPETITION_PENALTY : v * REPETITION_PENALTY; }
   }
@@ -58,6 +63,26 @@ export function applyRules(logits, gen) {
 }
 
 export function argmax(a) { let m = 0; for (let j = 1; j < a.length; j++) if (a[j] > a[m]) m = j; return m; }
+
+// The first generated token must be a real word piece, never a stop or a pad:
+// masking EOS/PAD at step 0 stops the preventable empty reply where the dice
+// (or greedy argmax) picks the stop token before Zeref has said a single word.
+// The mask applies ONLY when at least one other token has a finite logit, so
+// when the brain genuinely has nothing to say the guard changes nothing and
+// the honest empty-reply path in chat.js still fires: nothing is invented in
+// his place. Mutates and returns the logits array it is given (applyRules
+// already hands generate a fresh copy each step).
+export function firstTokenGuard(lg, eos_id) {
+  let hasWord = false;
+  for (let i = 0; i < lg.length; i++) {
+    if (i === eos_id || i === PAD_ID) continue;
+    if (Number.isFinite(lg[i])) { hasWord = true; break; }
+  }
+  if (!hasWord) return lg;
+  lg[eos_id] = -Infinity;
+  lg[PAD_ID] = -Infinity;
+  return lg;
+}
 
 // session: an onnxruntime InferenceSession of the step graph; dims: manifest.dims.
 export async function generate(ort, session, dims, promptIds, { maxNewTokens = MAX_NEW_TOKENS, onPiece, pick = null } = {}) {
@@ -76,7 +101,9 @@ export async function generate(ort, session, dims, promptIds, { maxNewTokens = M
   await step(promptIds); // whole-prompt prefill in one call, as the server does
   const gen = [];
   for (let i = 0; i < maxNewTokens; i++) {
-    const t = pick ? await pick(applyRules(logits, gen), i) : argmax(applyRules(logits, gen));
+    let lg = applyRules(logits, gen);
+    if (i === 0) lg = firstTokenGuard(lg, eos_id);
+    const t = pick ? await pick(lg, i) : argmax(lg);
     gen.push(t);
     if (onPiece) onPiece(t, gen);
     if (t === eos_id) break;

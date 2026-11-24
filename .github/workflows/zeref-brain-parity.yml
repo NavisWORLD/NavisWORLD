@@ -6,7 +6,8 @@ name: Zeref brain parity
 # ids -> text) on the 9 greedy cases. The verdict rule lives in the tool: a
 # case whose assembly did not change must match the reference exactly; a case
 # whose assembly changed under the token-budgeted window passes when its prompt
-# fits the window and the reply is non-empty.
+# fits the window and the reply is non-empty. It also runs the mouth unit
+# tests (docs/zeref-brain/core.test.mjs), which need no model download.
 #
 # Runs on PRs that touch the page brain or the tool itself, and by hand.
 
@@ -34,3 +35,5 @@ jobs:
         run: npm i --no-save onnxruntime-web@1.31.1
       - name: Run the parity check
         run: node tools/zeref-brain-parity.mjs
+      - name: Run the mouth guard unit tests
+        run: node --test docs/zeref-brain/core.test.mjs
