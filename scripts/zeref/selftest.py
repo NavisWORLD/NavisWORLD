@@ -203,12 +203,18 @@ _qjs = (brain_dir / "qrec.mjs").read_text(encoding="utf-8")
 _qraw = (brain_dir / "quantum-record.json").read_bytes()
 _qrec = json.loads(_qraw)
 check(_hl.sha256(_qraw).hexdigest() in _qjs, "quantum-record.json matches the sha256 pinned in qrec.mjs")
-check(_qrec["schema"] == "zeref-quantum-record-v1" and all(x["source_class"] == "RECORDED_IBM_HARDWARE" for x in _qrec["sources"])
-      and _qrec["shots_by_class"]["measured_ibm_hardware"] == sum(x["measured_rounds"] for x in _qrec["sources"]) and _qrec["shots_by_class"]["other"] == 0
-      and _hl.sha256("|".join(["zeref-quantum-record-v1", _qrec["heart_seed"]["sha256"], *[x["outcomes_sha256"] for x in _qrec["sources"]]]).encode()).hexdigest() == _qrec["record_seed_sha256"],
-      "quantum record: RECORDED IBM sources only, shots counted by class, record seed recomputes")
+_traw = (brain_dir / "quantum-dice-table.bin").read_bytes()
+check(_qrec["schema"] == "zeref-quantum-record-v2" and _qrec["table"]["sha256"] == _hl.sha256(_traw).hexdigest()
+      and _qrec["table"]["bytes"] == len(_traw) and _qrec["table"]["bits"] == 11354112
+      and _qrec["shots_by_class"]["measured_ibm_hardware"] == 7770112 and _qrec["shots_by_class"]["legacy_unlabelled"] == 3584000
+      and _qrec["shots_by_class"]["classical_simulator_excluded"] == 1024 and _qrec["shots_by_class"]["total_in_table"] == 11354112
+      and _qrec["shots_by_class"]["other"] == 0
+      and _hl.sha256("|".join(["zeref-quantum-record-v2", _qrec["heart_seed"]["sha256"], _qrec["table"]["sha256"]]).encode()).hexdigest() == _qrec["record_seed_sha256"]
+      and 0.49 < sum(b.bit_count() for b in _traw) / 11354112 < 0.51
+      and {x["job_id"] for x in _qrec["history"]} == {"dbp2818ou4as73cstj5g", "dbffvhvgdj9s73bbj940"},
+      "quantum record v2: full-loop table pinned by sha, shots counted by class, record seed recomputes, v1 jobs kept as history")
 check("live quantum" not in _qrec["label"].replace("not live quantum", "") and "Math.random" not in _qjs + js and "crypto.subtle.digest('SHA-256'" in _qjs
-      and "not live quantum" in _qjs and "live_quantum: false" in _qjs, "dice are sha256 over the record, labelled not live quantum, no unseeded randomness")
+      and "not live quantum" in _qjs and "live_quantum: false" in _qjs, "dice are table bits from the record, labelled not live quantum, no unseeded randomness")
 check("get('greedy') !== '1'" in js and "qm.modeLabel(brain.record)" in js and "receipt: " in js and "replayable, not live quantum" in js
       and "greedy (the same thread always gets the same reply)" in js and "pick ? await pick(applyRules(logits, gen), i)" in cjs,
       "dice are the default; ?greedy=1 and the toggle give greedy; every reply shows its mode and receipt")
