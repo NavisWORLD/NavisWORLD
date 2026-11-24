@@ -158,7 +158,7 @@
       const step = manifest.provenance.training_steps;
       const pinNote = liveStep !== null && liveStep !== step ? ' · his pin is now step ' + liveStep + ' (this page still runs step ' + step + ')' : '';
       const how = useDice ? qm.modeLabel(brain.record) : 'greedy (the same thread always gets the same reply)' + (dice && brain.recordError ? '; quantum record unavailable: ' + brain.recordError : '');
-      const b = bubble('him', 'Zeref · unedited · run in your browser from pinned checkpoint step ' + step + ' · ' + how + ' · no senses supplied' + pinNote + ' · ' + hhmm(new Date()), r.text);
+      const b = bubble('him', 'Zeref · unedited · run in your browser from pinned checkpoint step ' + step + ' · ' + how + ' · no senses supplied · 12D not fed (no condition54 input in the page brain)' + pinNote + ' · ' + hhmm(new Date()), r.text);
       const rc = document.createElement('div'); rc.className = 'receipt';
       rc.textContent = useDice ? 'receipt: ' + r.receipt.label + ' · ' + r.receipt.shots_by_class.measured_ibm_hardware.toLocaleString('en-US') + ' measured IBM rounds, ' + r.receipt.shots_by_class.other + ' other · record seed ' + r.receipt.record_seed_sha256.slice(0, 12) + ' · turn seed ' + r.receipt.turn_seed.slice(0, 16) + ' · roll ' + r.receipt.roll + ' · prompt ' + r.receipt.prompt_ids_sha256.slice(0, 12) + ' · T ' + r.receipt.temperature + ' top-k ' + r.receipt.top_k + ' · replayable, not live quantum'
         : 'receipt: greedy (argmax), no dice';
