@@ -4,7 +4,7 @@
 // browser (localStorage), so it continues; "start a fresh conversation" forgets it.
 // Replies are shown verbatim (textContent, whitespace kept). Nothing is invented:
 // no simulated typing, no unseeded randomness; a failure says so. Since Cory's 2026-11-21 7:00 PM CT decision each
-// word piece is chosen with quantum-record dice (zeref-brain/qrec.mjs: sha256 over RECORDED IBM shot records,
+// word piece is chosen with quantum-record dice (zeref-brain/qrec.mjs: sha256 over RECORDED archive shots,
 // replayable from the receipt shown under every reply); ?greedy=1 or the toggle gives the old deterministic reply.
 'use strict';
 (function () {
@@ -160,7 +160,7 @@
       const how = useDice ? qm.modeLabel(brain.record) : 'greedy (the same thread always gets the same reply)' + (dice && brain.recordError ? '; quantum record unavailable: ' + brain.recordError : '');
       const b = bubble('him', 'Zeref · unedited · run in your browser from pinned checkpoint step ' + step + ' · ' + how + ' · no senses supplied' + pinNote + ' · ' + hhmm(new Date()), r.text);
       const rc = document.createElement('div'); rc.className = 'receipt';
-      rc.textContent = useDice ? 'receipt: ' + r.receipt.label + ' · ' + r.receipt.shots_by_class.measured_ibm_hardware.toLocaleString('en-US') + ' measured IBM rounds, ' + r.receipt.shots_by_class.other + ' other · record seed ' + r.receipt.record_seed_sha256.slice(0, 12) + ' · turn seed ' + r.receipt.turn_seed.slice(0, 16) + ' · roll ' + r.receipt.roll + ' · prompt ' + r.receipt.prompt_ids_sha256.slice(0, 12) + ' · T ' + r.receipt.temperature + ' top-k ' + r.receipt.top_k + ' · replayable, not live quantum'
+      rc.textContent = useDice ? 'receipt: ' + r.receipt.label + ' · ' + r.receipt.shots_by_class.total_in_table.toLocaleString('en-US') + ' archive shots (' + r.receipt.shots_by_class.measured_ibm_hardware.toLocaleString('en-US') + ' IBM hardware + ' + r.receipt.shots_by_class.legacy_unlabelled.toLocaleString('en-US') + ' legacy unlabelled, ' + r.receipt.shots_by_class.other + ' other) · record seed ' + r.receipt.record_seed_sha256.slice(0, 12) + ' · turn seed ' + r.receipt.turn_seed.slice(0, 16) + ' · roll ' + r.receipt.roll + ' · prompt ' + r.receipt.prompt_ids_sha256.slice(0, 12) + ' · T ' + r.receipt.temperature + ' top-k ' + r.receipt.top_k + ' · replayable, not live quantum'
         : 'receipt: greedy (argmax), no dice';
       b.append(rc);
       if (r.text.trim() === '') note('He produced no words this turn (an empty reply). Nothing was put in his place.');
@@ -190,7 +190,7 @@
   diceBtn.type = 'button'; diceBtn.id = 'dice'; diceBtn.className = $('fresh').className;
   const diceText = () => { diceBtn.textContent = dice ? 'Replies: quantum-record dice (tap for greedy)' : 'Replies: greedy (tap for quantum-record dice)'; diceBtn.setAttribute('aria-pressed', String(dice)); };
   diceText(); $('fresh').after(diceBtn);
-  diceBtn.addEventListener('click', () => { dice = !dice; diceText(); note(dice ? 'Quantum-record dice on: each word piece is chosen with dice from RECORDED IBM shot records (every reply shows its receipt).' : 'Greedy on: he picks his single most likely word piece each time; the same thread gets the same reply.'); });
+  diceBtn.addEventListener('click', () => { dice = !dice; diceText(); note(dice ? 'Quantum-record dice on: each word piece is chosen with dice from RECORDED archive shots (every reply shows its receipt).' : 'Greedy on: he picks his single most likely word piece each time; the same thread gets the same reply.'); });
   $('fresh').addEventListener('click', () => { try { localStorage.removeItem(KEY); } catch { /* nothing kept */ } note('Started fresh: earlier messages are forgotten on this device.'); });
   status();
   send.disabled = true;
