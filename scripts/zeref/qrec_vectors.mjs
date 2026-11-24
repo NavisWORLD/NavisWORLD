@@ -1,11 +1,12 @@
 // Writes / checks the shared quantum-record dice vectors (scripts/zeref/qrec-vectors.json).
-// The same file is checked by The-beast-box- tests/test_qrec_sampler.py against the Python twin.
+// The same file is checked by The-beast-box- tests/test_qrec_v2_sampler.py against the Python twin.
 //   node scripts/zeref/qrec_vectors.mjs          -> check (exit 1 on any difference)
 //   node scripts/zeref/qrec_vectors.mjs --write  -> regenerate
 import fs from 'fs';
 import { sha256Hex, turnSeed, uniform, pick, recordSeed } from '../../docs/zeref-brain/qrec.mjs';
 
 const rec = JSON.parse(fs.readFileSync(new URL('../../docs/zeref-brain/quantum-record.json', import.meta.url), 'utf8'));
+const table = new Uint8Array(fs.readFileSync(new URL('../../docs/zeref-brain/quantum-dice-table.bin', import.meta.url)));
 const OUT = new URL('./qrec-vectors.json', import.meta.url);
 const cases = [];
 for (let c = 0; c < 12; c++) {
@@ -19,12 +20,13 @@ for (let c = 0; c < 12; c++) {
   const roll = c % 4, T = c === 7 ? 1.3 : 0.75, K = c === 9 ? 5 : 40;
   const seed = await turnSeed(rec.record_seed_sha256, roll, promptIds);
   const picks = [];
-  for (let k = 0; k < 8; k++) { const u = await uniform(seed, k); picks.push({ k, u, pick: pick(logits, u, T, K) }); }
+  for (let k = 0; k < 8; k++) { const { u, pos } = await uniform(table, seed, k); picks.push({ k, u, pos, pick: pick(logits, u, T, K) }); }
   cases.push({ roll, prompt_ids: promptIds, temperature: T, top_k: K, turn_seed: seed,
     logits: logits.map((v) => (Number.isFinite(v) ? v : null)), picks });
 }
-const doc = { schema: 'zeref-qrec-vectors-v1', record_seed_sha256: rec.record_seed_sha256,
-  record_seed_recomputed: await recordSeed(rec.heart_seed.sha256, rec.sources.map((s) => s.outcomes_sha256)), cases };
+const doc = { schema: 'zeref-qrec-vectors-v2', record_seed_sha256: rec.record_seed_sha256,
+  record_seed_recomputed: await recordSeed(rec.heart_seed.sha256, rec.table.sha256),
+  table_sha256: rec.table.sha256, cases };
 if (process.argv.includes('--write')) { fs.writeFileSync(OUT, JSON.stringify(doc) + '\n'); console.log('wrote', cases.length, 'cases'); }
 else {
   const want = fs.readFileSync(OUT, 'utf8').trim();
