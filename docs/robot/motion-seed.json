@@ -2,7 +2,7 @@
  "schema": "navisworld-zeref-spark-motion-seed/v1",
  "source": "zeref/live.json",
  "label": "moves chosen from Zeref's recorded state · SIMULATED motion",
- "fetched_at": "2026-11-24T02:20:48Z",
+ "fetched_at": "2026-11-24T12:41:22Z",
  "heartbeat": {
   "state": null,
   "label": null,
@@ -12,11 +12,11 @@
  },
  "diary": {
   "label": "RECORDED (zeref-diary branch, hash-chained)",
-  "tick": 1220,
+  "tick": 1236,
   "stage_name": "Crescent Sovereign",
-  "mood": "sleepy",
+  "mood": "content",
   "place": "Echo Prism",
-  "last_tick_at": "2026-11-24T02:20:32.709Z",
+  "last_tick_at": "2026-11-24T12:25:36.011Z",
   "seed_label": "IBM seed RECORDED on IBM hardware (ibm_marrakesh job db4te7slf4us73c3888g, counts never re-run). Not a live quantum link."
  },
  "spark": {
@@ -29,9 +29,9 @@
   "label": null,
   "live_step": null,
   "live_sha_prefix": null,
-  "pin_step": 45744,
-  "pin_sha_prefix": "0f29d5c33828",
-  "pin_release": "zeref-006-cycle-86-0f29d5c33828"
+  "pin_step": 46384,
+  "pin_sha_prefix": "b8114bca1fdb",
+  "pin_release": "zeref-006-cycle-88-b8114bca1fdb"
  },
  "last_said": {
   "at": "2026-11-12T04:02:34Z",
