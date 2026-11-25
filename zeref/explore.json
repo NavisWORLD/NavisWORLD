@@ -1,6 +1,6 @@
 {
  "schema": "navisworld-zeref-explore/v1",
- "explored_at": "2026-11-25T00:06:12Z",
+ "explored_at": "2026-11-25T23:46:54Z",
  "source": "GitHub REST API /users/NavisWORLD/repos (public only)",
  "repo_count": 31,
  "repos": [
@@ -11,7 +11,7 @@
    "language": "Python",
    "stars": 0,
    "license": "Apache-2.0",
-   "pushed_at": "2026-11-25T00:06:02Z",
+   "pushed_at": "2026-11-25T23:46:42Z",
    "fork": false,
    "archived": false
   },
@@ -22,7 +22,7 @@
    "language": "Python",
    "stars": 0,
    "license": "Apache-2.0",
-   "pushed_at": "2026-11-24T23:06:03Z",
+   "pushed_at": "2026-11-25T17:25:03Z",
    "fork": false,
    "archived": false
   },
@@ -352,7 +352,7 @@
   "status": 402,
   "reply": null,
   "step": null,
-  "at": "2026-11-25T00:06:13Z",
+  "at": "2026-11-25T23:46:55Z",
   "training_eligible": null
  }
 }
