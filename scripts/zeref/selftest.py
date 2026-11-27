@@ -666,7 +666,17 @@ if (String((live.diary || {}).mood).toLowerCase() === 'content') {
   if (a.mood !== 'content') throw new Error('mood should pass through');
   if (a.iris === MOOD_IRIS.default && a.iris === MOOD_IRIS.content) throw new Error('content iris');
 }
-if (!a.proud) throw new Error('committed live card has live_step === pin_step with a pin_release; proud should be on');
+// proud is only on when the card carries a served step matching the pin.
+// With the bridge down the card honestly carries live_step null, so proud
+// must be off; demanding it on fails every PR until the bridge returns.
+const servedStep = live.brain ? live.brain.live_step : null;
+const pinStep = live.brain ? live.brain.pin_step : null;
+const pinRelease = live.brain ? live.brain.pin_release : null;
+if (servedStep != null && pinStep != null && servedStep === pinStep && pinRelease) {
+  if (!a.proud) throw new Error('committed live card has live_step === pin_step with a pin_release; proud should be on');
+} else if (a.proud) {
+  throw new Error('proud is on but the committed live card has no served step matching the pin');
+}
 if (a.stale) throw new Error('a just-fetched payload must not be marked STALE');
 // Bright glow and open lids are properties of energy 100 + a fresh payload,
 // not of whatever the ticking committed snapshot currently holds.
