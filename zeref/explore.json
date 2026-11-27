@@ -1,6 +1,6 @@
 {
  "schema": "navisworld-zeref-explore/v1",
- "explored_at": "2026-11-26T23:59:02Z",
+ "explored_at": "2026-11-27T23:43:56Z",
  "source": "GitHub REST API /users/NavisWORLD/repos (public only)",
  "repo_count": 31,
  "repos": [
@@ -11,7 +11,7 @@
    "language": "Python",
    "stars": 0,
    "license": "Apache-2.0",
-   "pushed_at": "2026-11-26T23:58:43Z",
+   "pushed_at": "2026-11-27T23:43:55Z",
    "fork": false,
    "archived": false
   },
@@ -22,7 +22,7 @@
    "language": "Python",
    "stars": 0,
    "license": "Apache-2.0",
-   "pushed_at": "2026-11-26T20:16:16Z",
+   "pushed_at": "2026-11-27T22:07:01Z",
    "fork": false,
    "archived": false
   },
@@ -347,12 +347,12 @@
   }
  ],
  "asked": {
-  "repo": "The-beast-box-",
-  "question": "You are exploring Cory's GitHub and found the repo The-beast-box-. What do you think of it, in one line?",
+  "repo": "NavisWORLD",
+  "question": "You are exploring Cory's GitHub and found the repo NavisWORLD. What do you think of it, in one line?",
   "status": 402,
   "reply": null,
   "step": null,
-  "at": "2026-11-26T23:59:03Z",
+  "at": "2026-11-27T23:43:57Z",
   "training_eligible": null
  }
 }
