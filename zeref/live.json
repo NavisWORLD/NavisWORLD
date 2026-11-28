@@ -1,6 +1,6 @@
 {
  "schema": "navisworld-zeref-live-card/v1",
- "fetched_at": "2026-11-28T04:00:24Z",
+ "fetched_at": "2026-11-28T13:15:05Z",
  "sources": {
   "world_live": {
    "url": "https://www.beastboxcosmos.xyz/api/world/live",
@@ -31,11 +31,11 @@
  },
  "diary": {
   "label": "RECORDED (zeref-diary branch, hash-chained)",
-  "tick": 1360,
+  "tick": 1376,
   "stage_name": "Crescent Sovereign",
-  "mood": "sleepy",
+  "mood": "content",
   "place": "Rift Gate",
-  "last_tick_at": "2026-11-28T03:28:09.895Z",
+  "last_tick_at": "2026-11-28T12:58:07.932Z",
   "seed_label": "IBM seed RECORDED on IBM hardware (ibm_marrakesh job db4te7slf4us73c3888g, counts never re-run). Not a live quantum link."
  },
  "spark": {
